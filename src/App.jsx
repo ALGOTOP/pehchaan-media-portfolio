@@ -1,8 +1,31 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Play, Instagram } from "lucide-react";
-import { Card, CardContent } from "./components/ui/card";
-import { Button } from "./components/ui/button";
+
+// ✅ Inline Button Component
+const Button = ({ children, className = "", ...props }) => (
+  <button
+    {...props}
+    className={`px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-2xl text-white font-medium transition duration-300 ${className}`}
+  >
+    {children}
+  </button>
+);
+
+// ✅ Inline Card Component
+const Card = ({ children, className = "", ...props }) => (
+  <div
+    {...props}
+    className={`rounded-2xl bg-[#141627] border border-gray-800 shadow-md p-6 hover:shadow-lg transition ${className}`}
+  >
+    {children}
+  </div>
+);
+
+// ✅ Inline CardContent Component
+const CardContent = ({ children, className = "" }) => (
+  <div className={`text-gray-400 ${className}`}>{children}</div>
+);
 
 export default function App() {
   return (
