@@ -1,83 +1,110 @@
+import React from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Instagram, ArrowRight } from "lucide-react";
+import { Play, Instagram } from "lucide-react";
+import { Card, CardContent } from "./components/ui/card";
+import { Button } from "./components/ui/button";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0B0D17] to-[#11142a] flex flex-col items-center justify-center px-6 py-12 text-center">
-      
+    <div className="bg-[#0B0D17] text-white min-h-screen font-inter">
       {/* Hero Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-        className="max-w-3xl"
-      >
-        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
-          <span className="text-white">Pehchaan Media</span>
-        </h1>
-        <p className="text-gray-400 text-lg md:text-xl mb-10">
-          We craft identity through motion, visuals, and purpose.  
-          A modern media house shaping stories that move people.
-        </p>
+      <section className="flex flex-col items-center justify-center text-center h-screen px-6">
+        <motion.h1
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-5xl md:text-7xl font-bold mb-4"
+        >
+          Pehchaan Media
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="text-gray-400 max-w-xl mb-8"
+        >
+          A digital media house crafting compelling stories through visuals,
+          sound, and strategy. Elevate your brand’s identity with us.
+        </motion.p>
 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
+          transition={{ delay: 0.6 }}
         >
-          <Button
-            asChild
-            className="bg-white text-black px-6 py-3 rounded-full font-semibold hover:bg-gray-200 transition"
+          <a
+            href="https://instagram.com/pehchaanmedia"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <a href="https://instagram.com/pehchaan.media" target="_blank" rel="noopener noreferrer">
-              <Instagram className="inline-block mr-2" size={18} />
-              Follow us on Instagram
-            </a>
-          </Button>
-
-          <Button
-            asChild
-            className="border border-white/30 text-white px-6 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition"
-          >
-            <a href="#work">
-              Explore Our Work <ArrowRight className="inline-block ml-2" size={18} />
-            </a>
-          </Button>
+            <Button className="flex items-center gap-2">
+              <Play className="w-4 h-4" /> Explore Our Work
+            </Button>
+          </a>
         </motion.div>
-      </motion.div>
+      </section>
 
-      {/* Work Section */}
-      <motion.section
-        id="work"
-        className="mt-24 grid md:grid-cols-3 gap-8 max-w-6xl"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={{
-          hidden: { opacity: 0, y: 40 },
-          visible: { opacity: 1, y: 0, transition: { duration: 0.8, staggerChildren: 0.2 } },
-        }}
-      >
-        {[
-          { title: "Brand Films", desc: "Visual storytelling that defines your essence." },
-          { title: "Digital Campaigns", desc: "Creative strategies that move markets and minds." },
-          { title: "Design & Identity", desc: "Creating visuals that breathe life into your story." },
-        ].map((card, i) => (
-          <motion.div
-            key={i}
-            className="bg-white/5 p-8 rounded-2xl hover:bg-white/10 transition shadow-lg"
-            whileHover={{ scale: 1.04 }}
-          >
-            <h3 className="text-xl font-semibold mb-3">{card.title}</h3>
-            <p className="text-gray-400">{card.desc}</p>
-          </motion.div>
-        ))}
-      </motion.section>
+      {/* Portfolio Section */}
+      <section className="px-8 py-20 bg-[#101223]">
+        <h2 className="text-3xl font-semibold text-center mb-12">
+          Featured Projects
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            {
+              title: "Cinematic Ad Campaign",
+              desc: "High-impact storytelling through visual precision.",
+            },
+            {
+              title: "Music Video Production",
+              desc: "Where rhythm meets narrative in perfect sync.",
+            },
+            {
+              title: "Brand Storytelling Series",
+              desc: "Crafting unique digital experiences for visionary brands.",
+            },
+          ].map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.2 }}
+            >
+              <Card>
+                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                <CardContent>{item.desc}</CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 text-center bg-[#0B0D17]">
+        <motion.h3
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="text-3xl font-semibold mb-6"
+        >
+          Let’s Build Something Iconic.
+        </motion.h3>
+
+        <a
+          href="https://instagram.com/pehchaanmedia"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Button className="flex items-center gap-2 bg-pink-600 hover:bg-pink-700">
+            <Instagram className="w-5 h-5" /> Follow Us on Instagram
+          </Button>
+        </a>
+      </section>
 
       {/* Footer */}
-      <footer className="mt-24 text-sm text-gray-500">
+      <footer className="py-6 text-center text-gray-500 text-sm border-t border-gray-800">
         © {new Date().getFullYear()} Pehchaan Media. All rights reserved.
       </footer>
     </div>
