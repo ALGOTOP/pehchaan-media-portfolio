@@ -1,15 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+// ✅ Clean, production-ready configuration for Vercel
 export default defineConfig({
   plugins: [react()],
-  server: {
-    host: true,
-    allowedHosts: ['*'],
-    strictPort: false,
-    cors: true, // ✅ allow sandbox requests through CORS
-    hmr: {
-      clientPort: 443, // ✅ required for CodeSandbox HTTPS tunnels
-    },
+  build: {
+    outDir: "dist", // output folder for Vercel
   },
 });
