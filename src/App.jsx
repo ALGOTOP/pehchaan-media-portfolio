@@ -778,7 +778,7 @@ export default function App() {
       <div className="flex items-center gap-3">
         {/* Instagram */}
         <a
-          href="https://instagram.com/pehchaanmedia"
+          href="https://www.instagram.com/pehchaanmediahouse/"
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 rounded-xl bg-[#11121b] hover:bg-gradient-to-tr hover:from-pink-500 hover:to-yellow-500 hover:text-white transition"
@@ -830,7 +830,7 @@ export default function App() {
     </div>
   </div>
 </footer>
-
+        
 </main>
 
       {/* floating CTA */}
