@@ -750,24 +750,88 @@ export default function App() {
               </div>
             </div>
           </div>
-        </section>
+    </section>
 
-        {/* footer */}
-        <footer className="py-8 border-t border-gray-800 bg-[#0a0c14]">
-          <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center font-bold">PM</div>
-              <div className="text-sm text-gray-300">© {new Date().getFullYear()} Pehchaan Media</div>
-            </div>
-            <div className="flex items-center gap-4 text-sm text-gray-400">
-              <a href="#privacy">Privacy</a>
-              <a href="#terms">Terms</a>
-              <a href="#sitemap">Sitemap</a>
-            </div>
-          </div>
-        </footer>
+{/* footer */}
+<footer className="py-8 border-t border-gray-800 bg-[#0a0c14]">
+  <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+    
+    {/* left side: logo + copyright */}
+    <div className="flex items-center gap-4">
+      <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center font-bold">
+        PM
+      </div>
+      <div className="text-sm text-gray-300">
+        © {new Date().getFullYear()} Pehchaan Media
+      </div>
+    </div>
 
-      </main>
+    {/* right side: links + social icons */}
+    <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-gray-400">
+      <div className="flex items-center gap-4">
+        <a href="#privacy" className="hover:text-white transition">Privacy</a>
+        <a href="#terms" className="hover:text-white transition">Terms</a>
+        <a href="#sitemap" className="hover:text-white transition">Sitemap</a>
+      </div>
+
+      {/* social icons */}
+      <div className="flex items-center gap-3">
+        {/* Instagram */}
+        <a
+          href="https://instagram.com/pehchaanmedia"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2 rounded-xl bg-[#11121b] hover:bg-gradient-to-tr hover:from-pink-500 hover:to-yellow-500 hover:text-white transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            className="w-5 h-5"
+          >
+            <path d="M7.5 2C4.46 2 2 4.46 2 7.5v9C2 19.54 4.46 22 7.5 22h9c3.04 0 5.5-2.46 5.5-5.5v-9C22 4.46 19.54 2 16.5 2h-9Zm0 2h9c1.93 0 3.5 1.57 3.5 3.5v9c0 1.93-1.57 3.5-3.5 3.5h-9A3.49 3.49 0 0 1 4 16.5v-9C4 5.57 5.57 4 7.5 4ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm4.75-.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+          </svg>
+        </a>
+
+        {/* YouTube */}
+        <a
+          href="https://youtube.com/@pehchaanmedia"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2 rounded-xl bg-[#11121b] hover:bg-red-600 hover:text-white transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            className="w-5 h-5"
+          >
+            <path d="M10 15l5.19-3L10 9v6zm12-3c0-1.66-1.34-3-3-3H5c-1.66 0-3 1.34-3 3s1.34 3 3 3h14c1.66 0 3-1.34 3-3z" />
+          </svg>
+        </a>
+
+        {/* TikTok */}
+        <a
+          href="https://tiktok.com/@pehchaanmedia"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2 rounded-xl bg-[#11121b] hover:bg-[#25F4EE] hover:text-black transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            className="w-5 h-5"
+          >
+            <path d="M12 2c1.1 0 2 .9 2 2v12a2 2 0 1 1-4 0V9h-2v7a4 4 0 1 0 8 0V6h-2V2h-2Z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</main>
 
       {/* floating CTA */}
       <div className="fixed right-6 bottom-6 z-40">
