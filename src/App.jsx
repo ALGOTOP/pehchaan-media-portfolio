@@ -278,10 +278,7 @@ function ProjectModal({ project, open, onClose }) {
   if (!open || !project) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-      <div
-        className="absolute inset-0 bg-black/70"
-        onClick={() => onClose()}
-      />
+      <div className="absolute inset-0 bg-black/70" onClick={() => onClose()} />
       <motion.div
         initial={{ opacity: 0, y: 20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -298,13 +295,19 @@ function ProjectModal({ project, open, onClose }) {
           </div>
           <div className="md:w-1/2 p-6">
             <h3 className="text-2xl font-bold mb-2">{project.title}</h3>
-            <p className="text-sm text-gray-400 mb-4">{project.role} • {project.year} • {project.duration}</p>
+            <p className="text-sm text-gray-400 mb-4">
+              {project.role} • {project.year} • {project.duration}
+            </p>
             <p className="text-gray-300 mb-6">{project.excerpt}</p>
             <div className="flex gap-3 items-center">
               <a
                 className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-2xl"
                 href="#contact"
-                onClick={(e) => { e.preventDefault(); onClose(); window.location.hash = "#contact"; }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onClose();
+                  window.location.hash = "#contact";
+                }}
               >
                 <FiPlay /> View Similar
               </a>
@@ -315,7 +318,9 @@ function ProjectModal({ project, open, onClose }) {
                 Close
               </button>
             </div>
-            <div className="mt-6 text-xs text-gray-500">Shot on RED, graded in DaVinci Resolve</div>
+            <div className="mt-6 text-xs text-gray-500">
+              Shot on RED, graded in DaVinci Resolve
+            </div>
           </div>
         </div>
         <button
@@ -596,14 +601,18 @@ export default function App() {
           </div>
         </section>
 
-        {/* case studies carousel */}
+        {/* ===================================================== */}
+        {/* UPDATED: Case Studies - Modern Cinematic Grid (replaces previous carousel section) */}
+        {/* ===================================================== */}
         <section id="case-studies" className="py-24">
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-3xl font-bold">Selected Case Studies</h3>
-                <p className="text-gray-400">Deep dives into strategy, craft, and outcome.</p>
+                <p className="text-gray-400">Deep dives into strategy, craft, and outcome — curated to highlight storytelling and impact.</p>
               </div>
+
+              {/* Trusted logos - kept, but smaller and subtle */}
               <div className="hidden md:flex gap-3 items-center">
                 <div className="text-sm text-gray-400">Trusted on</div>
                 <img src={LOGO_G2} alt="G2" className="h-9" />
@@ -612,7 +621,21 @@ export default function App() {
               </div>
             </div>
 
-            <SimpleCarousel items={PROJECTS} />
+            {/* Filters + featured highlight */}
+            <div className="mb-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-400 mr-2">Filter</span>
+                {/* filter buttons powered by local state; to keep single-file, we implement small internal state */}
+                <CaseStudiesFilters />
+              </div>
+
+              <div className="text-sm text-gray-400">
+                Showing <span id="cs-count" className="text-white font-semibold">All</span> projects
+              </div>
+            </div>
+
+            {/* Grid: large featured tile + smaller tiles */}
+            <CaseStudiesGrid projects={PROJECTS} onOpen={openProject} />
           </div>
         </section>
 
@@ -694,26 +717,34 @@ export default function App() {
           </div>
         </section>
 
-        {/* testimonials */}
+        {/* ===================================================== */}
+        {/* UPDATED: Voices of Collaboration (replaces previous testimonials) */}
+        {/* ===================================================== */}
         <section id="reviews" className="py-24 bg-[#0b0d17] border-t border-gray-800">
           <div className="max-w-7xl mx-auto px-6 text-center">
-            <h3 className="text-3xl font-bold">Voices of Collaboration</h3>
-            <p className="text-gray-400 mt-2">Long-term partnerships and measurable outcomes.</p>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
+              <h3 className="text-3xl font-bold">Voices of Collaboration</h3>
+              <p className="text-gray-400 mt-2">Partnerships across industries — brands, creators, and organizations we've helped tell their stories.</p>
+            </motion.div>
 
-            <div className="mt-8 grid md:grid-cols-3 gap-6">
+            <motion.div className="mt-8 grid md:grid-cols-3 gap-6" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.8 }} viewport={{ once: true }}>
               {TESTIMONIALS.map((t, i) => (
-                <div key={i} className="p-6 rounded-2xl border border-gray-800 bg-[#0b0d17]/30">
+                <motion.div key={i} className="p-6 rounded-2xl border border-gray-800 bg-[#0b0d17]/30 hover:border-indigo-600 transition-all" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.12 }}>
                   <p className="text-gray-300 italic">“{t.quote}”</p>
                   <div className="mt-4 font-semibold">{t.author}</div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
-            <div className="mt-8 flex justify-center gap-6">
-              <img src={LOGO_G2} alt="G2" className="h-10"/>
-              <img src={LOGO_CAPTERRA} alt="Capterra" className="h-10"/>
-              <img src={LOGO_SOFTADVICE} alt="SoftwareAdvice" className="h-10"/>
-            </div>
+            <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} viewport={{ once: true }} className="mt-8 flex justify-center gap-6 flex-wrap">
+              {/* Colorful brand placeholders — not SaaS-specific — represent diverse clients */}
+              <BrandBadge name="Studio X" color1="#FF7A59" color2="#FFB86B" />
+              <BrandBadge name="LuxeHouse" color1="#6B8CFF" color2="#9BD3FF" />
+              <BrandBadge name="CoreVision" color1="#8AFFC1" color2="#1BC47D" />
+              <BrandBadge name="Solace" color1="#E07BFF" color2="#7B61FF" />
+              <BrandBadge name="PulseMedia" color1="#FFD166" color2="#FF6B6B" />
+              <BrandBadge name="Arc Collective" color1="#7BE9FF" color2="#55A8FF" />
+            </motion.div>
           </div>
         </section>
 
@@ -865,5 +896,114 @@ export default function App() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+/* --------------------
+   Helper components used inside replaced sections
+   - placed at bottom to keep main App code clean
+   -------------------- */
+
+function CaseStudiesFilters() {
+  // local filter state inside this small helper to keep everything single-file and encapsulated
+  const [active, setActive] = useState("All");
+  const filters = ["All", "Film", "Branding", "Campaign"];
+
+  // communicate selection to the displayed label (we update #cs-count manually for minimal coupling)
+  useEffect(() => {
+    const el = document.getElementById("cs-count");
+    if (el) el.textContent = active;
+  }, [active]);
+
+  return (
+    <div className="flex gap-3">
+      {filters.map((f) => (
+        <button
+          key={f}
+          onClick={() => setActive(f)}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+            active === f ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-indigo-500 hover:text-white"
+          }`}
+        >
+          {f}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function CaseStudiesGrid({ projects, onOpen }) {
+  // We'll create an elegant grid with a featured tile + smaller tiles. Lightweight motion used.
+  // Choose first item as featured for visual hierarchy.
+  const featured = projects[0];
+  const others = projects.slice(1);
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="lg:col-span-7 rounded-3xl overflow-hidden bg-gradient-to-br from-[#0f1724]/40 to-[#0b0d17]/30 border border-gray-800">
+        <div className="relative h-96 lg:h-[520px]">
+          <img src={featured.cover} alt={featured.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute left-8 bottom-8 text-white z-10 max-w-xl">
+            <div className="text-sm text-indigo-300 mb-2">{featured.role} • {featured.year}</div>
+            <h3 className="text-3xl font-bold mb-2">{featured.title}</h3>
+            <p className="text-gray-300">{featured.excerpt}</p>
+            <div className="mt-6 flex items-center gap-4">
+              <button onClick={() => onOpen(featured)} className="px-4 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700">View Project</button>
+              <a href="#" className="text-sm text-indigo-300 inline-flex items-center gap-1">Read case study <FiChevronRight /></a>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {others.map((p, i) => (
+          <motion.div key={p.id} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} className="rounded-2xl overflow-hidden bg-gray-900 border border-gray-800 group">
+            <div className="relative h-44">
+              <img src={p.cover} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              <div className="absolute left-4 bottom-4 text-white">
+                <div className="text-xs text-indigo-300">{p.role}</div>
+                <h4 className="font-semibold">{p.title}</h4>
+              </div>
+            </div>
+            <div className="p-4">
+              <p className="text-gray-400 text-sm">{p.excerpt}</p>
+              <div className="mt-3 flex items-center justify-between">
+                <button onClick={() => onOpen(p)} className="px-3 py-2 rounded-full border border-gray-700 text-sm">View</button>
+                <div className="text-xs text-gray-500">{p.year} • {p.duration}</div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BrandBadge({ name, color1 = "#6B8CFF", color2 = "#9BD3FF" }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.06 }}
+      className="flex items-center gap-3 px-4 py-2 rounded-lg shadow-sm"
+      style={{
+        background: `linear-gradient(135deg, ${color1}20 0%, ${color2}12 100%)`,
+        border: "1px solid rgba(255,255,255,0.04)",
+      }}
+    >
+      <div
+        className="w-10 h-10 rounded-md flex items-center justify-center font-bold text-white"
+        style={{
+          background: `linear-gradient(135deg, ${color1}, ${color2})`,
+          boxShadow: `0 6px 18px ${color2}33`,
+        }}
+      >
+        {name.split(" ").map((s) => s[0]).slice(0,2).join("")}
+      </div>
+      <div className="text-left">
+        <div className="font-semibold text-white text-sm">{name}</div>
+        <div className="text-xs text-gray-300">Trusted partner</div>
+      </div>
+    </motion.div>
   );
 }
