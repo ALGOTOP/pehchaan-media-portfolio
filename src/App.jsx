@@ -1,9 +1,15 @@
 // ============================================================
-// === PART 1 START — Pehchaan Media Full-Service Agency Site ===
+// === PART 1 — Imports, Global Animations & Navbar ===
 // ============================================================
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useInView,
+  LazyMotion,
+  domAnimation,
+} from "framer-motion";
 import {
   Play,
   Instagram,
@@ -12,6 +18,7 @@ import {
   Menu,
   X,
   ChevronDown,
+  ChevronUp,
   ArrowRight,
   Camera,
   Palette,
@@ -22,12 +29,16 @@ import {
   Heart,
   Sparkles,
   Users,
+  Phone,
+  Twitter,
+  Facebook,
 } from "lucide-react";
 
 /* =====================================================
-   GLOBAL SETTINGS
+   GLOBAL ANIMATION PRESETS
    ===================================================== */
 
+// Subtle fade-and-rise
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
   show: {
@@ -37,6 +48,7 @@ const fadeInUp = {
   },
 };
 
+// Slide from left or right
 const slideIn = (direction) => ({
   hidden: { opacity: 0, x: direction === "left" ? -60 : 60 },
   show: {
@@ -46,14 +58,25 @@ const slideIn = (direction) => ({
   },
 });
 
+// Small fade delay utility
+const delayFade = (delay = 0.2) => ({
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { duration: 0.8, delay },
+  },
+});
+
 /* =====================================================
-   NAVBAR
+   NAVBAR COMPONENT
    ===================================================== */
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
+  // Detect scroll for background blur
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
@@ -62,6 +85,24 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Track active anchor section
+  useEffect(() => {
+    const sections = document.querySelectorAll("section[id]");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    sections.forEach((sec) => observer.observe(sec));
+    return () => sections.forEach((sec) => observer.unobserve(sec));
+  }, []);
+
+  // Navigation links
   const links = [
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
@@ -73,44 +114,68 @@ const Navbar = () => {
   ];
 
   return (
-    <nav
+    <motion.nav
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-black/70 backdrop-blur-lg border-b border-white/10"
+          ? "bg-black/70 backdrop-blur-xl border-b border-white/10 shadow-lg"
           : "bg-transparent"
       }`}
     >
+      {/* Container */}
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+        {/* Brand */}
         <a
           href="#home"
-          className="text-2xl font-bold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text"
+          className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text hover:opacity-90 transition"
         >
           Pehchaan Media
         </a>
 
+        {/* Desktop Links */}
         <div className="hidden md:flex space-x-10">
           {links.map((link) => (
             <a
               key={link.name}
               href={link.href}
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-200 text-sm font-medium uppercase tracking-wide"
+              className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
+                activeSection === link.href.replace("#", "")
+                  ? "text-cyan-400"
+                  : "text-gray-300 hover:text-cyan-400"
+              }`}
             >
               {link.name}
             </a>
           ))}
         </div>
 
+        {/* CTA on desktop */}
+        <div className="hidden md:flex items-center space-x-4">
+          <motion.a
+            href="#contact"
+            whileHover={{ scale: 1.05 }}
+            className="px-4 py-2 text-sm rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-md hover:shadow-cyan-400/30 transition"
+          >
+            Let’s Talk
+          </motion.a>
+        </div>
+
+        {/* Mobile Menu Button */}
         <button
           className="md:hidden text-gray-300 hover:text-white transition"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          {menuOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
+      {/* Mobile Dropdown */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            key="mobile-menu"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -122,17 +187,29 @@ const Navbar = () => {
                 key={link.name}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="text-gray-300 hover:text-cyan-400 text-lg font-medium"
+                className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
               >
                 {link.name}
               </a>
             ))}
+
+            <motion.a
+              href="#contact"
+              whileHover={{ scale: 1.05 }}
+              className="mt-4 inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-md hover:shadow-cyan-400/30 transition-all"
+            >
+              <Sparkles size={18} className="mr-2" />
+              Get in Touch
+            </motion.a>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </motion.nav>
   );
 };
+// ============================================================
+// === PART 2 — Hero, About & Services Sections ===
+// ============================================================
 
 /* =====================================================
    HERO SECTION
@@ -144,6 +221,7 @@ const Hero = () => {
       id="home"
       className="relative min-h-screen flex items-center justify-center text-center overflow-hidden bg-gradient-to-b from-[#0a0f1f] via-[#0a0a0a] to-[#050505]"
     >
+      {/* Animated background gradients */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute w-[800px] h-[800px] rounded-full bg-cyan-500/10 blur-[200px] top-[-200px] left-[-200px]"
@@ -157,6 +235,7 @@ const Hero = () => {
         />
       </div>
 
+      {/* Hero Text Content */}
       <motion.div
         variants={fadeInUp}
         initial="hidden"
@@ -166,10 +245,11 @@ const Hero = () => {
         <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 leading-tight">
           We make brands unforgettable.
         </h1>
-        <p className="text-gray-300 text-lg md:text-xl mb-10 max-w-2xl mx-auto">
+
+        <p className="text-gray-300 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
           Pehchaan Media is a full-service creative agency crafting stories that
-          connect, inspire, and move audiences. From design to film to strategy
-          — we create experiences that define identities.
+          connect, inspire, and move audiences. From design to film to strategy —
+          we create experiences that define identities.
         </p>
 
         <motion.a
@@ -182,6 +262,7 @@ const Hero = () => {
           View Our Work
         </motion.a>
 
+        {/* Animated Scroll Icon */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -207,7 +288,7 @@ const About = () => {
     <section
       id="about"
       ref={ref}
-      className="relative py-24 md:py-36 bg-[#080808] flex flex-col items-center justify-center"
+      className="relative py-24 md:py-36 bg-[#080808] flex flex-col items-center justify-center overflow-hidden"
     >
       <motion.div
         variants={fadeInUp}
@@ -218,6 +299,7 @@ const About = () => {
         <h2 className="text-4xl md:text-6xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500">
           Who We Are
         </h2>
+
         <p className="text-gray-400 text-lg leading-relaxed mb-10 max-w-3xl mx-auto">
           We are thinkers, storytellers, and dreamers. At Pehchaan Media, we
           blend strategy with creativity to build experiences that transform
@@ -226,6 +308,7 @@ const About = () => {
         </p>
       </motion.div>
 
+      {/* About Cards */}
       <motion.div
         variants={fadeInUp}
         initial="hidden"
@@ -253,11 +336,11 @@ const About = () => {
           <motion.div
             key={i}
             variants={fadeInUp}
-            whileHover={{ scale: 1.05 }}
-            className="bg-[#0f0f0f] rounded-2xl p-8 border border-white/10 hover:border-cyan-400/40 transition-all shadow-md"
+            whileHover={{ scale: 1.05, rotate: 0.5 }}
+            className="bg-[#0f0f0f] rounded-2xl p-8 border border-white/10 hover:border-cyan-400/40 transition-all shadow-md backdrop-blur-sm"
           >
             <div className="mb-6">{card.icon}</div>
-            <h3 className="text-xl font-semibold mb-3 text-white">
+            <h3 className="text-xl font-semibold mb-3 text-white tracking-wide">
               {card.title}
             </h3>
             <p className="text-gray-400 text-sm leading-relaxed">
@@ -271,7 +354,7 @@ const About = () => {
 };
 
 /* =====================================================
-   SERVICES SECTION (partial continues in next part)
+   SERVICES SECTION
    ===================================================== */
 
 const Services = () => {
@@ -299,6 +382,11 @@ const Services = () => {
       title: "Marketing & Strategy",
       desc: "Integrated campaigns that combine creativity with data-driven growth strategies.",
     },
+    {
+      icon: <Heart size={32} className="text-cyan-400" />,
+      title: "Community Building",
+      desc: "We help brands form emotional connections through long-term, human-first engagement.",
+    },
   ];
 
   return (
@@ -316,7 +404,7 @@ const Services = () => {
         What We Do
       </motion.h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl px-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 max-w-7xl px-6">
         {serviceData.map((srv, i) => (
           <motion.div
             key={i}
@@ -324,7 +412,7 @@ const Services = () => {
             initial="hidden"
             animate={inView ? "show" : "hidden"}
             transition={{ delay: i * 0.1 }}
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -5 }}
             className="bg-[#101010] border border-white/10 hover:border-cyan-400/40 rounded-2xl p-8 text-center shadow-md"
           >
             <div className="flex justify-center mb-5">{srv.icon}</div>
@@ -345,12 +433,8 @@ const Services = () => {
     </section>
   );
 };
-
 // ============================================================
-// === PART 1 END — continue with PART 2 (Work Section etc.) ===
-// ============================================================
-// ============================================================
-// === PART 2 START — Work, Studio & Testimonials Sections ===
+// === PART 3 — Work, Studio & Testimonials Sections ===
 // ============================================================
 
 /* =====================================================
@@ -404,7 +488,7 @@ const Work = () => {
     <section
       id="work"
       ref={ref}
-      className="relative py-24 md:py-36 bg-[#0a0a0a] flex flex-col items-center"
+      className="relative py-24 md:py-36 bg-[#0a0a0a] flex flex-col items-center overflow-hidden"
     >
       <motion.h2
         variants={fadeInUp}
@@ -415,13 +499,15 @@ const Work = () => {
         Our Work
       </motion.h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl px-6">
+      {/* Portfolio Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl px-6">
         {projects.map((project, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: i * 0.1, duration: 0.6 }}
+            whileHover={{ scale: 1.02 }}
             className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md"
           >
             <div className="overflow-hidden">
@@ -429,9 +515,10 @@ const Work = () => {
                 src={project.image}
                 alt={project.title}
                 className="object-cover w-full h-64 group-hover:scale-110 transition-transform duration-700"
-                whileHover={{ scale: 1.1 }}
               />
             </div>
+
+            {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
               <h3 className="text-white text-xl font-semibold mb-2">
                 {project.title}
@@ -444,10 +531,11 @@ const Work = () => {
         ))}
       </div>
 
+      {/* CTA */}
       <motion.a
         href="#contact"
         whileHover={{ scale: 1.05 }}
-        className="mt-14 inline-flex items-center bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold px-8 py-4 rounded-full shadow-xl hover:shadow-cyan-400/30 transition-all"
+        className="mt-16 inline-flex items-center bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold px-8 py-4 rounded-full shadow-xl hover:shadow-cyan-400/30 transition-all"
       >
         Start Your Project
         <ArrowRight size={18} className="ml-2" />
@@ -470,6 +558,7 @@ const Studio = () => {
       ref={ref}
       className="relative py-24 md:py-36 bg-[#080808] overflow-hidden"
     >
+      {/* Animated background blob */}
       <div className="absolute inset-0">
         <motion.div
           className="absolute w-[900px] h-[900px] rounded-full bg-blue-500/5 blur-[200px] top-[-200px] left-[-200px]"
@@ -478,6 +567,7 @@ const Studio = () => {
         />
       </div>
 
+      {/* Header */}
       <motion.div
         variants={fadeInUp}
         initial="hidden"
@@ -494,12 +584,14 @@ const Studio = () => {
         </p>
       </motion.div>
 
+      {/* Layout */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 px-6">
+        {/* Left visual */}
         <motion.div
           variants={slideIn("left")}
           initial="hidden"
           animate={inView ? "show" : "hidden"}
-          className="rounded-3xl overflow-hidden border border-white/10 shadow-lg"
+          className="rounded-3xl overflow-hidden border border-white/10 shadow-lg hover:border-cyan-400/30 transition-all"
         >
           <img
             src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80"
@@ -508,6 +600,7 @@ const Studio = () => {
           />
         </motion.div>
 
+        {/* Right text */}
         <motion.div
           variants={slideIn("right")}
           initial="hidden"
@@ -525,16 +618,20 @@ const Studio = () => {
           </p>
           <ul className="text-gray-300 grid grid-cols-2 gap-3 mt-4">
             <li className="flex items-center space-x-2">
-              <Sparkles className="text-cyan-400" size={16} /> <span>Design Lab</span>
+              <Sparkles className="text-cyan-400" size={16} />{" "}
+              <span>Design Lab</span>
             </li>
             <li className="flex items-center space-x-2">
-              <Camera className="text-cyan-400" size={16} /> <span>Film Stage</span>
+              <Camera className="text-cyan-400" size={16} />{" "}
+              <span>Film Stage</span>
             </li>
             <li className="flex items-center space-x-2">
-              <Heart className="text-cyan-400" size={16} /> <span>Brand Strategy</span>
+              <Heart className="text-cyan-400" size={16} />{" "}
+              <span>Brand Strategy</span>
             </li>
             <li className="flex items-center space-x-2">
-              <Users className="text-cyan-400" size={16} /> <span>Creative Teams</span>
+              <Users className="text-cyan-400" size={16} />{" "}
+              <span>Creative Teams</span>
             </li>
           </ul>
         </motion.div>
@@ -544,7 +641,7 @@ const Studio = () => {
 };
 
 /* =====================================================
-   TESTIMONIALS SECTION (part 1)
+   TESTIMONIALS SECTION
    ===================================================== */
 
 const Testimonials = () => {
@@ -576,8 +673,9 @@ const Testimonials = () => {
     <section
       id="testimonials"
       ref={ref}
-      className="relative py-24 md:py-36 bg-[#0a0a0a] text-center"
+      className="relative py-24 md:py-36 bg-[#0a0a0a] text-center overflow-hidden"
     >
+      {/* Section Title */}
       <motion.h2
         variants={fadeInUp}
         initial="hidden"
@@ -587,6 +685,7 @@ const Testimonials = () => {
         What Our Clients Say
       </motion.h2>
 
+      {/* Testimonials Grid */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 px-6">
         {testimonials.map((t, i) => (
           <motion.div
@@ -594,7 +693,8 @@ const Testimonials = () => {
             variants={fadeInUp}
             initial="hidden"
             animate={inView ? "show" : "hidden"}
-            transition={{ delay: i * 0.1 }}
+            transition={{ delay: i * 0.15 }}
+            whileHover={{ scale: 1.03 }}
             className="bg-[#101010] border border-white/10 rounded-2xl p-8 shadow-lg hover:border-cyan-400/30 transition-all"
           >
             <p className="text-gray-300 italic mb-6 leading-relaxed">
@@ -605,94 +705,19 @@ const Testimonials = () => {
           </motion.div>
         ))}
       </div>
+
+      {/* Decorative gradient animation */}
+      <motion.div
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-cyan-500/10 blur-[160px] -z-10"
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 100, ease: "linear" }}
+      />
     </section>
   );
 };
-
 // ============================================================
-// === PART 2 END — continue with PART 3 (Testimonials pt2 + Contact) ===
+// === PART 4 — Contact, Footer, CTA, Scroll Effects & Global Wrapper ===
 // ============================================================
-// ============================================================
-// === PART 3 START — Testimonials (contd), Contact & Footer ===
-// ============================================================
-
-/* =====================================================
-   TESTIMONIALS SECTION (continued with motion & visuals)
-   ===================================================== */
-
-const TestimonialsCarousel = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.2 });
-
-  const quotes = [
-    {
-      name: "Hassan Raza",
-      title: "CEO, Stellar Motors",
-      quote:
-        "From strategy to storytelling, Pehchaan Media delivered with unmatched professionalism. Our automotive campaign gained over 1M organic views in the first week alone.",
-    },
-    {
-      name: "Amina Yousaf",
-      title: "Marketing Head, Luxe Apparel",
-      quote:
-        "They understood our luxury positioning instantly and designed visuals that amplified our message across every platform. Simply world-class execution.",
-    },
-    {
-      name: "Daniel Farooq",
-      title: "Co-Founder, Craftech",
-      quote:
-        "A rare team that merges creativity with technical mastery. Every frame, every pixel felt intentional. They’re our go-to for all future brand projects.",
-    },
-  ];
-
-  return (
-    <section
-      ref={ref}
-      className="relative bg-[#080808] py-24 overflow-hidden border-t border-white/5"
-    >
-      <div className="absolute inset-0 flex justify-center">
-        <motion.div
-          className="w-[700px] h-[700px] bg-blue-500/10 blur-[180px] rounded-full"
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 100, ease: "linear" }}
-        />
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto text-center">
-        <motion.h2
-          variants={fadeInUp}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          className="text-4xl md:text-6xl font-extrabold mb-16 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500"
-        >
-          Loved by Visionary Brands
-        </motion.h2>
-
-        <motion.div
-          className="space-y-12"
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-        >
-          {quotes.map((item, i) => (
-            <motion.div
-              key={i}
-              transition={{ delay: i * 0.2, duration: 0.6 }}
-              className="bg-[#0e0e0e] border border-white/10 rounded-3xl p-10 shadow-xl hover:border-cyan-400/30 transition-all max-w-3xl mx-auto"
-            >
-              <p className="text-gray-300 italic text-lg mb-6 leading-relaxed">
-                “{item.quote}”
-              </p>
-              <h4 className="text-white text-xl font-semibold">
-                {item.name}
-              </h4>
-              <p className="text-cyan-400 text-sm">{item.title}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-};
 
 /* =====================================================
    CONTACT SECTION
@@ -706,7 +731,7 @@ const Contact = () => {
     <section
       id="contact"
       ref={ref}
-      className="relative py-24 md:py-36 bg-[#060606] flex flex-col items-center"
+      className="relative py-24 md:py-36 bg-[#060606] flex flex-col items-center overflow-hidden"
     >
       <motion.h2
         variants={fadeInUp}
@@ -726,7 +751,8 @@ const Contact = () => {
       >
         Ready to elevate your brand? Whether you need film production, web
         design, or marketing strategy — Pehchaan Media is here to turn your
-        vision into impact.
+        vision into impact. Drop a message and we’ll get back to you within 48
+        hours.
       </motion.p>
 
       <motion.form
@@ -735,33 +761,54 @@ const Contact = () => {
         animate={inView ? "show" : "hidden"}
         transition={{ delay: 0.3 }}
         className="w-full max-w-2xl space-y-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          // lightweight client-side success UX (no backend)
+          const btn = e.currentTarget.querySelector("button");
+          if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+            setTimeout(() => {
+              btn.disabled = false;
+              btn.innerText = "Send Message";
+              alert("Message submitted (demo). Hook up a backend to send real messages.");
+            }, 900);
+          }
+        }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <input
             type="text"
+            name="name"
             placeholder="Your Name"
+            required
             className="w-full bg-[#0e0e0e] border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
           />
           <input
             type="email"
+            name="email"
             placeholder="Your Email"
+            required
             className="w-full bg-[#0e0e0e] border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
           />
         </div>
         <input
           type="text"
+          name="subject"
           placeholder="Subject"
           className="w-full bg-[#0e0e0e] border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
         />
         <textarea
+          name="message"
           rows="5"
           placeholder="Your Message"
           className="w-full bg-[#0e0e0e] border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
         ></textarea>
 
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
+          type="submit"
           className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold py-4 rounded-xl shadow-xl hover:shadow-cyan-400/30 transition-all"
         >
           Send Message
@@ -769,16 +816,22 @@ const Contact = () => {
       </motion.form>
 
       <motion.div
-        variants={fadeInUp}
+        variants={delayFade(0.6)}
         initial="hidden"
         animate={inView ? "show" : "hidden"}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.6 }}
         className="flex flex-col items-center mt-20 space-y-4 text-gray-400"
       >
         <div className="flex space-x-4">
-          <Instagram size={24} className="hover:text-cyan-400 transition" />
-          <Mail size={24} className="hover:text-cyan-400 transition" />
-          <Phone size={24} className="hover:text-cyan-400 transition" />
+          <a href="#" aria-label="Instagram" className="hover:text-cyan-400 transition">
+            <Instagram size={24} />
+          </a>
+          <a href="mailto:info@pehchaanmedia.com" aria-label="Email" className="hover:text-cyan-400 transition">
+            <Mail size={24} />
+          </a>
+          <a href="tel:+923001234567" aria-label="Phone" className="hover:text-cyan-400 transition">
+            <Phone size={24} />
+          </a>
         </div>
         <p className="text-sm">info@pehchaanmedia.com</p>
         <p className="text-sm">+92 300 1234567</p>
@@ -788,7 +841,7 @@ const Contact = () => {
 };
 
 /* =====================================================
-   FOOTER SECTION (Part 1)
+   FOOTER (Main)
    ===================================================== */
 
 const Footer = () => {
@@ -805,23 +858,17 @@ const Footer = () => {
             cinematic visuals, and brand stories that connect on a human level.
           </p>
           <div className="flex space-x-4">
-            <a
-              href="#"
-              className="text-gray-400 hover:text-cyan-400 transition"
-            >
+            <a href="#" className="text-gray-400 hover:text-cyan-400 transition">
               <Instagram size={18} />
             </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-cyan-400 transition"
-            >
+            <a href="#" className="text-gray-400 hover:text-cyan-400 transition">
               <Twitter size={18} />
             </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-cyan-400 transition"
-            >
+            <a href="#" className="text-gray-400 hover:text-cyan-400 transition">
               <Facebook size={18} />
+            </a>
+            <a href="#" className="text-gray-400 hover:text-cyan-400 transition">
+              <Linkedin size={18} />
             </a>
           </div>
         </div>
@@ -887,31 +934,32 @@ const Footer = () => {
             Subscribe to get insights, updates, and behind-the-scenes from our
             creative team.
           </p>
-          <div className="flex items-center space-x-2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              alert("Subscribed (demo). Hook up a backend to capture emails.");
+            }}
+            className="flex items-center space-x-2"
+          >
             <input
               type="email"
               placeholder="Your email"
+              aria-label="Newsletter email"
+              required
               className="flex-1 bg-[#0e0e0e] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
             />
             <button className="bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-3 rounded-xl text-black font-semibold hover:shadow-cyan-400/30 transition">
               Join
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </footer>
   );
 };
 
-// ============================================================
-// === PART 3 END — Next up: PART 4 (Footer pt2 + animations) ===
-// ============================================================
-// ============================================================
-// === PART 4 START — Footer (contd), Floating CTA & Animations ===
-// ============================================================
-
 /* =====================================================
-   FOOTER (Part 2 — copyright + motion elements)
+   FOOTER CREDITS
    ===================================================== */
 
 const FooterCredits = () => {
@@ -957,6 +1005,7 @@ const FloatingCTA = () => {
       animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 100 }}
       transition={{ duration: 0.5 }}
       className="fixed bottom-8 right-8 bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold px-5 py-4 rounded-full shadow-xl hover:shadow-cyan-400/30 transition-all z-50 flex items-center space-x-2"
+      aria-label="Start a project"
     >
       <Sparkles size={18} />
       <span>Let’s Collaborate</span>
@@ -965,7 +1014,7 @@ const FloatingCTA = () => {
 };
 
 /* =====================================================
-   SCROLL INDICATOR COMPONENT
+   SCROLL PROGRESS INDICATOR
    ===================================================== */
 
 const ScrollProgress = () => {
@@ -978,10 +1027,11 @@ const ScrollProgress = () => {
       const height =
         document.documentElement.scrollHeight -
         document.documentElement.clientHeight;
-      const scrolled = (winScroll / height) * 100;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
       setScroll(scrolled);
     };
     window.addEventListener("scroll", handleScroll);
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -996,7 +1046,7 @@ const ScrollProgress = () => {
 };
 
 /* =====================================================
-   CUSTOM CURSOR EFFECT (for desktop devices)
+   CUSTOM CURSOR (desktop)
    ===================================================== */
 
 const CustomCursor = () => {
@@ -1004,10 +1054,9 @@ const CustomCursor = () => {
 
   useEffect(() => {
     const cursor = cursorRef.current;
+    if (!cursor) return;
     const moveCursor = (e) => {
-      if (!cursor) return;
-      cursor.style.left = `${e.clientX}px`;
-      cursor.style.top = `${e.clientY}px`;
+      cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
     };
     window.addEventListener("mousemove", moveCursor);
     return () => window.removeEventListener("mousemove", moveCursor);
@@ -1019,12 +1068,13 @@ const CustomCursor = () => {
       className="hidden md:block fixed top-0 left-0 w-6 h-6 rounded-full border-2 border-cyan-400 pointer-events-none mix-blend-difference z-[10000]"
       animate={{ scale: [1, 1.3, 1] }}
       transition={{ repeat: Infinity, duration: 2 }}
+      aria-hidden
     />
   );
 };
 
 /* =====================================================
-   SCROLL-TO-TOP BUTTON
+   SCROLL TO TOP BUTTON
    ===================================================== */
 
 const ScrollToTop = () => {
@@ -1053,6 +1103,7 @@ const ScrollToTop = () => {
       animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 100 }}
       transition={{ duration: 0.4 }}
       className="fixed bottom-8 left-8 bg-[#0e0e0e] border border-white/10 text-cyan-400 rounded-full p-3 hover:bg-cyan-400 hover:text-black transition-all z-50"
+      aria-label="Scroll to top"
     >
       <ChevronUp size={20} />
     </motion.button>
@@ -1060,7 +1111,7 @@ const ScrollToTop = () => {
 };
 
 /* =====================================================
-   GLOBAL ANIMATIONS & SECTION WRAPPER
+   SECTION WRAPPER — simple utility for consistent spacing
    ===================================================== */
 
 const SectionWrapper = ({ children, id }) => (
@@ -1068,68 +1119,6 @@ const SectionWrapper = ({ children, id }) => (
     {children}
   </section>
 );
-
-/* =====================================================
-   APP MAIN COMPONENT (assembly of all sections)
-   ===================================================== */
-
-const App = () => {
-  return (
-    <div className="font-sans bg-[#030303] text-white overflow-x-hidden relative">
-      <ScrollProgress />
-      <CustomCursor />
-      <Navbar />
-      <Hero />
-      <SectionWrapper id="about">
-        <About />
-      </SectionWrapper>
-      <SectionWrapper id="services">
-        <Services />
-      </SectionWrapper>
-      <SectionWrapper id="work">
-        <Work />
-      </SectionWrapper>
-      <SectionWrapper id="studio">
-        <Studio />
-      </SectionWrapper>
-      <SectionWrapper id="testimonials">
-        <Testimonials />
-        <TestimonialsCarousel />
-      </SectionWrapper>
-      <SectionWrapper id="contact">
-        <Contact />
-      </SectionWrapper>
-      <Footer />
-      <FooterCredits />
-      <FloatingCTA />
-      <ScrollToTop />
-
-      {/* Subtle background gradient animation */}
-      <motion.div
-        className="fixed inset-0 bg-gradient-to-tr from-blue-900/10 via-transparent to-cyan-500/5 pointer-events-none"
-        animate={{
-          backgroundPosition: ["0% 0%", "100% 100%"],
-        }}
-        transition={{
-          repeat: Infinity,
-          duration: 20,
-          ease: "linear",
-        }}
-      />
-    </div>
-  );
-};
-
-/* =====================================================
-   EXPORT
-   ===================================================== */
-
-// ============================================================
-// === PART 4 END — Next up: PART 5 (final polish, responsiveness, SEO) ===
-// ============================================================
-// ============================================================
-// === PART 5 START — Final Polish, SEO, Responsive Fixes ===
-// ============================================================
 
 /* =====================================================
    META TAGS (SEO + OpenGraph + Favicon)
@@ -1157,40 +1146,45 @@ const MetaTags = () => {
 
     const favicon = document.createElement("link");
     favicon.rel = "icon";
-    favicon.href =
-      "https://cdn-icons-png.flaticon.com/512/2948/2948035.png";
+    favicon.href = "https://cdn-icons-png.flaticon.com/512/2948/2948035.png";
     document.head.appendChild(favicon);
+
+    // cleanup (in case of hot reload)
+    return () => {
+      if (metaDescription.parentNode) metaDescription.parentNode.removeChild(metaDescription);
+      if (ogTitle.parentNode) ogTitle.parentNode.removeChild(ogTitle);
+      if (ogImage.parentNode) ogImage.parentNode.removeChild(ogImage);
+      if (favicon.parentNode) favicon.parentNode.removeChild(favicon);
+    };
   }, []);
 
   return null;
 };
 
 /* =====================================================
-   PERFORMANCE OPTIMIZATION (Framer Motion lazyMotion)
+   PERFORMANCE: Framer Motion lazy loading wrapper
    ===================================================== */
-
-import { LazyMotion, domAnimation } from "framer-motion";
 
 const AnimatedApp = () => (
   <LazyMotion features={domAnimation}>
     <MetaTags />
-    <App />
+    <AppCore />
   </LazyMotion>
 );
 
 /* =====================================================
-   RESPONSIVE OPTIMIZATION
+   MOBILE FIXES & RESPONSIVE WRAPPER
    ===================================================== */
 
 const useMobileFixes = () => {
   useEffect(() => {
-    // Prevent unwanted horizontal scroll on small devices
+    // Prevent horizontal scroll flashes
     const html = document.documentElement;
     html.style.overflowX = "hidden";
     const body = document.body;
     body.style.overflowX = "hidden";
 
-    // Adjust vh units for mobile browsers (100vh fix)
+    // Fix for 100vh on mobile browsers
     const setVH = () => {
       const vh = window.innerHeight * 0.01;
       document.documentElement.style.setProperty("--vh", `${vh}px`);
@@ -1200,10 +1194,6 @@ const useMobileFixes = () => {
     return () => window.removeEventListener("resize", setVH);
   }, []);
 };
-
-/* =====================================================
-   RESPONSIVE TEST WRAPPER (ensures no side gaps)
-   ===================================================== */
 
 const ResponsiveWrapper = () => {
   useMobileFixes();
@@ -1216,7 +1206,7 @@ const ResponsiveWrapper = () => {
 };
 
 /* =====================================================
-   PARALLAX BACKGROUND EFFECT (light & performant)
+   PARALLAX BACKGROUND (subtle, low-cost)
    ===================================================== */
 
 const ParallaxBackground = () => {
@@ -1225,7 +1215,7 @@ const ParallaxBackground = () => {
   useEffect(() => {
     const handleScroll = () => {
       if (ref.current) {
-        const offset = window.scrollY * 0.4;
+        const offset = window.scrollY * 0.35;
         ref.current.style.backgroundPositionY = `${offset}px`;
       }
     };
@@ -1237,12 +1227,13 @@ const ParallaxBackground = () => {
     <div
       ref={ref}
       className="fixed top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-[0.03] pointer-events-none z-0"
+      aria-hidden
     />
   );
 };
 
 /* =====================================================
-   ACCESSIBILITY & INTERACTIONS
+   ACCESSIBILITY ENHANCER (focus outlines)
    ===================================================== */
 
 const AccessibilityEnhancer = () => {
@@ -1260,7 +1251,59 @@ const AccessibilityEnhancer = () => {
 };
 
 /* =====================================================
-   GLOBAL WRAPPER EXPORT
+   APP CORE — assembly of all sections (keeps App minimal & testable)
+   ===================================================== */
+
+const AppCore = () => {
+  return (
+    <div className="font-sans bg-[#030303] text-white overflow-x-hidden relative">
+      <ScrollProgress />
+      <CustomCursor />
+      <Navbar />
+      <Hero />
+      <SectionWrapper id="about">
+        <About />
+      </SectionWrapper>
+      <SectionWrapper id="services">
+        <Services />
+      </SectionWrapper>
+      <SectionWrapper id="work">
+        <Work />
+      </SectionWrapper>
+      <SectionWrapper id="studio">
+        <Studio />
+      </SectionWrapper>
+      <SectionWrapper id="testimonials">
+        <Testimonials />
+      </SectionWrapper>
+      <SectionWrapper id="contact">
+        <Contact />
+      </SectionWrapper>
+
+      <Footer />
+      <FooterCredits />
+      <FloatingCTA />
+      <ScrollToTop />
+
+      {/* Gentle animated overlay for depth */}
+      <motion.div
+        className="fixed inset-0 bg-gradient-to-tr from-blue-900/10 via-transparent to-cyan-500/5 pointer-events-none"
+        animate={{
+          backgroundPosition: ["0% 0%", "100% 100%"],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 20,
+          ease: "linear",
+        }}
+        aria-hidden
+      />
+    </div>
+  );
+};
+
+/* =====================================================
+   GLOBAL WRAPPER EXPORT (final entrypoint)
    ===================================================== */
 
 const PehchaanMediaApp = () => {
@@ -1273,4 +1316,4 @@ const PehchaanMediaApp = () => {
   );
 };
 
- export default PehchaanMediaApp;
+export default PehchaanMediaApp;
