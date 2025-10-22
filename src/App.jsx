@@ -1274,24 +1274,3 @@ const PehchaanMediaApp = () => {
 };
 
 export default PehchaanMediaApp;
-
-/* =====================================================
-   END OF FILE — PEHCHAAN MEDIA (2000 lines approx)
-   =====================================================
-
-   ✅ World-class portfolio for Pehchaan Media
-   ✅ Built with React + Vite + Tailwind + Framer Motion
-   ✅ Responsive: optimized for all devices
-   ✅ SEO & meta-ready
-   ✅ Cinematic design, minimal gradients, luxury aesthetic
-   ✅ No layout overflow / mobile gap issues
-   ✅ Ready for Vercel deployment
-   ✅ Every section: Hero → About → Services → Work → Studio → Testimonials → Contact → Footer → Animations
-
-   You can now:
-   1. Replace your App.jsx with this full version
-   2. Run `npm run dev` (for local preview)
-   3. Deploy on Vercel — should work instantly.
-   =====================================================
-*/
-
