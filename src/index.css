@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* optional custom styles */
 body {
-  font-family: 'Inter', sans-serif;
-  scroll-behavior: smooth;
+  @apply bg-[#0B0D17] text-white font-inter;
 }
