@@ -1,1485 +1,1261 @@
-// ===========================================================================
-// Pehchaan Media — App.jsx
-// Part 1/6
-// Imports, Theme, Utilities, Animation Presets, Navbar & Smooth Navigation
-// ===========================================================================
-
 /**
- * Notes:
- * - This file is delivered in multiple parts (Part 1/6 ... Part 6/6).
- * - Each part continues the same file in sequence. When assembled, they form a
- *   single production-ready App.jsx.
- *
- * - Save each part sequentially (append) into App.jsx or copy/paste all parts
- *   into one file. Make sure to keep the order intact.
- *
- * - Part 1 contains core globals + Navbar with buttery scroll on nav clicks.
- *
- * - Tailwind CSS is assumed to be available in your project.
+ * Pehchaan Media Portfolio
+ * Single-file monolithic edition
+ * Framework: Vite + React + Framer Motion + Lenis + r3f/drei
  */
 
-import React, { useEffect, useRef, useState, useMemo } from "react";
-import {
-  motion,
-  AnimatePresence,
-  LazyMotion,
-  domAnimation,
-  useInView,
-} from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, Sphere, Float, Environment } from "@react-three/drei";
+import { motion, AnimatePresence } from "framer-motion";
+import Lenis from "lenis";
+import * as THREE from "three";
+import "./index.css";
 
-// lucide-react icons (tree-shakeable)
-import {
-  Menu,
-  X,
-  Sparkles,
-  Play,
-  ChevronDown,
-  ChevronUp,
-  Camera,
-  Palette,
-  PenTool,
-  Film,
-  Globe,
-  Megaphone,
-  Heart,
-  Users,
-  Phone,
-  Mail,
-  Instagram,
-  Linkedin,
-  Twitter,
-  Facebook,
-  ArrowRight,
-} from "lucide-react";
-
-/* ==========================
-   Safe window helper (SSR-safe)
-   ========================== */
-const safeWindow = typeof window !== "undefined" ? window : null;
-
-/* ==========================
-   THEME CONSTANTS (purple-forward)
-   ========================== */
-const THEME = {
-  palette: {
-    purple100: "#FAF5FF",
-    purple300: "#C4B5FD",
-    purple400: "#A78BFA",
-    purple500: "#8B5CF6",
-    indigo600: "#5B21B6",
-    bgStart: "#0b0614",
-    bgMid: "#0e0820",
-    bgEnd: "#06040b",
-    surface: "#0d0913",
-    textPrimary: "#F8FAFC",
-    textMuted: "#CBD5E1",
+/* ────────────────────────────────────────────────────────────────
+   THEME CONSTANTS
+──────────────────────────────────────────────────────────────── */
+const theme = {
+  colors: {
+    bg: "#050307",
+    surface: "#0b0614",
+    indigo: "#8B5CF6",
+    cyan: "#00F5FF",
+    coral: "#FF6F61",
+    white: "#FFFFFF",
   },
-  // gradient helper classes for tailwind usage (we'll use Tailwind class strings in JSX)
-  gradients: {
-    purpleToIndigo: "bg-gradient-to-r from-purple-400 to-indigo-600",
-    subtlePurple: "bg-gradient-to-b from-[#120524] to-[#060214]",
+  fonts: {
+    heading: '"Playfair Display", serif',
+    body: '"Satoshi", sans-serif',
   },
 };
 
-/* ==========================
-   UTILITY: classNames
-   ========================== */
-const cn = (...args) => args.filter(Boolean).join(" ");
+/* ────────────────────────────────────────────────────────────────
+   3D SCENE COMPONENT (EXAMPLE – GLOBE)
+──────────────────────────────────────────────────────────────── */
+function Globe() {
+  const ref = useRef();
+  useFrame((_, delta) => {
+    ref.current.rotation.y += delta * 0.15;
+  });
+  return (
+    <Float speed={1} rotationIntensity={0.5}>
+      <Sphere ref={ref} args={[1.2, 64, 64]}>
+        <meshStandardMaterial
+          color={theme.colors.indigo}
+          emissive={theme.colors.cyan}
+          emissiveIntensity={0.4}
+          roughness={0.3}
+          metalness={0.8}
+        />
+      </Sphere>
+    </Float>
+  );
+}
 
-/* ==========================
-   Motion / animation presets
-   ========================== */
-const fadeInUp = {
-  hidden: { opacity: 0, y: 22 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-  },
-};
-
-const subtleFade = (delay = 0) => ({
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] },
-  },
-});
-
-const slideIn = (direction = "up") => {
-  const axis = direction === "left" || direction === "right" ? "x" : "y";
-  const value =
-    direction === "left" ? -40 : direction === "right" ? 40 : direction === "up" ? 20 : -20;
-  return {
-    hidden: { opacity: 0, [axis]: value },
-    show: { opacity: 1, [axis]: 0, transition: { duration: 0.6, ease: "easeOut" } },
-  };
-};
-
-const navClickSpring = { type: "spring", stiffness: 120, damping: 20 };
-
-/* ==========================
-   Accessibility: reduced motion hook
-   ========================== */
-const usePrefersReducedMotion = () => {
-  const [reduced, setReduced] = useState(false);
-
+/* ────────────────────────────────────────────────────────────────
+   PRELOADER
+──────────────────────────────────────────────────────────────── */
+const Preloader = ({ onFinish }) => {
   useEffect(() => {
-    if (!safeWindow || !safeWindow.matchMedia) return;
-    const media = safeWindow.matchMedia("(prefers-reduced-motion: reduce)");
-    const handler = () => setReduced(media.matches);
-    handler();
-    try {
-      media.addEventListener("change", handler);
-      return () => media.removeEventListener("change", handler);
-    } catch {
-      // Safari fallback
-      media.addListener(handler);
-      return () => media.removeListener(handler);
-    }
+    const timer = setTimeout(() => onFinish(), 2600);
+    return () => clearTimeout(timer);
   }, []);
-
-  return reduced;
-};
-
-/* ==========================
-   SMOOTH SCROLL HELPERS
-   - butteryScrollTo: handles offset for fixed navbar and supports prefer-reduced-motion
-   - scrollIntoViewSmooth: fallback
-   ========================== */
-const getNavbarOffset = () => {
-  // If your navbar height is dynamic, compute it here. Default 88 px.
-  return 88;
-};
-
-const butteryScrollTo = (id, { offset = -getNavbarOffset(), behavior = "smooth" } = {}) => {
-  if (!safeWindow) return;
-  const el = document.getElementById(id);
-  if (!el) return;
-  const top = el.getBoundingClientRect().top + safeWindow.pageYOffset + offset;
-  // detect reduced motion
-  const prefersReducedMotion = safeWindow.matchMedia
-    ? safeWindow.matchMedia("(prefers-reduced-motion: reduce)").matches
-    : false;
-  if (prefersReducedMotion) {
-    safeWindow.scrollTo({ top, behavior: "auto" });
-    return;
-  }
-  // smooth scroll
-  safeWindow.scrollTo({ top, behavior });
-};
-
-/* ==========================
-   SECTION OBSERVER UTILITY
-   - returns map of id -> inView state
-   ========================== */
-const useSectionObserver = (ids = [], options = { threshold: 0.45 }) => {
-  const [visible, setVisible] = useState(() =>
-    ids.reduce((acc, id) => {
-      acc[id] = false;
-      return acc;
-    }, {})
-  );
-
-  useEffect(() => {
-    if (!safeWindow || !window.IntersectionObserver) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const id = entry.target.id;
-          if (!id) return;
-          setVisible((prev) => ({ ...prev, [id]: entry.isIntersecting }));
-        });
-      },
-      { threshold: options.threshold || 0.45 }
-    );
-
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [JSON.stringify(ids), options.threshold]);
-
-  return visible;
-};
-
-/* ==========================
-   NAVBAR COMPONENT
-   - responsive
-   - accessible mobile menu
-   - highlights active section
-   - buttery nav-click
-   ========================== */
-
-const NAV_LINKS = [
-  { id: "home", label: "Home" },
-  { id: "about", label: "About" },
-  { id: "services", label: "Services" },
-  { id: "work", label: "Work" },
-  { id: "studio", label: "Studio" },
-  { id: "testimonials", label: "Testimonials" },
-  { id: "contact", label: "Contact" },
-];
-
-const Navbar = () => {
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState("home");
-  const reduced = usePrefersReducedMotion();
-
-  // observe sections
-  const observed = useSectionObserver(NAV_LINKS.map((l) => l.id), { threshold: 0.45 });
-
-  useEffect(() => {
-    // set active section based on observer state (chooser: first true by order)
-    const order = NAV_LINKS.map((l) => l.id);
-    for (let id of order) {
-      if (observed[id]) {
-        setActive(id);
-        break;
-      }
-    }
-  }, [observed]);
-
-  useEffect(() => {
-    const handle = () => setScrolled(safeWindow ? safeWindow.scrollY > 24 : false);
-    if (!safeWindow) return;
-    safeWindow.addEventListener("scroll", handle);
-    handle();
-    return () => safeWindow.removeEventListener("scroll", handle);
-  }, []);
-
-  const handleNavClick = (id) => {
-    setOpen(false);
-    butteryScrollTo(id, { offset: -getNavbarOffset(), behavior: reduced ? "auto" : "smooth" });
-    // after scroll we can set focus for accessibility
-    setTimeout(() => {
-      const el = document.getElementById(id);
-      if (el) el.focus({ preventScroll: true });
-    }, 420);
-  };
-
   return (
-    <motion.nav
-      initial={{ y: -24, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.55, ease: "easeOut" }}
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50",
-        "transition-all duration-300",
-        scrolled ? "backdrop-blur-md bg-black/60 border-b border-white/5" : "bg-transparent"
-      )}
-      role="navigation"
-      aria-label="Main navigation"
+    <motion.div
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 0 }}
+      transition={{ duration: 1.2, delay: 1.5 }}
+      className="fixed inset-0 flex items-center justify-center bg-black z-[100]"
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between h-20">
-        {/* Brand */}
-        <a
-          href="#home"
-          onClick={(e) => {
-            e.preventDefault();
-            handleNavClick("home");
-          }}
-          className="font-extrabold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-indigo-400"
-          aria-current={active === "home" ? "page" : undefined}
-        >
-          Pehchaan Media
-        </a>
-
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center space-x-8">
-          {NAV_LINKS.map((link) => (
-            <button
-              key={link.id}
-              onClick={() => handleNavClick(link.id)}
-              className={cn(
-                "uppercase tracking-wide text-sm font-medium px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-purple-400/30",
-                active === link.id ? "text-purple-300" : "text-gray-300 hover:text-purple-300"
-              )}
-              aria-current={active === link.id ? "page" : undefined}
-            >
-              {link.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Desktop CTA */}
-        <div className="hidden md:flex items-center space-x-4">
-          <motion.a
-            whileHover={{ scale: 1.02 }}
-            className="px-4 py-2 rounded-full font-semibold bg-gradient-to-r from-purple-400 to-indigo-600 text-black shadow-md"
-            href="#contact"
-            onClick={(e) => {
-              e.preventDefault();
-              handleNavClick("contact");
-            }}
-          >
-            Let's Talk
-          </motion.a>
-        </div>
-
-        {/* Mobile menu toggle */}
-        <div className="md:hidden">
-          <button
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-            className="p-2 rounded text-gray-200 bg-black/20 hover:bg-black/30"
-          >
-            {open ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile menu panel */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            key="mobile-menu"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28 }}
-            className="md:hidden bg-black/85 backdrop-blur-md border-t border-white/6"
-            id="mobile-menu"
-          >
-            <div className="px-6 py-6 flex flex-col items-center space-y-4">
-              {NAV_LINKS.map((link) => (
-                <button
-                  key={link.id}
-                  onClick={() => handleNavClick(link.id)}
-                  className="w-full text-left text-white text-lg font-medium px-4 py-2 rounded hover:bg-white/3"
-                >
-                  {link.label}
-                </button>
-              ))}
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                className="mt-2 inline-flex items-center bg-gradient-to-r from-purple-400 to-indigo-600 text-black px-6 py-3 rounded-full font-semibold"
-                onClick={() => handleNavClick("contact")}
-              >
-                <Sparkles size={16} className="mr-2" /> Start a Project
-              </motion.button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+      <motion.h1
+        className="text-5xl font-bold text-white"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.2 }}
+        style={{ fontFamily: theme.fonts.heading }}
+      >
+        Pehchaan Media
+      </motion.h1>
+    </motion.div>
   );
 };
 
-/* ==========================
-   Export for Part 1 continuation
-   - Next part will include Hero + About + Services
-   ========================== */
-
-// NOTE: We do not export default App yet because this file is continued
-// in subsequent parts. For now we export Navbar to be used in the rest of file.
-export { Navbar, THEME, fadeInUp, slideIn, subtleFade, cn, safeWindow, usePrefersReducedMotion, butteryScrollTo };
-
-// End of Part 1/6
-// ===========================================================================
-// Part 2/6 — Hero, About, Services
-// ===========================================================================
-
-/**
- * NOTE: This part expects the following identifiers to be available from Part 1:
- * - motion, useInView, AnimatePresence, LazyMotion, domAnimation
- * - Navbar, THEME, fadeInUp, slideIn, subtleFade, cn, safeWindow,
- *   usePrefersReducedMotion, butteryScrollTo
- *
- * Ensure Part 1 is placed above this block in App.jsx.
- */
-
-//////////////////////////
-// HERO
-//////////////////////////
-const Hero = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { amount: 0.45, once: true });
-  const reduced = usePrefersReducedMotion();
-
-  // small entrance side-effect for analytics or focus
-  useEffect(() => {
-    if (inView) {
-      // You could send a view event here if desired
-    }
-  }, [inView]);
-
+/* ────────────────────────────────────────────────────────────────
+   HERO SECTION (WITH 3D CANVAS)
+──────────────────────────────────────────────────────────────── */
+function Hero() {
   return (
-    <header
-      id="home"
-      ref={ref}
-      tabIndex={-1}
-      aria-label="Hero"
-      className={cn("relative min-h-screen flex items-center justify-center overflow-hidden", THEME.gradients?.subtlePurple || "")}
-      style={{ background: `linear-gradient(180deg, ${THEME.palette.bgStart}, ${THEME.palette.bgMid})` }}
-    >
-      {/* Animated decorative blobs (reduce motion when requested) */}
-      <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
-        {!reduced && (
-          <>
-            <motion.div
-              className="absolute w-[900px] h-[900px] rounded-full bg-purple-600/8 blur-[120px] -left-40 -top-36"
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 70, ease: "linear" }}
-            />
-            <motion.div
-              className="absolute w-[700px] h-[700px] rounded-full bg-indigo-600/8 blur-[90px] -right-32 -bottom-36"
-              animate={{ rotate: -360 }}
-              transition={{ repeat: Infinity, duration: 90, ease: "linear" }}
-            />
-          </>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 w-full max-w-5xl px-6 sm:px-8 text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: 18 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-          className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-indigo-400"
+    <section id="hero" style={{ height: "100vh", position: "relative" }}>
+      <Canvas camera={{ position: [0, 0, 3] }}>
+        <ambientLight intensity={0.6} />
+        <directionalLight position={[5, 5, 5]} intensity={1} />
+        <Globe />
+        <OrbitControls enableZoom={false} />
+        <Environment preset="city" />
+      </Canvas>
+      <motion.div
+        className="absolute inset-0 flex flex-col items-center justify-center text-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5 }}
+      >
+        <h1
+          className="text-6xl font-bold"
+          style={{ fontFamily: theme.fonts.heading }}
         >
-          We craft stories with purple precision.
-        </motion.h1>
-
-        <motion.p
-          variants={fadeInUp}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          className="text-gray-300 max-w-3xl mx-auto text-lg md:text-xl mb-8"
+          Crafting Stories for a Global Audience
+        </h1>
+        <p
+          className="mt-4 text-lg text-gray-300 max-w-xl"
+          style={{ fontFamily: theme.fonts.body }}
         >
-          Pehchaan Media blends cinematic production with strategic brand thinking.
-          We design websites, produce films, and launch campaigns that create lasting identity.
-        </motion.p>
-
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.2 }}>
-          <div className="inline-flex items-center space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => butteryScrollTo("work")}
-              className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-purple-400 to-indigo-600 text-black font-semibold shadow"
-            >
-              <Play size={16} className="mr-2" />
-              View Work
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              onClick={() => butteryScrollTo("contact")}
-              className="inline-flex items-center px-6 py-3 rounded-full border border-white/10 text-white bg-black/20"
-            >
-              Get in touch
-            </motion.button>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Scroll hint */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <ChevronDown size={26} className="text-purple-300 animate-bounce" />
-      </div>
-    </header>
-  );
-};
-
-//////////////////////////
-// ABOUT
-//////////////////////////
-const About = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.35 });
-
-  const cards = [
-    {
-      icon: <Camera size={36} className="text-purple-300" />,
-      title: "Visual Storytelling",
-      desc: "Cinematic visuals and design that put audiences at the center of your story.",
-    },
-    {
-      icon: <Palette size={36} className="text-purple-300" />,
-      title: "Creative Strategy",
-      desc: "Brand systems and campaigns built with measurable goals in mind.",
-    },
-    {
-      icon: <Users size={36} className="text-purple-300" />,
-      title: "Collaborative Workflows",
-      desc: "We integrate with teams to move fast and ship results that matter.",
-    },
-  ];
-
-  return (
-    <section id="about" ref={ref} tabIndex={-1} aria-labelledby="about-title" className="pt-32 pb-20 bg-transparent">
-      <div className="max-w-4xl mx-auto text-center px-6 sm:px-8">
-        <motion.h2 variants={fadeInUp} initial="hidden" animate={inView ? "show" : "hidden"} id="about-title" className="text-3xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-indigo-400">
-          Who We Are
-        </motion.h2>
-        <motion.p variants={subtleFade(0.1)} initial="hidden" animate={inView ? "show" : "hidden"} className="text-gray-300 max-w-2xl mx-auto">
-          We are filmmakers, designers, and strategists who help brands find voice, form, and momentum.
-          Every project is an opportunity to craft something memorable.
-        </motion.p>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-        {cards.map((c, i) => (
-          <motion.div
-            key={i}
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.08 }}
-            className="p-6 rounded-2xl bg-[#0d0913] border border-white/6 shadow-sm"
-            role="article"
-            aria-label={c.title}
-          >
-            <div className="mb-4">{c.icon}</div>
-            <h3 className="text-lg font-semibold mb-2">{c.title}</h3>
-            <p className="text-gray-300 text-sm">{c.desc}</p>
-          </motion.div>
-        ))}
-      </div>
+          A full-service agency blending design, media and technology —
+          operating globally and remotely.
+        </p>
+      </motion.div>
     </section>
   );
-};
+}
 
-//////////////////////////
-// SERVICES
-//////////////////////////
-const Services = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.3 });
+/* ────────────────────────────────────────────────────────────────
+   MAIN APP COMPONENT – Lenis + Preloader + Sections
+──────────────────────────────────────────────────────────────── */
+export default function App() {
+  const lenis = useRef();
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const l = new Lenis({ lerp: 0.1, smooth: true });
+    lenis.current = l;
+    function raf(time) {
+      l.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    return () => l.destroy();
+  }, []);
+
+  return (
+    <>
+      <AnimatePresence>{loading && <Preloader onFinish={() => setLoading(false)} />}</AnimatePresence>
+
+      {!loading && (
+        <motion.div
+          key="main"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2 }}
+        >
+          <Hero />
+          {/* ↓ More sections will follow here */}
+        </motion.div>
+      )}
+    </>
+  );
+}
+/* ────────────────────────────────────────────────────────────────
+   ABOUT SECTION – Story-driven narrative block
+──────────────────────────────────────────────────────────────── */
+function About() {
+  const ref = useRef();
+
+  return (
+    <motion.section
+      id="about"
+      ref={ref}
+      initial={{ opacity: 0, y: 100 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 1.2, ease: [0.6, 0.01, -0.05, 0.95] }}
+      style={{
+        background: "linear-gradient(180deg, #0b0614 0%, #050307 100%)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        padding: "8rem 2rem",
+      }}
+    >
+      <motion.h2
+        className="text-5xl font-bold"
+        style={{ fontFamily: theme.fonts.heading, color: theme.colors.white }}
+      >
+        Our Philosophy
+      </motion.h2>
+      <motion.p
+        className="mt-6 max-w-3xl text-gray-300 leading-relaxed text-lg"
+        style={{ fontFamily: theme.fonts.body }}
+      >
+        Pehchaan Media is a full-service agency building global identities
+        through design, media, and technology. We believe in merging human
+        emotion with digital precision — creating experiences that connect
+        people, brands, and culture worldwide.
+      </motion.p>
+      <motion.div
+        className="mt-12 grid md:grid-cols-3 gap-10 max-w-5xl"
+        initial="hidden"
+        whileInView="visible"
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.3 } },
+        }}
+      >
+        {[
+          {
+            title: "Global Collaboration",
+            text: "Remote-first teams that operate seamlessly across time zones and cultures.",
+          },
+          {
+            title: "Craft & Innovation",
+            text: "We balance design intuition with technological mastery to deliver award-worthy outcomes.",
+          },
+          {
+            title: "Sustainable Growth",
+            text: "Every solution scales ethically — respecting users, data, and environment.",
+          },
+        ].map((item, i) => (
+          <motion.div
+            key={i}
+            className="p-6 rounded-2xl"
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              backdropFilter: "blur(10px)",
+            }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: i * 0.2 }}
+          >
+            <h3
+              className="text-2xl mb-3"
+              style={{ fontFamily: theme.fonts.heading, color: theme.colors.cyan }}
+            >
+              {item.title}
+            </h3>
+            <p
+              className="text-gray-400"
+              style={{ fontFamily: theme.fonts.body, lineHeight: 1.6 }}
+            >
+              {item.text}
+            </p>
+          </motion.div>
+        ))}
+      </motion.div>
+    </motion.section>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────
+   SERVICES SECTION – Animated service cards
+──────────────────────────────────────────────────────────────── */
+function Services() {
   const services = [
-    { icon: <PenTool size={28} className="text-purple-300" />, title: "Brand Identity", desc: "Logos, systems, and brand books." },
-    { icon: <Film size={28} className="text-purple-300" />, title: "Film & Production", desc: "From concept to final edit." },
-    { icon: <Globe size={28} className="text-purple-300" />, title: "Web & Digital", desc: "High-performance, delightful experiences." },
-    { icon: <Megaphone size={28} className="text-purple-300" />, title: "Marketing", desc: "Audience-first campaigns that convert." },
-    { icon: <Heart size={28} className="text-purple-300" />, title: "Community", desc: "Long-term engagement strategies." },
+    {
+      title: "Brand Strategy & Identity",
+      desc: "Developing cohesive brand systems, tone, and design languages that transcend borders.",
+      iconColor: theme.colors.coral,
+    },
+    {
+      title: "Digital Experience Design",
+      desc: "UX, UI, and interactive storytelling for web, mobile, and installations.",
+      iconColor: theme.colors.cyan,
+    },
+    {
+      title: "Media Production",
+      desc: "Cinematic campaigns, video, and photography that evoke emotion and drive results.",
+      iconColor: theme.colors.indigo,
+    },
+    {
+      title: "Development & Technology",
+      desc: "Building performant, scalable digital platforms using modern stacks and WebGL.",
+      iconColor: theme.colors.white,
+    },
   ];
 
   return (
-    <section id="services" ref={ref} tabIndex={-1} aria-labelledby="services-title" className="pt-28 pb-20">
-      <div className="max-w-4xl mx-auto text-center px-6 sm:px-8">
-        <motion.h2 variants={fadeInUp} initial="hidden" animate={inView ? "show" : "hidden"} id="services-title" className="text-3xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-indigo-400">
-          What We Do
-        </motion.h2>
-        <motion.p variants={subtleFade(0.12)} initial="hidden" animate={inView ? "show" : "hidden"} className="text-gray-300 max-w-2xl mx-auto">
-          Strategy, production and design — delivered with craft and clarity.
-        </motion.p>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <motion.section
+      id="services"
+      initial={{ opacity: 0, y: 100 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 1.2 }}
+      style={{
+        background: theme.colors.bg,
+        padding: "8rem 2rem",
+        textAlign: "center",
+      }}
+    >
+      <h2
+        className="text-5xl font-bold mb-10"
+        style={{ fontFamily: theme.fonts.heading, color: theme.colors.white }}
+      >
+        Services
+      </h2>
+      <motion.div
+        className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto"
+        initial="hidden"
+        whileInView="visible"
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.25 } },
+        }}
+      >
         {services.map((s, i) => (
           <motion.div
             key={i}
-            variants={slideIn("up")}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.06 }}
-            className="rounded-2xl p-6 bg-[#0d0913] border border-white/6 hover:border-purple-400/30 transition-shadow shadow-sm"
-            role="article"
-            aria-label={s.title}
+            className="p-6 rounded-2xl cursor-pointer"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{
+              scale: 1.04,
+              boxShadow: `0 0 20px ${s.iconColor}55`,
+            }}
+            transition={{ duration: 0.6 }}
           >
-            <div className="mb-4">{s.icon}</div>
-            <h4 className="font-semibold mb-2">{s.title}</h4>
-            <p className="text-gray-300 text-sm">{s.desc}</p>
+            <div
+              className="w-12 h-12 mx-auto mb-5 rounded-full flex items-center justify-center"
+              style={{
+                backgroundColor: s.iconColor + "22",
+                border: `1px solid ${s.iconColor}55`,
+              }}
+            >
+              <div
+                style={{
+                  width: "10px",
+                  height: "10px",
+                  borderRadius: "50%",
+                  background: s.iconColor,
+                }}
+              />
+            </div>
+            <h3
+              className="text-xl font-semibold mb-3"
+              style={{ fontFamily: theme.fonts.heading }}
+            >
+              {s.title}
+            </h3>
+            <p
+              className="text-gray-400 text-sm"
+              style={{ fontFamily: theme.fonts.body }}
+            >
+              {s.desc}
+            </p>
           </motion.div>
         ))}
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   );
-};
+}
+/* ────────────────────────────────────────────────────────────────
+   PART 3 — Global Reach (3D) + Work (Portfolio Grid + Case Modal)
+   Paste this after Services() and before the App() export.
+──────────────────────────────────────────────────────────────── */
 
-/* ==========================
-   Export components for next part
-   - Part 3 will include Work, Studio, Testimonials
-   ========================== */
-export { Hero, About, Services };
+/* Utilities used below */
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
-// End of Part 2/6
-// ===========================================================================
-// Part 3/6 — Work, Studio, Testimonials
-// ===========================================================================
+/* ---------------------------
+   GLOBAL REACH — 3D GLOBE SCENE
+   - Uses r3f Canvas
+   - Shows rotating globe, nodes for sample client locations,
+     and animated connection lines.
+---------------------------- */
+function GlobeNodes({ points = [], radius = 1.2 }) {
+  // We render small spheres positioned on the globe's surface for each location
+  return (
+    <group>
+      {points.map((p, i) => {
+        // lat / lon -> 3D Cartesian conversion
+        const { lat, lon, label } = p;
+        const phi = (90 - lat) * (Math.PI / 180);
+        const theta = (lon + 180) * (Math.PI / 180);
+        const x = -radius * Math.sin(phi) * Math.cos(theta);
+        const z = radius * Math.sin(phi) * Math.sin(theta);
+        const y = radius * Math.cos(phi);
 
-/**
- * Prerequisites from Parts 1 & 2:
- * - motion, fadeInUp, slideIn, subtleFade, cn, THEME, usePrefersReducedMotion
- * - butteryScrollTo
- */
+        return (
+          <mesh key={i} position={[x, y, z]}>
+            <sphereGeometry args={[0.02, 12, 12]} />
+            <meshStandardMaterial
+              emissive={theme.colors.cyan}
+              emissiveIntensity={0.9}
+              color={theme.colors.indigo}
+              metalness={0.7}
+              roughness={0.2}
+            />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
 
-//////////////////////////
-// WORK (Portfolio)
-//////////////////////////
-const Work = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.3 });
+/* Animated connecting arcs between nodes (simple lerp lines) */
+function Connections({ points = [], radius = 1.2 }) {
+  // Create curved lines between first point and others for demonstration
+  const lines = [];
+  if (points.length > 1) {
+    const a = points[0];
+    const aPhi = (90 - a.lat) * (Math.PI / 180);
+    const aTheta = (a.lon + 180) * (Math.PI / 180);
+    const ax = -radius * Math.sin(aPhi) * Math.cos(aTheta);
+    const az = radius * Math.sin(aPhi) * Math.sin(aTheta);
+    const ay = radius * Math.cos(aPhi);
 
-  const projects = [
-    {
-      img: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=1200",
-      title: "LuxeHouse Campaign",
-      desc: "A cinematic digital narrative blending light, texture and tone.",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200",
-      title: "Urban Perspective",
-      desc: "Architectural film meets experiential branding.",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200",
-      title: "TechVerse Identity",
-      desc: "Dynamic branding system and website redesign.",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1487014679447-9f8336841d58?w=1200",
-      title: "Narrative Studio Reel",
-      desc: "Film direction and editing for a storytelling showcase.",
-    },
+    for (let i = 1; i < points.length; i++) {
+      const b = points[i];
+      const bPhi = (90 - b.lat) * (Math.PI / 180);
+      const bTheta = (b.lon + 180) * (Math.PI / 180);
+      const bx = -radius * Math.sin(bPhi) * Math.cos(bTheta);
+      const bz = radius * Math.sin(bPhi) * Math.sin(bTheta);
+      const by = radius * Math.cos(bPhi);
+
+      // Build a curved path by interpolating toward an elevated midpoint
+      const midpoint = [(ax + bx) / 2, (ay + by) / 2, (az + bz) / 2];
+      midpoint[1] += 0.3; // raise midpoint for arc effect
+
+      const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(ax, ay, az),
+        new THREE.Vector3(midpoint[0], midpoint[1], midpoint[2]),
+        new THREE.Vector3(bx, by, bz),
+      ]);
+
+      const pts = curve.getPoints(50);
+      const geometry = new THREE.BufferGeometry().setFromPoints(pts);
+      lines.push(
+        <line key={i} geometry={geometry}>
+          <lineBasicMaterial
+            attach="material"
+            color={theme.colors.cyan}
+            linewidth={2}
+            transparent={true}
+            opacity={0.6}
+          />
+        </line>
+      );
+    }
+  }
+
+  return <group>{lines}</group>;
+}
+
+/* GlobeCanvas composes the globe, nodes, and atmosphere */
+function GlobeCanvas({ className = "w-full h-[60vh]" }) {
+  // sample nodes (latitude, longitude, label)
+  const sampleNodes = [
+    { lat: 37.7749, lon: -122.4194, label: "San Francisco" },
+    { lat: 51.5074, lon: -0.1278, label: "London" },
+    { lat: 24.8607, lon: 67.0011, label: "Karachi" },
+    { lat: -33.8688, lon: 151.2093, label: "Sydney" },
+    { lat: 35.6895, lon: 139.6917, label: "Tokyo" },
   ];
 
+  // rotating group via useFrame inside a small inner component
+  function RotatingGroup({ children }) {
+    const ref = useRef();
+    useFrame((state, delta) => {
+      if (ref.current) {
+        ref.current.rotation.y += delta * 0.08;
+      }
+    });
+    return <group ref={ref}>{children}</group>;
+  }
+
   return (
-    <section id="work" ref={ref} tabIndex={-1} aria-labelledby="work-title" className="pt-28 pb-24">
-      <div className="max-w-4xl mx-auto text-center px-6 sm:px-8">
-        <motion.h2
-          variants={fadeInUp}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          id="work-title"
-          className="text-3xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-indigo-400"
-        >
-          Our Work
-        </motion.h2>
-        <motion.p
-          variants={subtleFade(0.1)}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          className="text-gray-300 max-w-2xl mx-auto"
-        >
-          A glimpse of our latest collaborations and storytelling projects.
-        </motion.p>
-      </div>
+    <div style={{ width: "100%", height: "60vh", position: "relative" }}>
+      <Canvas camera={{ position: [0, 0, 3.6], fov: 35 }} style={{ zIndex: 1 }}>
+        {/* Lighting */}
+        <ambientLight intensity={0.6} />
+        <directionalLight position={[5, 5, 5]} intensity={0.9} color={theme.colors.cyan} />
+        <RotatingGroup>
+          {/* Main globe: glossy material */}
+          <mesh>
+            <sphereGeometry args={[1.2, 64, 64]} />
+            <meshStandardMaterial
+              color={theme.colors.surface}
+              metalness={0.6}
+              roughness={0.25}
+              emissive={theme.colors.indigo}
+              emissiveIntensity={0.03}
+            />
+          </mesh>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((p, i) => (
-          <motion.div
-            key={i}
-            variants={slideIn("up")}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.06 }}
-            className="rounded-2xl overflow-hidden bg-[#0d0913] border border-white/6 hover:border-purple-400/30 shadow-sm group"
-          >
-            <div className="overflow-hidden">
-              <motion.img
-                loading="lazy"
-                width="600"
-                height="400"
-                src={p.img}
-                alt={p.title}
-                className="object-cover w-full h-60 group-hover:scale-105 transition-transform duration-700"
-              />
-            </div>
-            <div className="p-6">
-              <h4 className="font-semibold mb-2 text-purple-300">{p.title}</h4>
-              <p className="text-gray-300 text-sm">{p.desc}</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+          {/* subtle cloud / atmosphere layer */}
+          <mesh scale={[1.04, 1.04, 1.04]}>
+            <sphereGeometry args={[1.205, 64, 64]} />
+            <meshPhongMaterial
+              color={theme.colors.cyan}
+              transparent
+              opacity={0.03}
+              shininess={50}
+            />
+          </mesh>
 
-      <div className="mt-12 text-center">
-        <motion.button
-          whileHover={{ scale: 1.04 }}
-          onClick={() => butteryScrollTo("contact")}
-          className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-purple-400 to-indigo-600 text-black font-semibold shadow"
-        >
-          <ArrowRight size={16} className="mr-2" /> Start Your Project
-        </motion.button>
+          {/* nodes and connections */}
+          <GlobeNodes points={sampleNodes} radius={1.2} />
+          <Connections points={sampleNodes} radius={1.2} />
+        </RotatingGroup>
+
+        {/* minor environment */}
+        <Environment preset="studio" />
+      </Canvas>
+
+      {/* Overlay textual summary for global reach */}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          textAlign: "center",
+          zIndex: 5,
+          pointerEvents: "none",
+        }}
+      >
+        <h3 style={{ fontFamily: theme.fonts.heading, color: theme.colors.white, fontSize: "1.6rem", margin: 0 }}>
+          Global Reach
+        </h3>
+        <p style={{ color: "#cbd5e1", marginTop: "0.5rem", maxWidth: "46ch" }}>
+          Distributed teams across timezones, delivering film, digital, and brand systems globally.
+        </p>
       </div>
-    </section>
+    </div>
   );
-};
+}
 
-//////////////////////////
-// STUDIO
-//////////////////////////
-const Studio = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.4 });
-  const reduced = usePrefersReducedMotion();
+/* ---------------------------
+   WORK SECTION — Grid + Modal Case Study
+   - Clicking a project opens a cinematic modal with deep storytelling.
+---------------------------- */
+
+function ProjectModal({ project, onClose }) {
+  // lock background scroll – simple approach
+  useEffect(() => {
+    const originalOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = originalOverflow;
+    };
+  }, []);
+
+  if (!project) return null;
 
   return (
-    <section id="studio" ref={ref} tabIndex={-1} aria-labelledby="studio-title" className="py-28 bg-[#0d0913] border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 grid md:grid-cols-2 gap-10 items-center">
-        <motion.div
-          variants={slideIn("left")}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          className="relative"
+    <motion.div
+      className="fixed inset-0 z-[200] flex items-stretch justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{ background: "linear-gradient(180deg, rgba(5,3,7,0.95), rgba(5,3,7,0.98))" }}
+    >
+      <div style={{ width: "100%", maxWidth: "1200px", margin: "auto", padding: "3rem 2rem" }}>
+        <motion.button
+          onClick={onClose}
+          style={{
+            background: "transparent",
+            color: theme.colors.white,
+            border: "1px solid rgba(255,255,255,0.06)",
+            padding: "0.5rem 0.8rem",
+            borderRadius: 8,
+            cursor: "pointer",
+            position: "absolute",
+            right: 28,
+            top: 28,
+          }}
+          whileHover={{ scale: 1.02 }}
         >
-          <div className="aspect-video rounded-2xl overflow-hidden shadow-lg border border-white/5">
-            {!reduced && (
-              <video
-                className="w-full h-full object-cover"
-                autoPlay
-                loop
-                muted
-                playsInline
-                poster="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200"
-              >
-                <source
-                  src="https://cdn.coverr.co/videos/coverr-people-filming-a-video-7199/1080p.mp4"
-                  type="video/mp4"
-                />
-              </video>
-            )}
-            {reduced && (
-              <img
-                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200"
-                alt="Studio environment"
-                loading="lazy"
-                width="600"
-                height="400"
-              />
-            )}
+          Close
+        </motion.button>
+
+        {/* Cinematic header */}
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "2rem",
+            alignItems: "start",
+          }}
+        >
+          <div style={{ borderRadius: 12, overflow: "hidden", boxShadow: "0 40px 120px rgba(0,0,0,0.6)" }}>
+            <img
+              src={project.hero}
+              alt={project.title}
+              style={{ width: "100%", height: "420px", objectFit: "cover", display: "block" }}
+            />
+          </div>
+
+          <div style={{ color: theme.colors.white }}>
+            <h2 style={{ fontFamily: theme.fonts.heading, fontSize: "2rem", marginBottom: "0.6rem" }}>
+              {project.title}
+            </h2>
+            <p style={{ color: "#cbd5e1", marginBottom: "1rem" }}>{project.subtitle}</p>
+
+            <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", flexWrap: "wrap" }}>
+              {project.tags.map((t, i) => (
+                <span
+                  key={i}
+                  style={{
+                    padding: "0.35rem 0.6rem",
+                    borderRadius: 999,
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid rgba(255,255,255,0.05)",
+                    color: theme.colors.cyan,
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+
+            <div style={{ color: "#e2e8f0", lineHeight: 1.7 }}>
+              <h4 style={{ marginTop: 4, marginBottom: 8 }}>The Challenge</h4>
+              <p style={{ marginBottom: 12 }}>{project.challenge}</p>
+
+              <h4 style={{ marginTop: 12, marginBottom: 8 }}>Our Approach</h4>
+              <p style={{ marginBottom: 12 }}>{project.approach}</p>
+
+              <h4 style={{ marginTop: 12, marginBottom: 8 }}>Outcome</h4>
+              <p style={{ marginBottom: 12 }}>{project.outcome}</p>
+            </div>
           </div>
         </motion.div>
 
+        {/* Gallery / supporting visuals */}
         <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          transition={{ delay: 0.2 }}
-          className="text-center md:text-left"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          style={{ marginTop: "2.5rem", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1rem" }}
         >
-          <h2 id="studio-title" className="text-3xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-indigo-400">
-            Inside Our Studio
-          </h2>
-          <p className="text-gray-300 mb-6">
-            From storyboarding to final edit, our in-house team blends artistry with technology. Every frame is designed to
-            resonate with your audience.
-          </p>
-          <button
-            onClick={() => butteryScrollTo("contact")}
-            className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-purple-400 to-indigo-600 text-black font-semibold shadow"
-          >
-            <Camera size={16} className="mr-2" /> Book a Session
-          </button>
+          {project.gallery.map((g, i) => (
+            <div key={i} style={{ height: 160, overflow: "hidden", borderRadius: 8 }}>
+              <img src={g} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+          ))}
         </motion.div>
       </div>
+    </motion.div>
+  );
+}
+
+function Work() {
+  // sample projects
+  const projects = [
+    {
+      id: "luxehouse",
+      title: "LuxeHouse Campaign",
+      subtitle: "Cinematic narrative and digital experience for a luxury brand.",
+      hero: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=1600&q=80",
+      gallery: [
+        "https://images.unsplash.com/photo-1542662564-9f8b88f0b9d8?w=1200&q=60",
+        "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&q=60",
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=60",
+      ],
+      tags: ["Film", "Brand", "Web"],
+      challenge:
+        "LuxeHouse needed a refined digital campaign that bridged in-store craftsmanship with immersive storytelling online.",
+      approach:
+        "We produced a cinematic hero film, built a responsive microsite, and created an editorial-led social series to maintain momentum.",
+      outcome: "Launch +18% sales lift in 3 months; global PR features and increased MQLs.",
+    },
+    {
+      id: "urban-perspective",
+      title: "Urban Perspective",
+      subtitle: "Architectural film & brand identity for a design collective.",
+      hero: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80",
+      gallery: [
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=60",
+        "https://images.unsplash.com/photo-1542744173-05336fcc7ad4?w=1200&q=60",
+        "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=1200&q=60",
+      ],
+      tags: ["Cinematography", "Identity", "Experiential"],
+      challenge: "Translate spatial storytelling into a brand expression with visual hierarchy.",
+      approach: "A combined shoot and 3D visualization workflow for consistent design language.",
+      outcome: "Awarded Best Campaign (regional) and secured international partnerships.",
+    },
+  ];
+
+  const [active, setActive] = useState(null);
+
+  return (
+    <section id="work" style={{ padding: "6rem 2rem", background: theme.colors.surface }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <motion.h2
+          className="text-4xl font-bold mb-6"
+          initial={{ y: 40, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          style={{ fontFamily: theme.fonts.heading, color: theme.colors.white }}
+        >
+          Selected Work
+        </motion.h2>
+
+        <motion.p
+          className="max-w-3xl text-gray-300 mb-8"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.2 }}
+          style={{ fontFamily: theme.fonts.body }}
+        >
+          A curated selection of deep case studies that show our process — strategy,
+          production, and measurable outcomes.
+        </motion.p>
+
+        {/* Grid */}
+        <div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
+          {projects.map((p, i) => (
+            <motion.div
+              key={p.id}
+              className="group"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ delay: i * 0.12 }}
+              style={{
+                borderRadius: 12,
+                overflow: "hidden",
+                background: "linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))",
+                border: "1px solid rgba(255,255,255,0.04)",
+                cursor: "pointer",
+              }}
+              onClick={() => setActive(p)}
+            >
+              <div style={{ position: "relative", height: 220 }}>
+                <img
+                  src={p.hero}
+                  alt={p.title}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 16,
+                    bottom: 16,
+                    color: theme.colors.white,
+                    textShadow: "0 6px 18px rgba(0,0,0,0.6)",
+                  }}
+                >
+                  <h4 style={{ margin: 0, fontFamily: theme.fonts.heading }}>{p.title}</h4>
+                  <p style={{ margin: 0, color: "#cbd5e1" }}>{p.tags.join(" • ")}</p>
+                </div>
+              </div>
+
+              <div style={{ padding: "1rem 1.1rem" }}>
+                <p style={{ margin: 0, color: "#e2e8f0", fontFamily: theme.fonts.body, fontSize: "0.95rem" }}>
+                  {p.subtitle}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Modal portal for active case */}
+      <AnimatePresence>{active && <ProjectModal project={active} onClose={() => setActive(null)} />}</AnimatePresence>
     </section>
   );
-};
+}
+/* ────────────────────────────────────────────────────────────────
+   PART 4 — Custom Cursor, Testimonials, Contact, Footer, Final App
+   Paste after Work() component in App.jsx
+──────────────────────────────────────────────────────────────── */
 
-//////////////////////////
-// TESTIMONIALS
-//////////////////////////
-const Testimonials = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.25 });
+/* ---------------------------
+   HOOK: prefers-reduced-motion
+   - Use this to disable non-essential motion on request
+---------------------------- */
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const onChange = () => setReduced(mq.matches);
+    onChange();
+    try {
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    } catch {
+      // Safari fallback
+      mq.addListener(onChange);
+      return () => mq.removeListener(onChange);
+    }
+  }, []);
+  return reduced;
+}
 
-  const testimonials = [
+/* ---------------------------
+   CUSTOM CURSOR
+   - Simple custom cursor that follows pointer
+   - Hides on touch devices and when reduced-motion is enabled
+   - Shows a subtle hover scale effect when hovering interactive elements
+---------------------------- */
+function CustomCursor() {
+  const reduced = usePrefersReducedMotion();
+  const cursorRef = useRef(null);
+  const hoverRef = useRef(false);
+
+  useEffect(() => {
+    // Do not show custom cursor on touch devices
+    if ("ontouchstart" in window || reduced) {
+      if (cursorRef.current) cursorRef.current.style.display = "none";
+      return;
+    }
+
+    const el = cursorRef.current;
+    if (!el) return;
+
+    let x = 0;
+    let y = 0;
+    let vx = 0;
+    let vy = 0;
+
+    const lerp = (start, end, t) => start + (end - start) * t;
+
+    function onMove(e) {
+      x = e.clientX;
+      y = e.clientY;
+      el.style.opacity = "1";
+    }
+
+    function loop() {
+      vx = lerp(vx, x, 0.16);
+      vy = lerp(vy, y, 0.16);
+      el.style.transform = `translate3d(${vx - 12}px, ${vy - 12}px, 0)`;
+      requestAnimationFrame(loop);
+    }
+
+    document.addEventListener("mousemove", onMove);
+    loop();
+
+    // Hover effects for interactive elements
+    function addHover() {
+      hoverRef.current = true;
+      el.style.transform += " scale(1.28)";
+      el.style.width = "28px";
+      el.style.height = "28px";
+      el.style.borderRadius = "8px";
+      el.style.boxShadow = `0 6px 24px ${theme.colors.cyan}33`;
+    }
+    function removeHover() {
+      hoverRef.current = false;
+      el.style.width = "24px";
+      el.style.height = "24px";
+      el.style.borderRadius = "50%";
+      el.style.boxShadow = "none";
+    }
+
+    const interactiveSelectors = [
+      "a",
+      "button",
+      "input",
+      "textarea",
+      "[data-cursor]",
+      ".interactive",
+    ];
+    const hoverables = document.querySelectorAll(interactiveSelectors.join(","));
+    hoverables.forEach((h) => {
+      h.addEventListener("mouseenter", addHover);
+      h.addEventListener("mouseleave", removeHover);
+    });
+
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      hoverables.forEach((h) => {
+        h.removeEventListener("mouseenter", addHover);
+        h.removeEventListener("mouseleave", removeHover);
+      });
+    };
+  }, [usePrefersReducedMotion()]); // re-run if reduced-motion preference changes
+
+  return (
+    <div
+      ref={cursorRef}
+      aria-hidden
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: 24,
+        height: 24,
+        borderRadius: "50%",
+        pointerEvents: "none",
+        transform: "translate3d(-50%, -50%, 0)",
+        background:
+          "radial-gradient(circle at 30% 30%, rgba(0,245,255,0.9) 0%, rgba(139,92,246,0.15) 40%, rgba(5,3,7,0.0) 70%)",
+        mixBlendMode: "screen",
+        zIndex: 9999,
+        transition: "width 180ms ease, height 180ms ease, box-shadow 180ms ease, transform 120ms linear",
+        opacity: 0,
+      }}
+    />
+  );
+}
+
+/* ---------------------------
+   TESTIMONIALS
+   - Animated cards with simple fade/slide reveal
+---------------------------- */
+function Testimonials() {
+  const data = [
     {
       quote:
-        "Pehchaan Media amplified our campaign with cinematic clarity — exceptional craft and cadence.",
+        "Pehchaan Media elevated our visual language and launched a campaign that doubled our engagement.",
       name: "Sara Malik",
-      role: "Creative Director @ LuxeHouse",
+      role: "Creative Director, LuxeHouse",
       avatar: "https://randomuser.me/api/portraits/women/44.jpg",
     },
     {
       quote:
-        "They delivered beyond expectations; their narrative approach produced measurable uplift.",
+        "A thoughtful team — their remote workflow and clarity made the complex feel simple.",
       name: "Adil Hussain",
-      role: "Marketing Head @ UrbanVista",
+      role: "Marketing Head, UrbanVista",
       avatar: "https://randomuser.me/api/portraits/men/32.jpg",
     },
     {
       quote:
-        "Truly a partner in storytelling — their purple-hued creative direction set our brand apart.",
+        "From strategy to production, their approach was rigorous, beautifully executed, and effective.",
       name: "Noor Fatima",
-      role: "Brand Manager @ AuroraTech",
+      role: "Brand Manager, AuroraTech",
       avatar: "https://randomuser.me/api/portraits/women/55.jpg",
     },
   ];
 
   return (
-    <section id="testimonials" ref={ref} tabIndex={-1} aria-labelledby="testimonials-title" className="pt-28 pb-28">
-      <div className="max-w-4xl mx-auto text-center px-6 sm:px-8">
-        <motion.h2
-          variants={fadeInUp}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          id="testimonials-title"
-          className="text-3xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-indigo-400"
+    <section
+      id="testimonials"
+      style={{
+        padding: "6rem 2rem",
+        background: "linear-gradient(180deg, rgba(11,6,20,0.7), rgba(5,3,7,0.95))",
+      }}
+    >
+      <div style={{ maxWidth: 1200, margin: "0 auto", textAlign: "center" }}>
+        <motion.h3
+          className="text-3xl font-bold"
+          initial={{ y: 20, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true }}
+          style={{ fontFamily: theme.fonts.heading, color: theme.colors.white }}
         >
           What Clients Say
-        </motion.h2>
-        <motion.p
-          variants={subtleFade(0.1)}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          className="text-gray-300 max-w-2xl mx-auto"
-        >
-          Voices of the brands that trusted us to craft their vision.
-        </motion.p>
-      </div>
+        </motion.h3>
 
-      <div className="max-w-6xl mx-auto mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 sm:px-8">
-        {testimonials.map((t, i) => (
-          <motion.div
-            key={i}
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1 }}
-            className="rounded-2xl p-6 bg-[#0d0913] border border-white/6 shadow-sm"
-          >
-            <div className="flex items-center mb-4">
-              <img
-                src={t.avatar}
-                alt={t.name}
-                loading="lazy"
-                width="48"
-                height="48"
-                className="w-12 h-12 rounded-full mr-3 object-cover"
-              />
-              <div className="text-left">
-                <p className="font-semibold text-purple-300">{t.name}</p>
-                <p className="text-gray-400 text-xs">{t.role}</p>
+        <motion.div
+          className="mt-10"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.12 } },
+          }}
+          style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fit, minmax(260px,1fr))" }}
+        >
+          {data.map((t, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: i * 0.08 }}
+              style={{
+                padding: "1.4rem",
+                borderRadius: 12,
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.04)",
+                boxShadow: "0 18px 60px rgba(2,6,23,0.6)",
+              }}
+            >
+              <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 8 }}>
+                <img
+                  src={t.avatar}
+                  alt={t.name}
+                  style={{ width: 48, height: 48, borderRadius: 999, objectFit: "cover" }}
+                />
+                <div>
+                  <div style={{ fontWeight: 700, color: theme.colors.white }}>{t.name}</div>
+                  <div style={{ color: "#9aa4b2", fontSize: 12 }}>{t.role}</div>
+                </div>
               </div>
-            </div>
-            <p className="text-gray-300 text-sm leading-relaxed">“{t.quote}”</p>
-          </motion.div>
-        ))}
+              <p style={{ color: "#dbe6f0", lineHeight: 1.7 }}>{t.quote}</p>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
-};
+}
 
-/* ==========================
-   Export for next part
-   - Part 4 will include Contact and Footer and global App composition
-   ========================== */
-export { Work, Studio, Testimonials };
-
-// End of Part 3/6
-// ===========================================================================
-// Part 4/6 — Contact, Footer, Floating CTA, Scroll Progress
-// ===========================================================================
-
-/**
- * Requires parts 1–3 already defined above this in App.jsx.
- */
-
-//////////////////////////
-// CONTACT SECTION
-//////////////////////////
-const Contact = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.35 });
+/* ---------------------------
+   CONTACT SECTION
+   - Accessible form with client-side demo success
+---------------------------- */
+function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
+  const reduced = usePrefersReducedMotion();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
-  };
+  function handleChange(e) {
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  }
 
-  const handleSubmit = (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
-    // Here you'd integrate EmailJS or a backend call
-    // Example (pseudo): emailjs.send("service_id", "template_id", form)
+    // Demo UX: set sent state, then reset
     setSent(true);
-    setTimeout(() => setSent(false), 5000);
-  };
+    setTimeout(() => setSent(false), 4500);
+
+    // Optional: open mail client as fallback
+    // window.location.href = `mailto:info@pehchaanmedia.com?subject=${encodeURIComponent("Inquiry from site")}&body=${encodeURIComponent(form.message)}`;
+  }
 
   return (
-    <section id="contact" ref={ref} tabIndex={-1} aria-labelledby="contact-title" className="pt-28 pb-32 bg-[#0b0614] border-t border-white/5">
-      <div className="max-w-4xl mx-auto text-center px-6 sm:px-8">
-        <motion.h2
-          variants={fadeInUp}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          id="contact-title"
-          className="text-3xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-indigo-400"
+    <section id="contact" style={{ padding: "6rem 2rem", background: theme.colors.bg }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
+        <motion.h3
+          initial={{ y: 20, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true }}
+          style={{ fontFamily: theme.fonts.heading, color: theme.colors.white, fontSize: "2rem" }}
         >
-          Let’s Collaborate
-        </motion.h2>
-        <motion.p
-          variants={subtleFade(0.1)}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          className="text-gray-300 max-w-2xl mx-auto mb-10"
-        >
-          Have a project in mind or want to say hi? Fill out the form and we’ll get back to you.
-        </motion.p>
-      </div>
+          Let's Collaborate
+        </motion.h3>
 
-      <div className="max-w-2xl mx-auto px-6 sm:px-8">
+        <motion.p style={{ color: "#cbd5e1", marginTop: 10 }}>
+          Tell us about your project — we’ll reply with a proposed approach and availability.
+        </motion.p>
+
         <motion.form
           onSubmit={handleSubmit}
-          variants={fadeInUp}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          className="space-y-5"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          style={{ marginTop: 28, display: "grid", gap: 12, gridTemplateColumns: "1fr 1fr" }}
         >
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
-              Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              required
-              value={form.name}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg bg-[#120524] border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-              placeholder="Your Name"
-            />
-          </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={form.email}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg bg-[#120524] border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-              placeholder="you@example.com"
-            />
-          </div>
-          <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-1">
-              Message
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              rows="5"
-              required
-              value={form.message}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg bg-[#120524] border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-              placeholder="Tell us about your project..."
-            ></textarea>
-          </div>
-
+          <input
+            name="name"
+            required
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Your name"
+            style={{
+              padding: "14px 16px",
+              borderRadius: 10,
+              border: "1px solid rgba(255,255,255,0.06)",
+              background: "rgba(255,255,255,0.02)",
+              color: theme.colors.white,
+              gridColumn: "1 / span 1",
+              fontFamily: theme.fonts.body,
+            }}
+          />
+          <input
+            name="email"
+            type="email"
+            required
+            value={form.email}
+            onChange={handleChange}
+            placeholder="Your email"
+            style={{
+              padding: "14px 16px",
+              borderRadius: 10,
+              border: "1px solid rgba(255,255,255,0.06)",
+              background: "rgba(255,255,255,0.02)",
+              color: theme.colors.white,
+              gridColumn: "2 / span 1",
+              fontFamily: theme.fonts.body,
+            }}
+          />
+          <textarea
+            name="message"
+            rows="5"
+            required
+            value={form.message}
+            onChange={handleChange}
+            placeholder="Tell us about your brief"
+            style={{
+              padding: "14px 16px",
+              borderRadius: 10,
+              border: "1px solid rgba(255,255,255,0.06)",
+              background: "rgba(255,255,255,0.02)",
+              color: theme.colors.white,
+              gridColumn: "1 / span 2",
+              fontFamily: theme.fonts.body,
+            }}
+          />
           <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
             type="submit"
-            className="inline-flex items-center px-8 py-3 rounded-full bg-gradient-to-r from-purple-400 to-indigo-600 text-black font-semibold shadow-md"
+            whileHover={{ scale: reduced ? 1 : 1.02 }}
+            whileTap={{ scale: reduced ? 1 : 0.98 }}
+            style={{
+              gridColumn: "1 / span 2",
+              padding: "14px 18px",
+              borderRadius: 12,
+              border: "none",
+              background: `linear-gradient(90deg, ${theme.colors.indigo}, ${theme.colors.cyan})`,
+              color: "#04111f",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
           >
-            <Mail size={16} className="mr-2" /> Send Message
+            {sent ? "Thanks — we'll follow up" : "Send Message"}
           </motion.button>
-
-          {sent && (
-            <p className="text-green-400 text-sm mt-3">Thank you! Your message has been sent.</p>
-          )}
         </motion.form>
       </div>
     </section>
   );
-};
+}
 
-//////////////////////////
-// FOOTER
-//////////////////////////
-const Footer = () => {
-  const socials = [
-    { icon: <Instagram size={18} />, href: "https://instagram.com/" },
-    { icon: <Linkedin size={18} />, href: "https://linkedin.com/" },
-    { icon: <Twitter size={18} />, href: "https://twitter.com/" },
-    { icon: <Facebook size={18} />, href: "https://facebook.com/" },
-  ];
-
+/* ---------------------------
+   FOOTER
+---------------------------- */
+function Footer() {
   return (
-    <footer
-      className="py-10 border-t border-white/10 bg-gradient-to-b from-[#120524] to-[#060214]"
-      role="contentinfo"
-    >
-      <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="text-sm text-gray-400">
-          © {new Date().getFullYear()} Pehchaan Media. All rights reserved.
+    <footer style={{ padding: "3.5rem 2rem", background: "#03040a", borderTop: "1px solid rgba(255,255,255,0.03)" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-between", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+        <div>
+          <div style={{ fontFamily: theme.fonts.heading, fontSize: 18, color: theme.colors.white }}>Pehchaan Media</div>
+          <div style={{ color: "#9aa4b2", marginTop: 6 }}>Global • Remote • Cinematic</div>
         </div>
-        <div className="flex items-center gap-5">
-          {socials.map((s, i) => (
-            <a
-              key={i}
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-purple-400 transition-colors"
-              aria-label={`Visit us on ${s.href.split('.')[1]}`}
-            >
-              {s.icon}
-            </a>
-          ))}
+
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <a href="#" aria-label="Instagram" style={{ color: "#9aa4b2" }}>Instagram</a>
+          <a href="#" aria-label="LinkedIn" style={{ color: "#9aa4b2" }}>LinkedIn</a>
+          <a href="#" aria-label="Twitter" style={{ color: "#9aa4b2" }}>Twitter</a>
         </div>
+
+        <div style={{ color: "#9aa4b2", fontSize: 13 }}>© {new Date().getFullYear()} Pehchaan Media — Crafted with care</div>
       </div>
     </footer>
   );
-};
+}
 
-//////////////////////////
-// FLOATING CTA BUTTON
-//////////////////////////
-const FloatingCTA = () => {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const handle = () => {
-      if (!safeWindow) return;
-      const scrollY = safeWindow.scrollY || 0;
-      setVisible(scrollY > 400);
-    };
-    safeWindow.addEventListener("scroll", handle);
-    return () => safeWindow.removeEventListener("scroll", handle);
-  }, []);
-
-  return (
-    <AnimatePresence>
-      {visible && (
-        <motion.button
-          key="floating-cta"
-          initial={{ opacity: 0, scale: 0.6 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.6 }}
-          transition={{ duration: 0.3 }}
-          onClick={() => butteryScrollTo("home")}
-          aria-label="Scroll to top"
-          className="fixed bottom-8 right-6 z-40 p-3 rounded-full bg-gradient-to-r from-purple-400 to-indigo-600 text-black shadow-lg"
-        >
-          <ChevronUp size={20} />
-        </motion.button>
-      )}
-    </AnimatePresence>
-  );
-};
-
-//////////////////////////
-// SCROLL PROGRESS BAR
-//////////////////////////
-const ScrollProgress = () => {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const updateProgress = () => {
-      if (!safeWindow) return;
-      const scrollTop = safeWindow.scrollY;
-      const docHeight = document.body.scrollHeight - safeWindow.innerHeight;
-      const percent = (scrollTop / docHeight) * 100;
-      setProgress(percent);
-    };
-    safeWindow.addEventListener("scroll", updateProgress);
-    return () => safeWindow.removeEventListener("scroll", updateProgress);
-  }, []);
-
-  return (
-    <div
-      className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-purple-400 to-indigo-600 z-50"
-      style={{ width: `${progress}%` }}
-      aria-hidden
-    />
-  );
-};
-
-/* ==========================
-   Export for next part
-   - Part 5 will assemble App() with all components,
-     SEO meta tags, LazyMotion, and final structure.
-   ========================== */
-export { Contact, Footer, FloatingCTA, ScrollProgress };
-
-// End of Part 4/6
-// ===========================================================================
-// Part 5/6 — App assembly, MetaTags, Accessibility, Cursor, Default Export
-// ===========================================================================
-
-/**
- * Prereqs:
- * This block expects the following to be available (defined in earlier parts):
- * - Navbar, Hero, About, Services, Work, Studio, Testimonials, Contact, Footer
- * - FloatingCTA, ScrollProgress
- * - motion, LazyMotion, domAnimation
- * - THEME, cn, safeWindow, usePrefersReducedMotion
- * - butteryScrollTo
- *
- * Ensure Parts 1–4 are appended above this block in App.jsx.
- */
-
-//////////////////////////
-// META TAGS (SEO + OpenGraph)
-//////////////////////////
-const MetaTags = ({ title = "Pehchaan Media | Creative Studio", description } = {}) => {
-  useEffect(() => {
-    const desc = description || "Pehchaan Media blends cinematic film, brand strategy, and digital experiences to craft identity-driven campaigns.";
-    document.title = title;
-
-    // helper to create a meta element
-    const createMeta = (attrs) => {
-      const el = document.createElement("meta");
-      Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
-      document.head.appendChild(el);
-      return el;
-    };
-
-    const metas = [];
-    const metaDescription = createMeta({ name: "description", content: desc });
-    metas.push(metaDescription);
-
-    const ogTitle = createMeta({ property: "og:title", content: title });
-    metas.push(ogTitle);
-    const ogDesc = createMeta({ property: "og:description", content: desc });
-    metas.push(ogDesc);
-    const ogImage = createMeta({
-      property: "og:image",
-      content:
-        "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?auto=format&fit=crop&w=1200&q=80",
-    });
-    metas.push(ogImage);
-
-    // canonical
-    const canonical = document.createElement("link");
-    canonical.rel = "canonical";
-    canonical.href = safeWindow ? safeWindow.location.href.split("#")[0] : "";
-    document.head.appendChild(canonical);
-
-    // cleanup on unmount / hot reload
-    return () => {
-      metas.forEach((m) => m && m.parentNode && m.parentNode.removeChild(m));
-      if (canonical && canonical.parentNode) canonical.parentNode.removeChild(canonical);
-    };
-  }, [title, description]);
-
-  return null;
-};
-
-//////////////////////////
-// ACCESSIBILITY ENHANCER
-//////////////////////////
-const AccessibilityEnhancer = () => {
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Tab") {
-        document.body.classList.add("focus-visible");
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-  return null;
-};
-
-//////////////////////////
-// CUSTOM CURSOR (reduced-motion aware)
-//////////////////////////
-const CustomCursor = () => {
-  const ref = useRef(null);
+/* ---------------------------
+   FINAL APP — Lenis init, Preloader flow, Cursor and Sections
+   - Replace any earlier simple App() with this full version if you had one.
+---------------------------- */
+export default function App() {
+  const lenisRef = useRef(null);
+  const [loading, setLoading] = useState(true);
   const reduced = usePrefersReducedMotion();
 
+  // Lenis initialization (smooth scroll)
   useEffect(() => {
-    if (!safeWindow || reduced) return;
-    const el = ref.current;
-    if (!el) return;
-    const move = (e) => {
-      // offset to center the dot
-      const x = e.clientX - el.clientWidth / 2;
-      const y = e.clientY - el.clientHeight / 2;
-      el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smooth: true,
+      direction: "vertical",
+    });
+    lenisRef.current = lenis;
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // cleanup
+    return () => {
+      try {
+        lenis.destroy();
+      } catch (e) {
+        // ignore destroy errors in dev
+      }
     };
-    safeWindow.addEventListener("mousemove", move);
-    return () => safeWindow.removeEventListener("mousemove", move);
+  }, []);
+
+  // Preloader simulated timing (keeps it cinematic)
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 2600);
+    return () => clearTimeout(t);
+  }, []);
+
+  // keyboard shortcut: press "m" to toggle reduced-motion hint (dev aid)
+  useEffect(() => {
+    function onKey(e) {
+      // For debugging only — no persistent changes
+      if (e.key === "m") {
+        // show a brief hint
+        const el = document.createElement("div");
+        el.textContent = "Reduced-motion preference: " + (reduced ? "ON" : "OFF");
+        el.style.position = "fixed";
+        el.style.right = "18px";
+        el.style.bottom = "18px";
+        el.style.background = "rgba(0,0,0,0.6)";
+        el.style.color = "#fff";
+        el.style.padding = "8px 12px";
+        el.style.borderRadius = "8px";
+        el.style.zIndex = 99999;
+        document.body.appendChild(el);
+        setTimeout(() => document.body.removeChild(el), 1200);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [reduced]);
 
-  if (reduced) return null;
   return (
-    <div
-      ref={ref}
-      aria-hidden
-      className="hidden md:block fixed top-0 left-0 w-4 h-4 rounded-full border-2 border-purple-300 pointer-events-none mix-blend-difference z-[9999] transition-transform duration-150"
-      style={{ transform: "translate3d(-9999px, -9999px, 0)" }}
-    />
-  );
-};
+    <>
+      {/* Cinematic preloader */}
+      <AnimatePresence>{loading && <Preloader onFinish={() => setLoading(false)} />}</AnimatePresence>
 
-//////////////////////////
-// APP — main assembly
-//////////////////////////
-const App = () => {
-  // simple mount / hydration guard to ensure size measurement works in SSR environments
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+      {/* Custom cursor (hidden on reduced motion / touch devices) */}
+      <CustomCursor />
 
-  return (
-    <LazyMotion features={domAnimation}>
-      <MetaTags />
-      <AccessibilityEnhancer />
-      <div className="min-h-screen bg-[#04020a] text-white antialiased selection:bg-purple-600/30">
-        {/* Global UX chrome */}
-        <ScrollProgress />
-        <CustomCursor />
-        <Navbar />
+      {/* Main app content */}
+      {!loading && (
+        <motion.div
+          key="site"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.1 }}
+          style={{ background: theme.colors.bg, minHeight: "100vh" }}
+        >
+          <header style={{ position: "sticky", top: 0, zIndex: 60 }}>
+            {/* Minimal navigation */}
+            <nav style={{ maxWidth: 1200, margin: "0 auto", padding: "18px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <a href="#hero" style={{ fontFamily: theme.fonts.heading, fontWeight: 700, color: theme.colors.white, textDecoration: "none" }}>
+                Pehchaan Media
+              </a>
 
-        {/* main content */}
-        <main id="main" className="pt-20">
-          <Hero />
-          <About />
-          <Services />
-          <Work />
-          <Studio />
-          <Testimonials />
-          <Contact />
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                <a href="#work" className="interactive" style={{ color: "#cbd5e1", textDecoration: "none" }}>Work</a>
+                <a href="#contact" className="interactive" style={{ color: "#cbd5e1", textDecoration: "none" }}>Contact</a>
+                <a href="#about" className="interactive" style={{ color: "#cbd5e1", textDecoration: "none" }}>About</a>
+              </div>
+            </nav>
+          </header>
+
+          <main>
+            {/* Hero -> About -> Services -> Global -> Work -> Testimonials -> Contact -> Footer */}
+            <Hero />
+            <About />
+            <Services />
+            {/* Global reach 3D canvas; we defined GlobeCanvas earlier */}
+            <motion.section id="globalreach" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} style={{ padding: "4rem 2rem" }}>
+              <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+                <GlobeCanvas />
+              </div>
+            </motion.section>
+
+            <Work />
+            <Testimonials />
+            <Contact />
+          </main>
+
           <Footer />
-        </main>
-
-        {/* floating CTA and helpful small chrome */}
-        <FloatingCTA />
-      </div>
-    </LazyMotion>
+        </motion.div>
+      )}
+    </>
   );
-};
-
-export default App;
-
-/* ==========================
-   End of Part 5/6
-   ==========================
-
-   Notes:
-   - App is exported as default here.
-   - Part 6/6 will include:
-     * Extended developer notes and file-splitting suggestions
-     * Optional EmailJS integration snippet (commented) and .env example
-     * Extra helper utilities (ScrollToTop, small polyfills) and final polish comments
-     * A small "how to paste" checklist to guarantee the assembled file runs with Tailwind + React.
-   - After you confirm Part 5 is appended correctly, I will deliver Part 6 which finishes the file and includes the longer developer notes and optional integration snippets.
-
-   Reminder: Do NOT add or remove curly braces or reorder parts — append Part 6 next exactly as provided to finish App.jsx.
-*/
-// ===========================================================================
-// Part 6/6 — Utilities, EmailJS Example (commented), README + QA checklist
-// ===========================================================================
-
-/**
- * NOTE:
- * - This is the final continuation for App.jsx.
- * - Part 1..5 must be present above this block for symbols to resolve.
- * - No default export is repeated here (App already exported in Part 5).
- */
-
-/* ==========================
-   SMALL UTILITIES
-   ========================== */
-
-/**
- * ScrollToTop component — shows when user scrolls past a threshold and
- * smoothly scrolls to top. This is complementary to FloatingCTA which scrolls to home.
- */
-const ScrollToTopButton = ({ threshold = 600 }) => {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const handler = () => {
-      if (!safeWindow) return;
-      setVisible(safeWindow.scrollY > threshold);
-    };
-    safeWindow.addEventListener("scroll", handler);
-    handler();
-    return () => safeWindow.removeEventListener("scroll", handler);
-  }, [threshold]);
-
-  if (!visible) return null;
-  return (
-    <button
-      aria-label="Scroll to top"
-      onClick={() => butteryScrollTo("home", { offset: -getNavbarOffset(), behavior: "smooth" })}
-      className="fixed left-6 bottom-6 z-50 p-3 rounded-full bg-[#0e0720] border border-white/6 text-purple-300 shadow"
-    >
-      <ChevronUp size={18} />
-    </button>
-  );
-};
-
-/**
- * SkipToContent — accessibility helper (visually hidden until focused)
- */
-const SkipToContent = () => (
-  <a
-    href="#main"
-    className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-purple-700 focus:text-white rounded-md"
-  >
-    Skip to content
-  </a>
-);
-
-/* ==========================
-   Tiny Polyfill: requestIdleCallback fallback
-   ========================== */
-const ric = (cb) => {
-  if (safeWindow && safeWindow.requestIdleCallback) {
-    safeWindow.requestIdleCallback(cb);
-  } else {
-    setTimeout(cb, 50);
-  }
-};
-
-/* ==========================
-   EmailJS Example (COMMENTED)
-   - This example shows how to wire the contact form to EmailJS.
-   - Steps:
-     1) Sign up at https://www.emailjs.com/
-     2) Create a service, template, and get your user/public key
-     3) Install emailjs-com: `npm i emailjs-com` (or the official SDK)
-     4) Provide the SERVICE_ID, TEMPLATE_ID, and USER_ID via env
-     5) Uncomment code below and follow the comments
-   ========================== */
-
-/*
-
-// 1) import at top of file
-import emailjs from 'emailjs-com';
-
-// 2) usage inside handleSubmit in Contact component (replace the placeholder function)
-const handleSubmit = (e) => {
-  e.preventDefault();
-  const form = e.target;
-  const templateParams = {
-    from_name: form.name.value,
-    from_email: form.email.value,
-    message: form.message.value,
-  };
-
-  // these values should be stored in environment variables
-  const SERVICE_ID = process.env.REACT_APP_EMAILJS_SERVICE_ID;
-  const TEMPLATE_ID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
-  const USER_ID = process.env.REACT_APP_EMAILJS_USER_ID;
-
-  emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams, USER_ID)
-    .then((response) => {
-      console.log('SUCCESS!', response.status, response.text);
-      // success UX
-    }, (err) => {
-      console.error('FAILED...', err);
-      // failure UX
-    });
-};
-
-*/
-
-/* ==========================
-   .env.example (copy as .env.local / .env in project root)
-   ==========================
-REACT_APP_EMAILJS_SERVICE_ID=your_service_id
-REACT_APP_EMAILJS_TEMPLATE_ID=your_template_id
-REACT_APP_EMAILJS_USER_ID=your_public_key
-*/
-
-/* ==========================
-   README & Assembly Checklist
-   ==========================
-1) Create a new file `src/App.jsx` (or replace your existing one).
-2) Paste the contents of Part 1/6 then Part 2/6 ... through Part 6/6 sequentially (do NOT reorder).
-3) Ensure these packages are installed:
-   - react, react-dom
-   - framer-motion
-   - lucide-react
-   - tailwindcss (with appropriate setup)
-   (Example): npm i framer-motion lucide-react
-4) Ensure Tailwind is configured (tailwind.config.js + PostCSS) and global styles include tailwind base, components, utilities.
-5) Start dev server: `npm run dev` or `npm start`.
-6) Verify console for errors — most issues will be missing imports or Tailwind not enabled.
-7) Test keyboard navigation: tab through nav, skip link, and forms.
-8) If using EmailJS, install SDK and uncomment example; add env variables.
-
-Notes:
-- If your project is Next.js, move MetaTags logic to _document or use next/head for SSR meta injection.
-- For CRA/Vite, the dynamic document.head injection is fine.
-
-*/
-
-/* ==========================
-   Performance & Lighthouse Checklist
-   ==========================
-- Images:
-  * Compress using mozjpeg/avif/webp; aim for <200KB for hero media.
-  * Serve via CDN (Cloudflare, Netlify, Vercel's built-in CDN).
-  * Use width/height on <img> to prevent CLS (done in many spots).
-
-- Scripts:
-  * Keep framer-motion in the bundle (used heavily). Tree-shake by importing only features you need (LazyMotion used here).
-  * Use code-splitting for heavy pages — if you add more pages, lazy-load sections.
-
-- CSS:
-  * Purge unused Tailwind classes in production.
-  * Avoid giant backdrop-blur on mobile; use reduced styles for small screens.
-
-- Accessibility:
-  * ARIA landmarks included on nav & sections.
-  * Skip link & focus-visible helper present.
-  * Prefers-reduced-motion respected.
-
-- Lighthouse targets:
-  * Performance: 85+ (with optimized images & hosting)
-  * Accessibility: 90+
-  * Best Practices: 90+
-  * SEO: 90+
-
-*/
-
-/* ==========================
-   How to split this big file into modules (optional)
-   ==========================
-If you'd prefer a modular codebase (recommended for maintainability), split as follows:
-
-src/
-├─ components/
-│  ├─ Navbar.jsx
-│  ├─ Hero.jsx
-│  ├─ About.jsx
-│  ├─ Services.jsx
-│  ├─ Work.jsx
-│  ├─ Studio.jsx
-│  ├─ Testimonials.jsx
-│  ├─ Contact.jsx
-│  ├─ Footer.jsx
-│  └─ UI/ (FloatingCTA, ScrollProgress, Cursor, etc.)
-├─ utils/
-│  ├─ theme.js
-│  ├─ animations.js
-│  └─ dom.js (butteryScrollTo)
-├─ App.jsx
-└─ index.jsx
-
-- Export/import between modules using named exports shown in each part.
-- Keep MetaTags server-friendly: move to Next.js head or SSR template if needed.
-
-*/
-
-/* ==========================
-   Final Developer Notes
-   ==========================
-- This file was designed to be dropped into a standard React + Tailwind environment.
-- If you want me to automatically split this single file into separate module files and provide a zipped structure, I can produce the individual component files as separate messages (one file per message) and a README — tell me "split into files" and I'll produce them next.
-- If you want me to expand comments, add unit-tests, or integrate with a backend (EmailJS or any REST endpoint), tell me which option and I'll generate the code and instructions.
-
-Thank you — that completes Part 6/6. 🎉
-You now have the full `App.jsx` in 6 parts. If you'd like I will:
-- Paste them together and show a single combined file (huge, but I can),
-- Or split into modular files (recommended) and deliver each file separately.
-
-Which do you want next? (split into files / give combined single file / integrate EmailJS) 
-*/
+}
