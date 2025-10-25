@@ -117,43 +117,6 @@ function Hero() {
     </section>
   );
 }
-
-/* ────────────────────────────────────────────────────────────────
-   MAIN APP COMPONENT – Lenis + Preloader + Sections
-──────────────────────────────────────────────────────────────── */
-export default function App() {
-  const lenis = useRef();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const l = new Lenis({ lerp: 0.1, smooth: true });
-    lenis.current = l;
-    function raf(time) {
-      l.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-    return () => l.destroy();
-  }, []);
-
-  return (
-    <>
-      <AnimatePresence>{loading && <Preloader onFinish={() => setLoading(false)} />}</AnimatePresence>
-
-      {!loading && (
-        <motion.div
-          key="main"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2 }}
-        >
-          <Hero />
-          {/* ↓ More sections will follow here */}
-        </motion.div>
-      )}
-    </>
-  );
-}
 /* ────────────────────────────────────────────────────────────────
    ABOUT SECTION – Story-driven narrative block
 ──────────────────────────────────────────────────────────────── */
