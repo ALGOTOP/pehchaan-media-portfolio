@@ -11,8 +11,8 @@
   "dependencies": {
     "@react-three/drei": "^9.88.12",
     "@react-three/fiber": "^8.15.12",
+    "@studio-freight/lenis": "^1.0.32",
     "framer-motion": "^11.0.0",
-    "lenis": "^1.0.26",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "three": "^0.163.0"
