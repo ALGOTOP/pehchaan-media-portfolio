@@ -16,7 +16,7 @@ const useLenisSmoothScroll = () => {
   React.useEffect(() => {
     let lenis;
 
-    import("@studio-freight/lenis")
+import("lenis")
       .then(({ default: Lenis }) => {
         lenis = new Lenis({
           duration: 1.2,
