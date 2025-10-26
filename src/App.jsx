@@ -270,7 +270,6 @@ function CustomCursor() {
 /* =========================
    Start App - INCLUDING EVERYTHING INSIDE <main>
    ========================= */
-export default function App() {
   // App-level effects are minimal; lenis handled in AppRoot
   return (
     <main
