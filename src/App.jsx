@@ -768,7 +768,7 @@ function ServiceCard({ icon, title, desc, caseStudies }) {
 /* ============================================================
    ABOUT SECTION — Expanded with Team & Case Stories
    ============================================================ */
-function About() {
+function Aboutsection() {
   const teamMembers = [
     {
       name: "Ananya Sharma",
