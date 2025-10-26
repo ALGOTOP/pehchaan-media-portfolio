@@ -387,6 +387,9 @@ export default function App() {
           ))}
         </div>
       </Section>
+      </>
+  );
+}
 /* ============================================================
    🖼️  WORK CARD + MODAL PREVIEW (Preserved functionality)
    ============================================================ */
