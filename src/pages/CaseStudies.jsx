@@ -1,66 +1,91 @@
-// src/pages/CaseStudies.jsx
 import React from "react";
 import { motion } from "framer-motion";
-import { caseStudies } from "../data/caseStudiesData";
+
+const caseStudies = [
+  {
+    title: "Lumina Vision Campaign",
+    image: "/images/case-studies/lumina-thumb.jpg",
+    link: "/case-studies/Lumina",
+  },
+  {
+    title: "Aurix Product Film",
+    image: "/images/case-studies/aurix-thumb.jpg",
+    link: "/case-studies/Aurix",
+  },
+  {
+    title: "NovaSkin Digital Launch",
+    image: "/images/case-studies/novaskin-thumb.jpg",
+    link: "/case-studies/NovaSkin",
+  },
+  {
+    title: "AerialX Cinematic Campaign",
+    image: "/images/case-studies/aerialx-thumb.jpg",
+    link: "/case-studies/AerialX",
+  },
+  {
+    title: "BuildSmart Web Redesign",
+    image: "/images/case-studies/buildsmart-thumb.jpg",
+    link: "/case-studies/BuildSmart",
+  },
+  {
+    title: "Velo Product Branding",
+    image: "/images/case-studies/velo-thumb.jpg",
+    link: "/case-studies/Velo",
+  },
+  {
+    title: "EcoRise Green Innovation",
+    image: "/images/case-studies/ecorise-thumb.jpg",
+    link: "/case-studies/EcoRise",
+  },
+  {
+    title: "HelixHealth App Experience",
+    image: "/images/case-studies/helixhealth-thumb.jpg",
+    link: "/case-studies/HelixHealth",
+  },
+  {
+    title: "Zenith Rebranding Strategy",
+    image: "/images/case-studies/zenith-thumb.jpg",
+    link: "/case-studies/Zenith",
+  },
+];
 
 export default function CaseStudies() {
   return (
     <div className="min-h-screen bg-white text-gray-900">
-      {/* ─── Hero Section ───────────────────────────── */}
-      <section className="text-center py-24 bg-gradient-to-b from-blue-50 to-white">
+      <section className="max-w-7xl mx-auto px-6 py-20">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-5xl font-bold mb-4 tracking-tight"
+          transition={{ duration: 0.6 }}
+          className="text-5xl font-bold mb-12 text-blue-600 text-center"
         >
           Case Studies
         </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="text-lg text-gray-600 max-w-2xl mx-auto"
-        >
-          A closer look at how Pehchaan Media crafts digital experiences that
-          move people and brands forward.
-        </motion.p>
-      </section>
 
-      {/* ─── Case Studies Grid ───────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 pb-24">
-        <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {caseStudies.map((study, index) => (
-            <motion.div
-              key={study.id}
+            <motion.a
+              key={index}
+              href={study.link}
+              target="_blank"
+              rel="noopener noreferrer"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ scale: 1.03 }}
-              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer group hover:shadow-2xl transition-all duration-300"
-              onClick={() =>
-                window.open(`/case-studies/${study.slug}`, "_blank")
-              }
+              transition={{ delay: index * 0.1, duration: 0.6 }}
+              className="group block rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500"
             >
-              <div className="relative w-full h-56 overflow-hidden">
-                <img
+              <div className="relative overflow-hidden">
+                <motion.img
                   src={study.image}
                   alt={study.title}
-                  className="object-cover w-full h-full transform group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60 group-hover:opacity-70 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-all duration-500"></div>
+                <h2 className="absolute bottom-4 left-4 text-white text-2xl font-semibold">
+                  {study.title}
+                </h2>
               </div>
-
-              <div className="p-6">
-                <h3 className="text-2xl font-semibold mb-2">{study.title}</h3>
-                <p className="text-gray-600 text-sm mb-3">
-                  {study.description}
-                </p>
-                <span className="text-blue-600 font-medium text-sm">
-                  {study.category}
-                </span>
-              </div>
-            </motion.div>
+            </motion.a>
           ))}
         </div>
       </section>
