@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import Lenis from "lenis";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 
 // ─────────────────────────────────────────────
@@ -15,7 +16,7 @@ import ParallaxBackground from "@/components/ParallaxBackground";
 import MetaTags from "@/components/MetaTags";
 
 // ─────────────────────────────────────────────
-// SECTIONS
+// SECTIONS (Home Page)
 // ─────────────────────────────────────────────
 import Hero from "@/sections/Hero";
 import About from "@/sections/About";
@@ -24,6 +25,20 @@ import Work from "@/sections/Work";
 import Studio from "@/sections/Studio";
 import Testimonials from "@/sections/Testimonials";
 import Contact from "@/sections/Contact";
+
+// ─────────────────────────────────────────────
+// CASE STUDY PAGES
+// ─────────────────────────────────────────────
+import CaseStudies from "@/pages/CaseStudies";
+import Lumina from "@/pages/case-studies/Lumina";
+import Aurix from "@/pages/case-studies/Aurix";
+import NovaSkin from "@/pages/case-studies/NovaSkin";
+import AerialX from "@/pages/case-studies/AerialX";
+import BuildSmart from "@/pages/case-studies/BuildSmart";
+import Velo from "@/pages/case-studies/Velo";
+import EcoRise from "@/pages/case-studies/EcoRise";
+import HelixHealth from "@/pages/case-studies/HelixHealth";
+import Zenith from "@/pages/case-studies/Zenith";
 
 // ─────────────────────────────────────────────
 // MAIN APP COMPONENT
@@ -47,29 +62,55 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative bg-black text-white font-sans overflow-hidden">
-      {/* ─── Meta & Global Components ─── */}
-      <MetaTags />
-      <Navbar />
-      <ParallaxBackground />
-      <ScrollProgress />
-      <CustomCursor />
+    <Router>
+      <div className="relative bg-black text-white font-sans overflow-hidden">
+        {/* ─── Global Components ─── */}
+        <MetaTags />
+        <Navbar />
+        <ParallaxBackground />
+        <ScrollProgress />
+        <CustomCursor />
 
-      {/* ─── Page Sections ─── */}
-      <AnimatePresence mode="wait">
-        <Hero />
-        <About />
-        <Services />
-        <Work />
-        <Studio />
-        <Testimonials />
-        <Contact />
-      </AnimatePresence>
+        {/* ─── Page Routing ─── */}
+        <AnimatePresence mode="wait">
+          <Routes>
+            {/* Home Page (One-Page Scroll Sections) */}
+            <Route
+              path="/"
+              element={
+                <>
+                  <Hero />
+                  <About />
+                  <Services />
+                  <Work />
+                  <Studio />
+                  <Testimonials />
+                  <Contact />
+                </>
+              }
+            />
 
-      {/* ─── Footer & Utility UI ─── */}
-      <Footer />
-      <ScrollToTop />
-      <FloatingCTA />
-    </div>
+            {/* Case Studies Overview */}
+            <Route path="/case-studies" element={<CaseStudies />} />
+
+            {/* Individual Case Studies */}
+            <Route path="/case-studies/Lumina" element={<Lumina />} />
+            <Route path="/case-studies/Aurix" element={<Aurix />} />
+            <Route path="/case-studies/NovaSkin" element={<NovaSkin />} />
+            <Route path="/case-studies/AerialX" element={<AerialX />} />
+            <Route path="/case-studies/BuildSmart" element={<BuildSmart />} />
+            <Route path="/case-studies/Velo" element={<Velo />} />
+            <Route path="/case-studies/EcoRise" element={<EcoRise />} />
+            <Route path="/case-studies/HelixHealth" element={<HelixHealth />} />
+            <Route path="/case-studies/Zenith" element={<Zenith />} />
+          </Routes>
+        </AnimatePresence>
+
+        {/* ─── Footer & Utility UI ─── */}
+        <Footer />
+        <ScrollToTop />
+        <FloatingCTA />
+      </div>
+    </Router>
   );
 }
