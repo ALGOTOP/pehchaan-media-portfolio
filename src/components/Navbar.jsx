@@ -7,6 +7,9 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
+  // ──────────────────────────────
+  // Scroll + Active Section Logic
+  // ──────────────────────────────
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
@@ -27,16 +30,23 @@ export default function Navbar() {
     return () => sections.forEach((sec) => observer.unobserve(sec));
   }, []);
 
+  // ──────────────────────────────
+  // Navigation Links
+  // ──────────────────────────────
   const links = [
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
     { name: "Services", href: "#services" },
     { name: "Work", href: "#work" },
+    { name: "Case Studies", href: "/case-studies", external: true },
     { name: "Studio", href: "#studio" },
     { name: "Testimonials", href: "#testimonials" },
     { name: "Contact", href: "#contact" },
   ];
 
+  // ──────────────────────────────
+  // Component JSX
+  // ──────────────────────────────
   return (
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
@@ -49,6 +59,7 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+        {/* ─── Brand ─── */}
         <a
           href="#home"
           className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text hover:opacity-90 transition"
@@ -56,22 +67,36 @@ export default function Navbar() {
           Pehchaan Media
         </a>
 
+        {/* ─── Desktop Links ─── */}
         <div className="hidden md:flex space-x-10">
-          {links.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
-                activeSection === link.href.replace("#", "")
-                  ? "text-cyan-400"
-                  : "text-gray-300 hover:text-cyan-400"
-              }`}
-            >
-              {link.name}
-            </a>
-          ))}
+          {links.map((link) =>
+            link.external ? (
+              <a
+                key={link.name}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium uppercase tracking-wide text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+              >
+                {link.name}
+              </a>
+            ) : (
+              <a
+                key={link.name}
+                href={link.href}
+                className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
+                  activeSection === link.href.replace("#", "")
+                    ? "text-cyan-400"
+                    : "text-gray-300 hover:text-cyan-400"
+                }`}
+              >
+                {link.name}
+              </a>
+            )
+          )}
         </div>
 
+        {/* ─── CTA Button ─── */}
         <div className="hidden md:flex items-center space-x-4">
           <motion.a
             href="#contact"
@@ -82,6 +107,7 @@ export default function Navbar() {
           </motion.a>
         </div>
 
+        {/* ─── Mobile Menu Button ─── */}
         <button
           className="md:hidden text-gray-300 hover:text-white transition"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -90,6 +116,7 @@ export default function Navbar() {
         </button>
       </div>
 
+      {/* ─── Mobile Menu ─── */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -100,16 +127,29 @@ export default function Navbar() {
             transition={{ duration: 0.4 }}
             className="md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 flex flex-col items-center py-6 space-y-4"
           >
-            {links.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
-              >
-                {link.name}
-              </a>
-            ))}
+            {links.map((link) =>
+              link.external ? (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMenuOpen(false)}
+                  className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
+                >
+                  {link.name}
+                </a>
+              ) : (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
+                >
+                  {link.name}
+                </a>
+              )
+            )}
             <motion.a
               href="#contact"
               whileHover={{ scale: 1.05 }}
