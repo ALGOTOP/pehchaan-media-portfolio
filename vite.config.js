@@ -3,14 +3,13 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 // ────────────────────────────────────────────────
-// VITE CONFIGURATION for Pehchaan Media Portfolio
+// VITE CONFIGURATION – Pehchaan Media Portfolio
 // ────────────────────────────────────────────────
-//
-// ✅ Includes:
-// - React support via @vitejs/plugin-react
-// - Aliases for clean imports (like "@/components/...")
-// - Optimized build settings for deployment on Vercel
-//
+// Includes:
+// ✅ React via @vitejs/plugin-react
+// ✅ Path alias "@/"
+// ✅ TailwindCSS support
+// ✅ SPA fallback for React Router (for Vercel)
 // ────────────────────────────────────────────────
 
 export default defineConfig({
@@ -18,26 +17,32 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"), // allows "@/..." imports
+      "@": path.resolve(__dirname, "./src"), // use "@/components/..." clean imports
     },
   },
 
   css: {
-    postcss: "./postcss.config.cjs", // ensures Tailwind & Autoprefixer are loaded
+    postcss: "./postcss.config.cjs", // ensures Tailwind + Autoprefixer work properly
   },
 
   build: {
-    outDir: "dist", // default build directory
-    sourcemap: false, // optional: set true if you want source maps for debugging
+    outDir: "dist",
+    sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: undefined, // improves small bundle splitting for SPA
+        manualChunks: undefined, // keeps bundles consistent for SPA builds
       },
     },
   },
 
   server: {
-    port: 5173, // you can change if you want (default 5173)
-    open: true, // auto-opens browser on dev start
+    port: 5173,
+    open: true,
+  },
+
+  // ✅ This makes sure routes like /case-studies/Lumina work after reload on Vercel
+  preview: {
+    port: 4173,
+    open: true,
   },
 });
