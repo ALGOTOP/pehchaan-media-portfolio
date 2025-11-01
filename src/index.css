@@ -1,3 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ────────────────────────────────
+   Global Typography & Layout Polish
+────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-black text-white antialiased selection:bg-cyan-400/20 selection:text-cyan-300;
+  font-family: "Inter", sans-serif;
+  font-feature-settings: "ss01", "ss02", "ss03";
+}
+
+h1,
+h2,
+h3,
+h4 {
+  @apply tracking-tight font-extrabold;
+}
+
+p {
+  @apply text-gray-400 leading-relaxed;
+}
+
+section {
+  @apply scroll-mt-24;
+}
+
+/* ────────────────────────────────
+   Smooth Animations + Hover Styles
+────────────────────────────────── */
+a {
+  @apply transition-colors duration-300;
+}
+
+button {
+  @apply transition-all duration-300 hover:scale-105 active:scale-95;
+}
