@@ -7,11 +7,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
-  // ──────────────────────────────
-  // Scroll + Active Section Logic
-  // ──────────────────────────────
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -24,15 +21,12 @@ export default function Navbar() {
           if (entry.isIntersecting) setActiveSection(entry.target.id);
         });
       },
-      { threshold: 0.4 }
+      { threshold: 0.5 }
     );
-    sections.forEach((sec) => observer.observe(sec));
-    return () => sections.forEach((sec) => observer.unobserve(sec));
+    sections.forEach((s) => observer.observe(s));
+    return () => sections.forEach((s) => observer.unobserve(s));
   }, []);
 
-  // ──────────────────────────────
-  // Navigation Links
-  // ──────────────────────────────
   const links = [
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
@@ -44,79 +38,64 @@ export default function Navbar() {
     { name: "Contact", href: "#contact" },
   ];
 
-  // ──────────────────────────────
-  // Component JSX
-  // ──────────────────────────────
   return (
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 backdrop-blur-xl ${
         scrolled
-          ? "bg-black/70 backdrop-blur-xl border-b border-white/10 shadow-lg"
+          ? "bg-black/70 border-b border-white/10 shadow-lg"
           : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        {/* ─── Brand ─── */}
+        {/* Brand */}
         <a
           href="#home"
-          className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text hover:opacity-90 transition"
+          className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text hover:opacity-80 transition"
         >
           Pehchaan Media
         </a>
 
-        {/* ─── Desktop Links ─── */}
+        {/* Desktop Menu */}
         <div className="hidden md:flex space-x-10">
-          {links.map((link) =>
-            link.external ? (
-              <a
-                key={link.name}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium uppercase tracking-wide text-gray-300 hover:text-cyan-400 transition-colors duration-300"
-              >
-                {link.name}
-              </a>
-            ) : (
-              <a
-                key={link.name}
-                href={link.href}
-                className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
-                  activeSection === link.href.replace("#", "")
-                    ? "text-cyan-400"
-                    : "text-gray-300 hover:text-cyan-400"
-                }`}
-              >
-                {link.name}
-              </a>
-            )
-          )}
+          {links.map((link) => (
+            <a
+              key={link.name}
+              href={link.href}
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noopener noreferrer" : undefined}
+              className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
+                activeSection === link.href.replace("#", "")
+                  ? "text-cyan-400"
+                  : "text-gray-300 hover:text-cyan-400"
+              }`}
+            >
+              {link.name}
+            </a>
+          ))}
         </div>
 
-        {/* ─── CTA Button ─── */}
-        <div className="hidden md:flex items-center space-x-4">
-          <motion.a
-            href="#contact"
-            whileHover={{ scale: 1.05 }}
-            className="px-4 py-2 text-sm rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-md hover:shadow-cyan-400/30 transition"
-          >
-            Let’s Talk
-          </motion.a>
-        </div>
+        {/* CTA */}
+        <motion.a
+          href="#contact"
+          whileHover={{ scale: 1.05 }}
+          className="hidden md:flex items-center px-4 py-2 text-sm rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-md hover:shadow-cyan-400/30 transition"
+        >
+          Let’s Talk
+        </motion.a>
 
-        {/* ─── Mobile Menu Button ─── */}
+        {/* Mobile Toggle */}
         <button
           className="md:hidden text-gray-300 hover:text-white transition"
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={() => setMenuOpen((p) => !p)}
         >
           {menuOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
-      {/* ─── Mobile Menu ─── */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -127,29 +106,18 @@ export default function Navbar() {
             transition={{ duration: 0.4 }}
             className="md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 flex flex-col items-center py-6 space-y-4"
           >
-            {links.map((link) =>
-              link.external ? (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
-                >
-                  {link.name}
-                </a>
-              ) : (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
-                >
-                  {link.name}
-                </a>
-              )
-            )}
+            {links.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
+                onClick={() => setMenuOpen(false)}
+                className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
+              >
+                {link.name}
+              </a>
+            ))}
             <motion.a
               href="#contact"
               whileHover={{ scale: 1.05 }}
