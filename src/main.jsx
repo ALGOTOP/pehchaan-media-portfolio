@@ -7,7 +7,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import Lenis from "@studio-freight/lenis";
+import Lenis from "lenis";
 import { useEffect } from "react";
 
 // ─────────────────────────────────────────────
