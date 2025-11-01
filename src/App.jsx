@@ -1,3 +1,6 @@
+// ───────────────────────────────────────────────
+// App.jsx – Main Portfolio Wrapper
+// ───────────────────────────────────────────────
 import React, { useEffect } from "react";
 import Lenis from "lenis";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -45,11 +48,13 @@ import Zenith from "@/pages/case-studies/Zenith";
 // ─────────────────────────────────────────────
 export default function App() {
   useEffect(() => {
-    // ✅ Smooth scroll with Lenis
+    // ✨ Enhanced Lenis scroll config
     const lenis = new Lenis({
-      duration: 1.3,
+      duration: 1.1,
+      lerp: 0.09,
       smoothWheel: true,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothTouch: false,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
     });
 
     function raf(time) {
@@ -71,10 +76,9 @@ export default function App() {
         <ScrollProgress />
         <CustomCursor />
 
-        {/* ─── Page Routing ─── */}
+        {/* ─── Routing ─── */}
         <AnimatePresence mode="wait">
           <Routes>
-            {/* Home Page (One-Page Scroll Sections) */}
             <Route
               path="/"
               element={
@@ -89,11 +93,7 @@ export default function App() {
                 </>
               }
             />
-
-            {/* Case Studies Overview */}
             <Route path="/case-studies" element={<CaseStudies />} />
-
-            {/* Individual Case Studies */}
             <Route path="/case-studies/Lumina" element={<Lumina />} />
             <Route path="/case-studies/Aurix" element={<Aurix />} />
             <Route path="/case-studies/NovaSkin" element={<NovaSkin />} />
@@ -106,7 +106,7 @@ export default function App() {
           </Routes>
         </AnimatePresence>
 
-        {/* ─── Footer & Utility UI ─── */}
+        {/* ─── Footer + Utilities ─── */}
         <Footer />
         <ScrollToTop />
         <FloatingCTA />
