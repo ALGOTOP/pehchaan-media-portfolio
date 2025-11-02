@@ -1,15 +1,16 @@
-// ────────────────────────────────────────────────
-// main.jsx — Root Entry for Pehchaan Media Portfolio
-// Stable Version (No Lenis / No Scroll Modifiers)
-// ────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────
+// main.jsx — Root Entry (Vercel-safe + Lenis-enabled via App.jsx)
+// ────────────────────────────────────────────────────────────────
 
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./App";
+import PehchaanMediaApp from "./App";
 
+// The App handles Lenis, Router, Framer Motion, and SEO.
+// Keeping this file clean ensures fastest hydration and stability.
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <PehchaanMediaApp />
   </React.StrictMode>
 );
