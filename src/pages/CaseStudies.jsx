@@ -1,106 +1,104 @@
-// ─────────────────────────────────────────────
-// CaseStudies.jsx — refined + SEO integrated
-// ─────────────────────────────────────────────
+// ────────────────────────────────────────────────
+// CaseStudies.jsx — Refined On-Theme Case Studies Section
+// ────────────────────────────────────────────────
+
 import React from "react";
 import { motion } from "framer-motion";
-import SEOManager from "../utils/SEOManager";
-import ParallaxBackground from "../components/ParallaxBackground";
+
+// Case Studies Data (You can add more projects here)
+const CASE_STUDIES = [
+  {
+    title: "Brand Transformation — Lumen Skincare",
+    description:
+      "Revamped the digital identity and motion design for Lumen, aligning the brand’s clean ethos with a vibrant, high-conversion landing experience.",
+    image:
+      "https://images.unsplash.com/photo-1607083206173-8d4c8d7a216d?auto=format&fit=crop&w=1400&q=80",
+    tags: ["Branding", "Web Design", "Motion"],
+  },
+  {
+    title: "Campaign Film — Vision Motors",
+    description:
+      "Directed a high-energy product film highlighting innovation, speed, and sustainability for Vision Motors’ EV launch.",
+    image:
+      "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1400&q=80",
+    tags: ["Film", "Direction", "Post Production"],
+  },
+  {
+    title: "Interactive Showcase — Flow Interior Studio",
+    description:
+      "Built a minimalist interactive portfolio for Flow Studio — balancing elegance, whitespace, and subtle parallax interactions.",
+    image:
+      "https://images.unsplash.com/photo-1581090700227-1e37b190418e?auto=format&fit=crop&w=1400&q=80",
+    tags: ["UI/UX", "Development", "Creative Direction"],
+  },
+];
 
 export default function CaseStudies() {
-  const caseStudies = [
-    {
-      id: 1,
-      title: "Digital Rebrand for TechNova",
-      subtitle: "Modern identity for a future-focused startup.",
-      image:
-        "https://images.unsplash.com/photo-1581092795360-56d09b231bde?auto=format&fit=crop&w=1200&q=80",
-      description:
-        "We transformed TechNova's presence into a bold digital identity, blending futuristic gradients, interactive motion, and meaningful UX.",
-    },
-    {
-      id: 2,
-      title: "E-commerce Evolution for UrbanWear",
-      subtitle: "Turning browsing into immersive storytelling.",
-      image:
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80",
-      description:
-        "UrbanWear’s site became a narrative experience — built with motion-first design, performance optimization, and luxury visual rhythm.",
-    },
-    {
-      id: 3,
-      title: "Campaign Activation — SoundScape",
-      subtitle: "A digital audio revolution powered by design.",
-      image:
-        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
-      description:
-        "Our campaign for SoundScape combined sonic branding, kinetic typography, and motion-crafted storytelling across digital platforms.",
-    },
-  ];
-
   return (
-    <main className="relative min-h-screen overflow-hidden">
-      <SEOManager
-        title="Case Studies — Pehchaan Media"
-        description="Explore the stories behind Pehchaan Media’s most impactful projects, where creativity meets performance."
-      />
-
-      <ParallaxBackground />
-
-      {/* ─── Hero Section ─── */}
-      <section className="relative z-10 py-28 text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text"
-        >
+    <section
+      id="case-studies"
+      className="relative py-32 px-6 md:px-20 bg-gradient-to-b from-[#001233] via-[#020617] to-[#000] text-white overflow-hidden"
+    >
+      {/* Section Heading */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1 }}
+        className="text-center mb-20"
+      >
+        <h2 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-4">
           Case Studies
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="mt-6 max-w-2xl mx-auto text-gray-400"
-        >
-          A curated collection of our most transformative collaborations — where
-          brands evolve through creativity and experience.
-        </motion.p>
-      </section>
+        </h2>
+        <p className="text-gray-400 max-w-2xl mx-auto">
+          A glimpse into how we help brands craft powerful stories through design, motion, and strategy.
+        </p>
+      </motion.div>
 
-      {/* ─── Case Studies Grid ─── */}
-      <section className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-12 pb-28">
-        {caseStudies.map((cs, index) => (
+      {/* Case Studies Grid */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+        {CASE_STUDIES.map((project, i) => (
           <motion.div
-            key={cs.id}
-            initial={{ opacity: 0, y: 50 }}
+            key={project.title}
+            initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.7,
-              delay: index * 0.15,
-              ease: "easeOut",
-            }}
             viewport={{ once: true }}
-            className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-xl hover:shadow-cyan-400/10 transition-all duration-500"
+            transition={{ duration: 1, delay: i * 0.15 }}
+            className="group relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 backdrop-blur-lg hover:bg-white/10 transition-all duration-500"
           >
-            <div className="overflow-hidden">
+            <div className="relative overflow-hidden">
               <img
-                src={cs.image}
-                alt={cs.title}
-                className="w-full h-60 object-cover hover:scale-105 transition-transform duration-700"
+                src={project.image}
+                alt={project.title}
+                className="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-700"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent opacity-80"></div>
             </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold text-white">
-                {cs.title}
-              </h3>
-              <p className="text-cyan-400 mt-1 text-sm">{cs.subtitle}</p>
-              <p className="text-gray-400 mt-3 text-sm leading-relaxed">
-                {cs.description}
-              </p>
+
+            <div className="p-6 flex flex-col justify-between h-[250px]">
+              <div>
+                <h3 className="text-2xl font-semibold mb-2 text-cyan-400">
+                  {project.title}
+                </h3>
+                <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                  {project.description}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {project.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs bg-white/10 border border-white/20 px-3 py-1 rounded-full text-gray-300"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
           </motion.div>
         ))}
-      </section>
-    </main>
+      </div>
+    </section>
   );
 }
