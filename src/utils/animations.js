@@ -1,5 +1,4 @@
 // src/utils/animations.js
-import { Variants } from "framer-motion";
 
 // ✅ Fade-in with upward motion
 export const fadeInUp = {
