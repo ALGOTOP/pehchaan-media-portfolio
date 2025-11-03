@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────
-// ParallaxBackground.jsx — GPU-optimized scroll layer
-// ─────────────────────────────────────────────
 import React, { useRef, useEffect } from "react";
 
 export default function ParallaxBackground() {
@@ -9,8 +6,8 @@ export default function ParallaxBackground() {
   useEffect(() => {
     const handleScroll = () => {
       if (ref.current) {
-        const offset = window.scrollY * 0.25;
-        ref.current.style.transform = `translateY(${offset}px)`;
+        const offset = window.scrollY * 0.35;
+        ref.current.style.backgroundPositionY = `${offset}px`;
       }
     };
     window.addEventListener("scroll", handleScroll);
@@ -20,7 +17,7 @@ export default function ParallaxBackground() {
   return (
     <div
       ref={ref}
-      className="fixed inset-0 bg-[url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=2000&q=80')] bg-cover bg-center opacity-[0.05] pointer-events-none will-change-transform z-0"
+      className="fixed top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-[0.03] pointer-events-none z-0"
     />
   );
 }
