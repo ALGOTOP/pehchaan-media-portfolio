@@ -63,7 +63,7 @@ export default function App() {
 
   return (
     <Router>
-      <div className="relative bg-black text-white font-sans overflow-hidden">
+      <div className="relative bg-black text-white font-sans">
         {/* ─── Global Components ─── */}
         <MetaTags />
         <Navbar />
