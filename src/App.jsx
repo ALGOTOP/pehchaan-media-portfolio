@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Lenis } from "lenis"; // ✅ correct import
+import Lenis from "lenis";
 import { AnimatePresence } from "framer-motion";
 
 // ─────────────────────────────────────────────
