@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig({
-  base: "./", // <<< make assets relative so index.html works anywhere
+  base: "/", // <<< change to absolute path for Vercel
   plugins: [react()],
   resolve: {
     alias: {
