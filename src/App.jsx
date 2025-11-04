@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import Lenis from "lenis";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { Lenis } from "lenis"; // ✅ correct import
 import { AnimatePresence } from "framer-motion";
 
 // ─────────────────────────────────────────────
@@ -27,93 +26,53 @@ import Testimonials from "@/sections/Testimonials";
 import Contact from "@/sections/Contact";
 
 // ─────────────────────────────────────────────
-// CASE STUDY PAGES
-// ─────────────────────────────────────────────
-import CaseStudies from "@/pages/CaseStudies";
-import Lumina from "@/pages/case-studies/Lumina";
-import Aurix from "@/pages/case-studies/Aurix";
-import NovaSkin from "@/pages/case-studies/NovaSkin";
-import AerialX from "@/pages/case-studies/AerialX";
-import BuildSmart from "@/pages/case-studies/BuildSmart";
-import Velo from "@/pages/case-studies/Velo";
-import EcoRise from "@/pages/case-studies/EcoRise";
-import HelixHealth from "@/pages/case-studies/HelixHealth";
-import Zenith from "@/pages/case-studies/Zenith";
-
-// ─────────────────────────────────────────────
 // MAIN APP COMPONENT
 // ─────────────────────────────────────────────
 export default function App() {
-useEffect(() => {
-  try {
-    const lenis = new Lenis({
-      duration: 1.3,
-      smoothWheel: true,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
+  useEffect(() => {
+    try {
+      const lenis = new Lenis({
+        duration: 1.3,
+        smoothWheel: true,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
 
-    function raf(time) {
-      lenis.raf(time);
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
       requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
 
-    return () => lenis.destroy();
-  } catch (err) {
-    console.warn("⚠️ Lenis init failed:", err);
-  }
-}, []);
+      return () => lenis.destroy();
+    } catch (err) {
+      console.warn("⚠️ Lenis init failed:", err);
+    }
+  }, []);
 
   return (
-    <Router>
-      <div className="relative bg-black text-white font-sans">
-        {/* ─── Global Components ─── */}
-        <MetaTags />
-        <Navbar />
-        <ParallaxBackground />
-        <ScrollProgress />
-        <CustomCursor />
+    <div className="relative bg-black text-white font-sans">
+      {/* ─── Global Components ─── */}
+      <MetaTags />
+      <Navbar />
+      <ParallaxBackground />
+      <ScrollProgress />
+      <CustomCursor />
 
-        {/* ─── Page Routing ─── */}
-        <AnimatePresence mode="wait">
-          <Routes>
-            {/* Home Page (One-Page Scroll Sections) */}
-            <Route
-              path="/"
-              element={
-                <>
-                  <Hero />
-                  <About />
-                  <Services />
-                  <Work />
-                  <Studio />
-                  <Testimonials />
-                  <Contact />
-                </>
-              }
-            />
+      {/* ─── Home Page Sections ─── */}
+      <AnimatePresence mode="wait">
+        <Hero />
+        <About />
+        <Services />
+        <Work />
+        <Studio />
+        <Testimonials />
+        <Contact />
+      </AnimatePresence>
 
-            {/* Case Studies Overview */}
-            <Route path="/case-studies" element={<CaseStudies />} />
-
-            {/* Individual Case Studies */}
-            <Route path="/case-studies/Lumina" element={<Lumina />} />
-            <Route path="/case-studies/Aurix" element={<Aurix />} />
-            <Route path="/case-studies/NovaSkin" element={<NovaSkin />} />
-            <Route path="/case-studies/AerialX" element={<AerialX />} />
-            <Route path="/case-studies/BuildSmart" element={<BuildSmart />} />
-            <Route path="/case-studies/Velo" element={<Velo />} />
-            <Route path="/case-studies/EcoRise" element={<EcoRise />} />
-            <Route path="/case-studies/HelixHealth" element={<HelixHealth />} />
-            <Route path="/case-studies/Zenith" element={<Zenith />} />
-          </Routes>
-        </AnimatePresence>
-
-        {/* ─── Footer & Utility UI ─── */}
-        <Footer />
-        <ScrollToTop />
-        <FloatingCTA />
-      </div>
-    </Router>
+      {/* ─── Footer & Utility UI ─── */}
+      <Footer />
+      <ScrollToTop />
+      <FloatingCTA />
+    </div>
   );
 }
