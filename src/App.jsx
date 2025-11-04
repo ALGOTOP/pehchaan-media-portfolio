@@ -44,8 +44,8 @@ import Zenith from "@/pages/case-studies/Zenith";
 // MAIN APP COMPONENT
 // ─────────────────────────────────────────────
 export default function App() {
-  useEffect(() => {
-    // ✅ Smooth scroll with Lenis
+useEffect(() => {
+  try {
     const lenis = new Lenis({
       duration: 1.3,
       smoothWheel: true,
@@ -59,7 +59,10 @@ export default function App() {
     requestAnimationFrame(raf);
 
     return () => lenis.destroy();
-  }, []);
+  } catch (err) {
+    console.warn("⚠️ Lenis init failed:", err);
+  }
+}, []);
 
   return (
     <Router>
