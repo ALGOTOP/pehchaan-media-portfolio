@@ -10,7 +10,7 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Detect scroll to style navbar
+  // Navbar scroll effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
@@ -33,18 +33,24 @@ export default function Navbar() {
     return () => sections.forEach((sec) => observer.unobserve(sec));
   }, [location.pathname]);
 
-  // Smooth scroll or route navigation handler
-  const handleNavClick = (e, href) => {
+  // Smooth scroll or route navigation
+  const handleNavClick = (e, href, newTab = false) => {
     e.preventDefault();
     setMenuOpen(false);
 
-    // If it's a route
+    // Case Studies Hub → open in new tab
+    if (newTab) {
+      window.open(href, "_blank");
+      return;
+    }
+
+    // Route-based navigation
     if (href.startsWith("/")) {
       navigate(href);
       return;
     }
 
-    // If it's a section on homepage
+    // Section scroll
     const target = document.querySelector(href);
     if (!target) return;
 
@@ -60,7 +66,7 @@ export default function Navbar() {
     { name: "About", href: "#about" },
     { name: "Services", href: "#services" },
     { name: "Work", href: "#work" },
-    { name: "Case Studies", href: "/case-studies" }, // ✅ route-based navigation
+    { name: "Case Studies", href: "/case-studies", newTab: true }, // ✅ opens in new tab
     { name: "Studio", href: "#studio" },
     { name: "Testimonials", href: "#testimonials" },
     { name: "Contact", href: "#contact" },
@@ -99,7 +105,11 @@ export default function Navbar() {
               <a
                 key={link.name}
                 href={link.href}
-                onClick={(e) => handleNavClick(e, link.href)}
+                onClick={(e) =>
+                  handleNavClick(e, link.href, link.newTab || false)
+                }
+                target={link.newTab ? "_blank" : "_self"}
+                rel={link.newTab ? "noopener noreferrer" : undefined}
                 className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
                   isActive
                     ? "text-cyan-400"
@@ -148,7 +158,9 @@ export default function Navbar() {
               <a
                 key={link.name}
                 href={link.href}
-                onClick={(e) => handleNavClick(e, link.href)}
+                target={link.newTab ? "_blank" : "_self"}
+                rel={link.newTab ? "noopener noreferrer" : undefined}
+                onClick={(e) => handleNavClick(e, link.href, link.newTab)}
                 className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
               >
                 {link.name}
