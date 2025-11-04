@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Sparkles } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const location = useLocation();
+  const navigate = useNavigate();
 
+  // Detect scroll to style navbar
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Observe sections for active link (only on main page)
   useEffect(() => {
+    if (location.pathname !== "/") return;
     const sections = document.querySelectorAll("section[id]");
     const observer = new IntersectionObserver(
       (entries) => {
@@ -25,13 +31,36 @@ export default function Navbar() {
     );
     sections.forEach((sec) => observer.observe(sec));
     return () => sections.forEach((sec) => observer.unobserve(sec));
-  }, []);
+  }, [location.pathname]);
+
+  // Smooth scroll or route navigation handler
+  const handleNavClick = (e, href) => {
+    e.preventDefault();
+    setMenuOpen(false);
+
+    // If it's a route
+    if (href.startsWith("/")) {
+      navigate(href);
+      return;
+    }
+
+    // If it's a section on homepage
+    const target = document.querySelector(href);
+    if (!target) return;
+
+    if (window.lenis && typeof window.lenis.scrollTo === "function") {
+      window.lenis.scrollTo(href);
+    } else {
+      target.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const links = [
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
     { name: "Services", href: "#services" },
     { name: "Work", href: "#work" },
+    { name: "Case Studies", href: "/case-studies" }, // ✅ route-based navigation
     { name: "Studio", href: "#studio" },
     { name: "Testimonials", href: "#testimonials" },
     { name: "Contact", href: "#contact" },
@@ -51,30 +80,43 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         <a
           href="#home"
+          onClick={(e) => handleNavClick(e, "#home")}
           className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text hover:opacity-90 transition"
         >
           Pehchaan Media
         </a>
 
+        {/* Desktop Links */}
         <div className="hidden md:flex space-x-10">
-          {links.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
-                activeSection === link.href.replace("#", "")
-                  ? "text-cyan-400"
-                  : "text-gray-300 hover:text-cyan-400"
-              }`}
-            >
-              {link.name}
-            </a>
-          ))}
+          {links.map((link) => {
+            const isActive =
+              (link.href.startsWith("#") &&
+                activeSection === link.href.replace("#", "")) ||
+              (link.href.startsWith("/") &&
+                location.pathname.startsWith(link.href));
+
+            return (
+              <a
+                key={link.name}
+                href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
+                className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
+                  isActive
+                    ? "text-cyan-400"
+                    : "text-gray-300 hover:text-cyan-400"
+                }`}
+              >
+                {link.name}
+              </a>
+            );
+          })}
         </div>
 
+        {/* Desktop CTA */}
         <div className="hidden md:flex items-center space-x-4">
           <motion.a
             href="#contact"
+            onClick={(e) => handleNavClick(e, "#contact")}
             whileHover={{ scale: 1.05 }}
             className="px-4 py-2 text-sm rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-md hover:shadow-cyan-400/30 transition"
           >
@@ -82,6 +124,7 @@ export default function Navbar() {
           </motion.a>
         </div>
 
+        {/* Mobile Menu Button */}
         <button
           className="md:hidden text-gray-300 hover:text-white transition"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -90,6 +133,7 @@ export default function Navbar() {
         </button>
       </div>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -104,7 +148,7 @@ export default function Navbar() {
               <a
                 key={link.name}
                 href={link.href}
-                onClick={() => setMenuOpen(false)}
+                onClick={(e) => handleNavClick(e, link.href)}
                 className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
               >
                 {link.name}
@@ -112,6 +156,7 @@ export default function Navbar() {
             ))}
             <motion.a
               href="#contact"
+              onClick={(e) => handleNavClick(e, "#contact")}
               whileHover={{ scale: 1.05 }}
               className="mt-4 inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-md hover:shadow-cyan-400/30 transition-all"
             >
