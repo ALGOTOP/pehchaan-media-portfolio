@@ -4,6 +4,14 @@ import { fadeInUp } from "@/utils/animations";
 import { Play, ChevronDown } from "lucide-react";
 
 export default function Hero() {
+  // Smooth scroll handler
+  const handleScrollToWork = () => {
+    const workSection = document.querySelector("#work");
+    if (workSection) {
+      workSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section
       id="home"
@@ -50,11 +58,13 @@ export default function Hero() {
           View Our Work
         </motion.a>
 
+        {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2 }}
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 cursor-pointer"
+          onClick={handleScrollToWork}
         >
           <ChevronDown className="text-cyan-400 animate-bounce" size={28} />
         </motion.div>
