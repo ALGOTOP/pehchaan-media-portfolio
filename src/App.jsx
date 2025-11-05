@@ -31,11 +31,13 @@ import Contact from "@/sections/Contact";
 // ─────────────────────────────────────────────
 import CaseStudiesHub from "@/pages/case-studies";
 import CaseStudyDetail from "@/pages/case-studies/CaseStudyDetail";
+import Lumina from "@/pages/case-studies/Lumina"; // ✅ Added — Custom Lumina Page
 
 // ─────────────────────────────────────────────
 // MAIN APP COMPONENT
 // ─────────────────────────────────────────────
 export default function App() {
+  // ─── Lenis Smooth Scroll Setup ───
   useEffect(() => {
     try {
       const lenis = new Lenis({
@@ -56,6 +58,7 @@ export default function App() {
     }
   }, []);
 
+  // ─── App Layout + Routing ───
   return (
     <div className="relative bg-black text-white font-sans">
       {/* ─── Global Components ─── */}
@@ -65,10 +68,10 @@ export default function App() {
       <ScrollProgress />
       <CustomCursor />
 
-      {/* ─── Route System ─── */}
+      {/* ─── Page Routes ─── */}
       <AnimatePresence mode="wait">
         <Routes>
-          {/* Home Page */}
+          {/* ─── Home Page ─── */}
           <Route
             path="/"
             element={
@@ -84,25 +87,21 @@ export default function App() {
             }
           />
 
-          {/* Case Studies */}
+          {/* ─── Case Studies ─── */}
           <Route path="/case-studies" element={<CaseStudiesHub />} />
-          <Route path="/case-studies/:slug" element={<CaseStudyDetail />} />
+          <Route path="/case-studies/lumina" element={<Lumina />} /> {/* ✅ Custom Page */}
+          <Route path="/case-studies/:slug" element={<CaseStudyDetail />} /> {/* fallback */}
 
-          {/* 404 Fallback */}
+          {/* ─── 404 Fallback ─── */}
           <Route
             path="*"
             element={
               <div className="min-h-screen flex flex-col items-center justify-center text-center bg-black text-white px-4">
-                <h1 className="text-5xl font-bold text-cyan-400 mb-3">
-                  404
-                </h1>
+                <h1 className="text-5xl font-bold text-cyan-400 mb-3">404</h1>
                 <p className="text-gray-400 mb-4">
                   The page you’re looking for doesn’t exist.
                 </p>
-                <a
-                  href="/"
-                  className="text-cyan-400 hover:underline font-medium"
-                >
+                <a href="/" className="text-cyan-400 hover:underline font-medium">
                   ⟵ Go back home
                 </a>
               </div>
