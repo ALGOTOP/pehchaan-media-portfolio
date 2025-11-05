@@ -1,13 +1,7 @@
-// src/App.jsx
 import React, { useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 import Lenis from "lenis";
 import { AnimatePresence } from "framer-motion";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
 
 // ─────────────────────────────────────────────
 // COMPONENTS
@@ -33,18 +27,15 @@ import Testimonials from "@/sections/Testimonials";
 import Contact from "@/sections/Contact";
 
 // ─────────────────────────────────────────────
-// PAGES (Case Studies)
+// CASE STUDIES
 // ─────────────────────────────────────────────
-import CaseStudiesHub from "@/pages/case-studies/index.jsx";
-import CaseStudyDetail from "@/pages/case-studies/CaseStudyDetail.jsx";
+import CaseStudiesHub from "@/pages/case-studies";
+import CaseStudyDetail from "@/pages/case-studies/CaseStudyDetail";
 
 // ─────────────────────────────────────────────
-// SCROLL + PAGE WRAPPER
+// MAIN APP COMPONENT
 // ─────────────────────────────────────────────
-function ScrollWrapper({ children }) {
-  const location = useLocation();
-
-  // Initialize Lenis smooth scroll
+export default function App() {
   useEffect(() => {
     try {
       const lenis = new Lenis({
@@ -65,60 +56,65 @@ function ScrollWrapper({ children }) {
     }
   }, []);
 
-  // Scroll to top on route change
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location]);
-
-  return children;
-}
-
-// ─────────────────────────────────────────────
-// MAIN APP COMPONENT
-// ─────────────────────────────────────────────
-export default function App() {
   return (
-    <Router>
-      <ScrollWrapper>
-        <div className="relative bg-black text-white font-sans">
-          <MetaTags />
-          <Navbar />
-          <ParallaxBackground />
-          <ScrollProgress />
-          <CustomCursor />
+    <div className="relative bg-black text-white font-sans">
+      {/* ─── Global Components ─── */}
+      <MetaTags />
+      <Navbar />
+      <ParallaxBackground />
+      <ScrollProgress />
+      <CustomCursor />
 
-          <AnimatePresence mode="wait">
-            <Routes>
-              {/* Home Page */}
-              <Route
-                path="/"
-                element={
-                  <>
-                    <Hero />
-                    <About />
-                    <Services />
-                    <Work />
-                    <Studio />
-                    <Testimonials />
-                    <Contact />
-                  </>
-                }
-              />
+      {/* ─── Route System ─── */}
+      <AnimatePresence mode="wait">
+        <Routes>
+          {/* Home Page */}
+          <Route
+            path="/"
+            element={
+              <>
+                <Hero />
+                <About />
+                <Services />
+                <Work />
+                <Studio />
+                <Testimonials />
+                <Contact />
+              </>
+            }
+          />
 
-              {/* Case Studies */}
-              <Route path="/case-studies" element={<CaseStudiesHub />} />
-              <Route
-                path="/case-studies/:slug"
-                element={<CaseStudyDetail />}
-              />
-            </Routes>
-          </AnimatePresence>
+          {/* Case Studies */}
+          <Route path="/case-studies" element={<CaseStudiesHub />} />
+          <Route path="/case-studies/:slug" element={<CaseStudyDetail />} />
 
-          <Footer />
-          <ScrollToTop />
-          <FloatingCTA />
-        </div>
-      </ScrollWrapper>
-    </Router>
+          {/* 404 Fallback */}
+          <Route
+            path="*"
+            element={
+              <div className="min-h-screen flex flex-col items-center justify-center text-center bg-black text-white px-4">
+                <h1 className="text-5xl font-bold text-cyan-400 mb-3">
+                  404
+                </h1>
+                <p className="text-gray-400 mb-4">
+                  The page you’re looking for doesn’t exist.
+                </p>
+                <a
+                  href="/"
+                  className="text-cyan-400 hover:underline font-medium"
+                >
+                  ⟵ Go back home
+                </a>
+              </div>
+            }
+          />
+        </Routes>
+      </AnimatePresence>
+
+      {/* ─── Footer & Utility UI ─── */}
+      <Footer />
+      <ScrollToTop />
+      <FloatingCTA />
+    </div>
   );
 }
