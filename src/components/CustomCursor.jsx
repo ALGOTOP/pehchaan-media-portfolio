@@ -2,12 +2,13 @@ import React, { useRef, useEffect, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 
 /**
- * CustomCursor Component (Interactive Version)
+ * CustomCursor Component (Enhanced Interactive Version)
  * ---------------------------------------------------------
- * ✦ Smooth motion tracking using transform3d
- * ✦ Enlarges and glows when hovering over clickable elements
- * ✦ Hidden on mobile and before first mouse move
- * ✦ Lightweight and GPU-accelerated for performance
+ * ✦ Smoothly tracks mouse position using translate3d
+ * ✦ Reacts to hover events on links, buttons, text, and images
+ * ✦ Enlarges and glows dynamically for better feedback
+ * ✦ Hidden on mobile and before first mouse movement
+ * ✦ Lightweight + GPU accelerated
  */
 
 export default function CustomCursor() {
@@ -27,14 +28,48 @@ export default function CustomCursor() {
       if (!visible) setVisible(true);
     };
 
-    // Add hover reactions
-    const handleMouseEnter = () => {
-      controls.start({
-        scale: 2,
-        borderColor: "#22d3ee", // Tailwind cyan-400
-        boxShadow: "0 0 15px #22d3ee55",
-        transition: { type: "spring", stiffness: 200, damping: 10 },
-      });
+    // Hover Effects: Elements that trigger a "focus" state
+    const hoverSelectors = [
+      "a",
+      "button",
+      "[role='button']",
+      "input",
+      "textarea",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "img",
+      ".hoverable",
+    ];
+
+    const handleMouseEnter = (e) => {
+      const tag = e.target.tagName.toLowerCase();
+
+      // Slightly different reactions depending on element
+      if (tag === "img") {
+        controls.start({
+          scale: 2.3,
+          borderColor: "#f472b6", // pink-400
+          boxShadow: "0 0 25px #f472b655",
+          transition: { type: "spring", stiffness: 220, damping: 12 },
+        });
+      } else if (["h1", "h2", "h3", "h4"].includes(tag)) {
+        controls.start({
+          scale: 1.8,
+          borderColor: "#22d3ee", // cyan-400
+          boxShadow: "0 0 18px #22d3ee55",
+          transition: { type: "spring", stiffness: 220, damping: 12 },
+        });
+      } else {
+        // default hover (links, buttons, etc.)
+        controls.start({
+          scale: 2,
+          borderColor: "#22d3ee",
+          boxShadow: "0 0 15px #22d3ee55",
+          transition: { type: "spring", stiffness: 220, damping: 10 },
+        });
+      }
     };
 
     const handleMouseLeave = () => {
@@ -48,15 +83,14 @@ export default function CustomCursor() {
 
     window.addEventListener("mousemove", moveCursor);
 
-    // Add listeners for interactive elements
-    const interactiveEls = document.querySelectorAll(
-      "a, button, [role='button'], input, textarea"
-    );
+    // Attach hover listeners to all interactive elements
+    const interactiveEls = document.querySelectorAll(hoverSelectors.join(","));
     interactiveEls.forEach((el) => {
       el.addEventListener("mouseenter", handleMouseEnter);
       el.addEventListener("mouseleave", handleMouseLeave);
     });
 
+    // Cleanup on unmount
     return () => {
       window.removeEventListener("mousemove", moveCursor);
       interactiveEls.forEach((el) => {
@@ -73,7 +107,7 @@ export default function CustomCursor() {
       className={`hidden md:block fixed top-0 left-0 w-5 h-5 rounded-full border-2 border-cyan-400 pointer-events-none mix-blend-difference z-[10000] transition-opacity duration-300 ${
         visible ? "opacity-100" : "opacity-0"
       }`}
-      transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+      transition={{ ease: "easeInOut" }}
     />
   );
 }
