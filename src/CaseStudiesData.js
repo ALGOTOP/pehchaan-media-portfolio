@@ -1,4 +1,5 @@
 // src/data/caseStudiesData.js
+
 export const caseStudies = [
   {
     id: 1,
@@ -8,6 +9,19 @@ export const caseStudies = [
       "A complete rebranding initiative focused on clarity, minimalism, and digital adaptability.",
     image: "/images/case-studies/lumina-cover.jpg",
     category: "Brand Strategy",
+    // 🔽 Optional rich fields for CaseStudyDetail.jsx
+    intro:
+      "Lumina approached Pehchaan Media to redefine its digital identity and align visuals with its futuristic brand philosophy.",
+    challenge:
+      "The old brand lacked cohesion across digital and print, creating inconsistency in perception.",
+    solution:
+      "We crafted a new brand language centered on light, motion, and minimalism — executed across logo, social assets, and a responsive web platform.",
+    results:
+      "Post-launch analytics showed a 40% increase in brand recall and a 25% growth in online engagement.",
+    gallery: [
+      "/images/case-studies/lumina-1.jpg",
+      "/images/case-studies/lumina-2.jpg",
+    ],
   },
   {
     id: 2,
@@ -17,7 +31,20 @@ export const caseStudies = [
       "Pehchaan Media designed and executed a content strategy that elevated engagement by 230%.",
     image: "/images/case-studies/aurix-cover.jpg",
     category: "Social Media",
+    intro:
+      "Aurix needed a social-first visual identity to break through saturated fashion feeds.",
+    challenge:
+      "The existing brand voice was inconsistent and lacked the modern edge needed to attract Gen-Z audiences.",
+    solution:
+      "Our creative team built a dynamic storytelling campaign optimized for Reels and TikTok with bold motion design.",
+    results:
+      "Engagement rose 230% within the first quarter, with user-generated content up by 90%.",
+    gallery: [
+      "/images/case-studies/aurix-1.jpg",
+      "/images/case-studies/aurix-2.jpg",
+    ],
   },
+  // ✅ You can add similar optional fields for the rest later as needed
   {
     id: 3,
     title: "E-Commerce Launch for NovaSkin",
