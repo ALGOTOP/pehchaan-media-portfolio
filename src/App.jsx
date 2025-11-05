@@ -11,7 +11,6 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollProgress from "@/components/ScrollProgress";
 import FloatingCTA from "@/components/FloatingCTA";
-import CustomCursor from "@/components/CustomCursor";
 import ParallaxBackground from "@/components/ParallaxBackground";
 import MetaTags from "@/components/MetaTags";
 
@@ -63,7 +62,6 @@ export default function App() {
     <div className="relative bg-black text-white font-sans">
       {/* ─── Global Components ─── */}
       <MetaTags />
-      <CustomCursor /> {/* 🟢 Placed at top so it always renders above everything */}
       <Navbar />
       <ParallaxBackground />
       <ScrollProgress />
