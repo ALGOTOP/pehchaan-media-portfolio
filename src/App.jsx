@@ -1,6 +1,13 @@
+// src/App.jsx
 import React, { useEffect } from "react";
 import Lenis from "lenis";
 import { AnimatePresence } from "framer-motion";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 
 // ─────────────────────────────────────────────
 // COMPONENTS
@@ -26,9 +33,18 @@ import Testimonials from "@/sections/Testimonials";
 import Contact from "@/sections/Contact";
 
 // ─────────────────────────────────────────────
-// MAIN APP COMPONENT
+// PAGES (Case Studies)
 // ─────────────────────────────────────────────
-export default function App() {
+import CaseStudiesHub from "@/pages/case-studies/index.jsx";
+import CaseStudyDetail from "@/pages/case-studies/CaseStudyDetail.jsx";
+
+// ─────────────────────────────────────────────
+// SCROLL + PAGE WRAPPER
+// ─────────────────────────────────────────────
+function ScrollWrapper({ children }) {
+  const location = useLocation();
+
+  // Initialize Lenis smooth scroll
   useEffect(() => {
     try {
       const lenis = new Lenis({
@@ -49,30 +65,60 @@ export default function App() {
     }
   }, []);
 
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
+  return children;
+}
+
+// ─────────────────────────────────────────────
+// MAIN APP COMPONENT
+// ─────────────────────────────────────────────
+export default function App() {
   return (
-    <div className="relative bg-black text-white font-sans">
-      {/* ─── Global Components ─── */}
-      <MetaTags />
-      <Navbar />
-      <ParallaxBackground />
-      <ScrollProgress />
-      <CustomCursor />
+    <Router>
+      <ScrollWrapper>
+        <div className="relative bg-black text-white font-sans">
+          <MetaTags />
+          <Navbar />
+          <ParallaxBackground />
+          <ScrollProgress />
+          <CustomCursor />
 
-      {/* ─── Home Page Sections ─── */}
-      <AnimatePresence mode="wait">
-        <Hero />
-        <About />
-        <Services />
-        <Work />
-        <Studio />
-        <Testimonials />
-        <Contact />
-      </AnimatePresence>
+          <AnimatePresence mode="wait">
+            <Routes>
+              {/* Home Page */}
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Hero />
+                    <About />
+                    <Services />
+                    <Work />
+                    <Studio />
+                    <Testimonials />
+                    <Contact />
+                  </>
+                }
+              />
 
-      {/* ─── Footer & Utility UI ─── */}
-      <Footer />
-      <ScrollToTop />
-      <FloatingCTA />
-    </div>
+              {/* Case Studies */}
+              <Route path="/case-studies" element={<CaseStudiesHub />} />
+              <Route
+                path="/case-studies/:slug"
+                element={<CaseStudyDetail />}
+              />
+            </Routes>
+          </AnimatePresence>
+
+          <Footer />
+          <ScrollToTop />
+          <FloatingCTA />
+        </div>
+      </ScrollWrapper>
+    </Router>
   );
 }
