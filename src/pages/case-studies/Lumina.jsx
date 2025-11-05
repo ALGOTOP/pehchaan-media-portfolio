@@ -18,7 +18,7 @@ export default function Lumina() {
   return (
     <div className="min-h-screen bg-black text-gray-200 font-sans overflow-hidden">
       {/* ─── Hero Section ─── */}
-      <section className="relative w-full py-28 flex flex-col items-center text-center overflow-hidden">
+      <section className="relative w-full py-32 flex flex-col items-center text-center overflow-hidden">
         <motion.h1
           variants={fadeUp}
           initial="hidden"
@@ -46,9 +46,9 @@ export default function Lumina() {
           whileInView="visible"
           custom={2}
           viewport={{ once: true }}
-          src="https://via.placeholder.com/1000x550/0a0a0a/ffffff?text=Lumina+Mockup"
+          src="https://images.unsplash.com/photo-1585218354497-1c72b1f36c1c?auto=format&fit=crop&w=1200&q=80"
           alt="Lumina Project Mockup"
-          className="mt-10 rounded-2xl shadow-2xl border border-white/10"
+          className="mt-12 rounded-2xl shadow-2xl border border-white/10 max-w-5xl w-full"
         />
       </section>
 
@@ -61,11 +61,22 @@ export default function Lumina() {
         className="max-w-6xl mx-auto px-6 py-24 border-t border-white/10"
       >
         <h2 className="text-3xl font-bold text-cyan-400 mb-6">Project Overview</h2>
+        <p className="text-gray-400 leading-relaxed mb-8">
+          Lumina approached Pehchaan Media with a mission to redefine their digital identity. Despite being a
+          leader in innovative lighting solutions, their brand presence lacked the sophistication of their
+          products. We crafted a sleek, high-end experience that captures the interplay between light, emotion,
+          and luxury — designed to inspire at every scroll.
+        </p>
+
+        <img
+          src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80"
+          alt="Brand concept visual"
+          className="rounded-xl shadow-lg border border-white/10 w-full mb-10"
+        />
+
         <p className="text-gray-400 leading-relaxed">
-          Lumina approached Pehchaan Media with a mission to redefine their digital identity.
-          Despite being a leader in innovative lighting solutions, their brand presence was dull
-          and outdated. We crafted a high-end digital experience that truly illuminates their
-          excellence — both literally and figuratively.
+          The project involved a complete overhaul of Lumina’s online identity, transforming a static brochure
+          site into a dynamic storytelling experience that celebrates artistry and innovation.
         </p>
       </motion.section>
 
@@ -79,11 +90,58 @@ export default function Lumina() {
       >
         <h2 className="text-3xl font-bold text-cyan-400 mb-6">Pain Points</h2>
         <ul className="list-disc pl-5 space-y-3 text-gray-400">
-          <li>Outdated brand visuals and inconsistent color usage.</li>
-          <li>Poor online engagement due to slow, unoptimized website.</li>
-          <li>Lack of clear storytelling and emotional connection with users.</li>
-          <li>Underutilized digital marketing strategy.</li>
+          <li>Outdated visuals failing to convey the luxury essence of the brand.</li>
+          <li>Unoptimized mobile experience with clunky navigation.</li>
+          <li>Lack of cohesive storytelling and visual identity across channels.</li>
+          <li>No clear value proposition or emotional engagement with users.</li>
         </ul>
+
+        <motion.img
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          custom={1}
+          viewport={{ once: true }}
+          src="https://images.unsplash.com/photo-1618005198919-d3d4b5a92e56?auto=format&fit=crop&w=1200&q=80"
+          alt="Pain point visualization"
+          className="rounded-xl shadow-lg border border-white/10 mt-12 w-full"
+        />
+      </motion.section>
+
+      {/* ─── Process & Strategy ─── */}
+      <motion.section
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="max-w-6xl mx-auto px-6 py-24 border-t border-white/10"
+      >
+        <h2 className="text-3xl font-bold text-cyan-400 mb-6">Our Process</h2>
+        <div className="grid md:grid-cols-3 gap-10 text-gray-400">
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-3">01 — Discovery</h3>
+            <p>We immersed ourselves in Lumina’s philosophy — understanding light as emotion and form.</p>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-3">02 — Design</h3>
+            <p>Developed a modular design system based on fluid grids, subtle gradients, and cinematic light play.</p>
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold text-white mb-3">03 — Execution</h3>
+            <p>Engineered a fast, responsive site with Framer Motion transitions and optimized imagery.</p>
+          </div>
+        </div>
+
+        <motion.img
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          custom={2}
+          viewport={{ once: true }}
+          src="https://images.unsplash.com/photo-1616628182501-5d3ad9b93056?auto=format&fit=crop&w=1200&q=80"
+          alt="Process showcase"
+          className="rounded-xl shadow-lg border border-white/10 mt-14 w-full"
+        />
       </motion.section>
 
       {/* ─── Services Provided ─── */}
@@ -97,19 +155,19 @@ export default function Lumina() {
         <h2 className="text-3xl font-bold text-cyan-400 mb-6">Services Provided</h2>
         <div className="grid md:grid-cols-2 gap-10 text-gray-400">
           <ul className="space-y-3">
-            <li>✔️ Brand Identity Design</li>
-            <li>✔️ Website Redesign & Development</li>
-            <li>✔️ UX/UI Strategy</li>
+            <li>✔️ Brand Identity & Positioning</li>
+            <li>✔️ UX/UI Design & Development</li>
+            <li>✔️ Storytelling & Content Strategy</li>
           </ul>
           <ul className="space-y-3">
-            <li>✔️ Content Direction</li>
-            <li>✔️ Social Media Art Direction</li>
-            <li>✔️ SEO Optimization</li>
+            <li>✔️ SEO & Performance Optimization</li>
+            <li>✔️ Social Campaign Art Direction</li>
+            <li>✔️ Photography Curation</li>
           </ul>
         </div>
       </motion.section>
 
-      {/* ─── Results & Impact ─── */}
+      {/* ─── Results ─── */}
       <motion.section
         variants={fadeUp}
         initial="hidden"
@@ -120,20 +178,19 @@ export default function Lumina() {
         <h2 className="text-3xl font-bold text-cyan-400 mb-6">Results & Impact</h2>
         <div className="grid md:grid-cols-2 gap-8 text-gray-400">
           <div>
-            <h3 className="text-xl font-semibold text-white mb-3">Performance</h3>
-            <p>
-              2.4× increase in website engagement, 60% faster load times, and a
-              significant uplift in lead conversions.
-            </p>
+            <h3 className="text-xl font-semibold text-white mb-3">Engagement</h3>
+            <p>2.4× increase in on-site time, 60% faster load speeds, and 45% higher conversions.</p>
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-white mb-3">Brand Perception</h3>
-            <p>
-              Lumina’s new design language became a benchmark in the luxury lighting space,
-              positioning them as a visionary leader.
-            </p>
+            <h3 className="text-xl font-semibold text-white mb-3">Brand Influence</h3>
+            <p>Positioned Lumina as an aspirational benchmark for luxury lighting globally.</p>
           </div>
         </div>
+        <img
+          src="https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?auto=format&fit=crop&w=1200&q=80"
+          alt="Results visuals"
+          className="rounded-xl shadow-lg border border-white/10 mt-12 w-full"
+        />
       </motion.section>
 
       {/* ─── Testimonial ─── */}
@@ -146,12 +203,10 @@ export default function Lumina() {
       >
         <Sparkles className="mx-auto text-cyan-400 mb-4" size={36} />
         <blockquote className="italic text-gray-300 text-lg leading-relaxed">
-          “Pehchaan Media completely redefined our online image. Their team understood
-          our brand at its core and transformed it into something timeless.”
+          “Pehchaan Media completely redefined our online image. Their design and storytelling made Lumina feel
+          alive — like light in motion.”
         </blockquote>
-        <p className="mt-4 text-cyan-400 font-semibold">
-          — Ayesha Malik, Creative Director at Lumina
-        </p>
+        <p className="mt-4 text-cyan-400 font-semibold">— Ayesha Malik, Creative Director at Lumina</p>
       </motion.section>
 
       {/* ─── CTA / Back ─── */}
