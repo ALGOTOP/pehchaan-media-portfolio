@@ -31,7 +31,7 @@ import Contact from "@/sections/Contact";
 // ─────────────────────────────────────────────
 import CaseStudiesHub from "@/pages/case-studies";
 import CaseStudyDetail from "@/pages/case-studies/CaseStudyDetail";
-import Lumina from "@/pages/case-studies/Lumina"; // ✅ Added — Custom Lumina Page
+import Lumina from "@/pages/case-studies/Lumina"; // ✅ Custom Lumina Page
 
 // ─────────────────────────────────────────────
 // MAIN APP COMPONENT
@@ -63,10 +63,10 @@ export default function App() {
     <div className="relative bg-black text-white font-sans">
       {/* ─── Global Components ─── */}
       <MetaTags />
+      <CustomCursor /> {/* 🟢 Placed at top so it always renders above everything */}
       <Navbar />
       <ParallaxBackground />
       <ScrollProgress />
-      <CustomCursor />
 
       {/* ─── Page Routes ─── */}
       <AnimatePresence mode="wait">
