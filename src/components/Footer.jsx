@@ -3,14 +3,17 @@ import {
   Instagram,
   Facebook,
   Linkedin,
+  Phone,
+  Mail,
   MessageCircle,
 } from "lucide-react";
-import { SiX } from "react-icons/si"; // X icon
 
 export default function Footer() {
   return (
     <footer className="relative bg-[#050505] border-t border-white/10 py-16 px-6 text-gray-400 text-sm md:text-base">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+        
+        {/* BRAND / ABOUT */}
         <div>
           <h3 className="text-white text-xl font-semibold mb-4">
             Pehchaan Media
@@ -22,10 +25,12 @@ export default function Footer() {
 
           {/* Contact Info */}
           <p className="text-gray-300">
-            📩 <span className="text-cyan-400">infopehchaanmedia@gmail.com</span>
+            <Mail className="inline-block mr-2" size={16} />
+            <span className="text-cyan-400">infopehchaanmedia@gmail.com</span>
           </p>
           <p className="text-gray-300 mb-6">
-            📞 <span className="text-cyan-400">+92 335 5312242</span>
+            <Phone className="inline-block mr-2" size={16} />
+            <span className="text-cyan-400">+92 335 5312242</span>
           </p>
 
           {/* Social Icons */}
@@ -37,15 +42,6 @@ export default function Footer() {
               className="hover:text-pink-500 transition"
             >
               <Instagram size={18} />
-            </a>
-
-            <a
-              href="https://x.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-black hover:bg-white rounded transition p-1"
-            >
-              <SiX size={16} />
             </a>
 
             <a
@@ -78,6 +74,7 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* SERVICES LINKS */}
         <div>
           <h4 className="text-white font-semibold mb-4">Services</h4>
           <ul className="space-y-2">
@@ -88,6 +85,7 @@ export default function Footer() {
           </ul>
         </div>
 
+        {/* COMPANY LINKS */}
         <div>
           <h4 className="text-white font-semibold mb-4">Company</h4>
           <ul className="space-y-2">
@@ -98,11 +96,11 @@ export default function Footer() {
           </ul>
         </div>
 
+        {/* NEWSLETTER */}
         <div>
           <h4 className="text-white font-semibold mb-4">Newsletter</h4>
           <p className="text-gray-400 mb-4">
-            Subscribe to get insights, updates, and behind-the-scenes from our
-            creative team.
+            Subscribe to get insights, behind-the-scenes, and updates from our creative team.
           </p>
 
           <form
@@ -125,6 +123,7 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* BOTTOM COPYRIGHT */}
       <div className="border-t border-white/10 mt-16 pt-8 text-center text-gray-500 text-sm">
         <p>
           © {new Date().getFullYear()}{" "}
