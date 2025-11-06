@@ -10,8 +10,8 @@ export default function Work() {
   // Project Data
   const projects = [
     {
-      title: "AMWAJ",
-      category: "Website Redesign / Development",
+      title: "AWSIM",
+      category: "Immersive Simulation",
       image: "https://i.ibb.co/d4p5RzTB/awsim.jpg",
     },
     {
@@ -21,7 +21,7 @@ export default function Work() {
     },
     {
       title: "Streams",
-      category: "Digital Infrastructure & Product Photography",
+      category: "Digital Campaign",
       image: "https://i.ibb.co/zTvZF0G3/streams.png",
     },
     {
@@ -36,7 +36,7 @@ export default function Work() {
     },
     {
       title: "Lumina",
-      category: "Creative Direction & Complete Marketing Rebrand",
+      category: "Cinematic Design",
       image: "https://i.ibb.co/RkwzFn42/lumina.jpg",
     },
   ];
@@ -72,7 +72,7 @@ export default function Work() {
             whileHover={{ scale: 1.03 }}
             className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md hover:shadow-cyan-500/10"
           >
-            {/* Image */}
+            {/* Image container */}
             <div className="overflow-hidden bg-black flex items-center justify-center">
               <motion.img
                 src={project.image}
@@ -83,15 +83,15 @@ export default function Work() {
               />
             </div>
 
-            {/* Overlay — triggers on full-card hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100 flex flex-col justify-end p-6">
+            {/* Overlay info — triggers from the entire card hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 whileHover={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
                 className="group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500"
               >
-                <h3 className="text-white text-xl font-semibold mb-1 tracking-tight">
+                <h3 className="text-white text-xl font-semibold mb-1">
                   {project.title}
                 </h3>
                 <p className="text-cyan-400 text-sm font-medium">
