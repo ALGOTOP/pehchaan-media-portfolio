@@ -2,7 +2,7 @@
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
-import caseStudies from "@/data/caseStudiesData.js"; // ✅ must include extension
+import caseStudies from "@/data/CaseStudiesData.js"; // ✅ must include extension
 import { ArrowRight } from "lucide-react";
 
 export default function CaseStudiesPreview() {
