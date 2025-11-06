@@ -46,6 +46,9 @@ export default function App() {
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       });
 
+       // ✅ expose lenis so ScrollToTop can access it
+  window.__lenis = lenis;
+
       function raf(time) {
         lenis.raf(time);
         requestAnimationFrame(raf);
