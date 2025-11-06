@@ -1,11 +1,14 @@
+// src/sections/Work.jsx
 import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { fadeInUp } from "@/utils/animations";
 import { ArrowRight } from "lucide-react";
 
 export default function Work() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.3 });
+  const inView = useInView(ref, {
+    once: true,
+    amount: 0.3,
+  });
 
   const projects = [
     {
@@ -48,9 +51,9 @@ export default function Work() {
     >
       {/* Section Title */}
       <motion.h2
-        variants={fadeInUp}
-        initial="hidden"
-        animate={inView ? "show" : "hidden"}
+        initial={{ opacity: 0, y: 20 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6, ease: "easeOut" }}
         className="text-4xl md:text-6xl font-extrabold mb-12 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500"
       >
         Our Work
@@ -72,19 +75,20 @@ export default function Work() {
               y: -6, // subtle lift
               boxShadow: "0px 12px 20px rgba(0, 255, 255, 0.1)",
             }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
             className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md cursor-pointer"
           >
-            {/* Image */}
+            {/* Image Block */}
             <div className="overflow-hidden bg-black flex items-center justify-center">
               <motion.img
                 src={project.image}
                 alt={project.title}
                 className="object-contain w-full h-64 md:h-72 lg:h-80 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                whileHover={{ scale: 1.06, rotate: -0.7 }}
+                transition={{ duration: 0.4 }}
               />
             </div>
 
-            {/* Overlay — now activates when hovering anywhere */}
+            {/* Hover Overlay */}
             <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <motion.div
                 variants={{
@@ -93,13 +97,12 @@ export default function Work() {
                 }}
                 initial="hidden"
                 animate={inView ? "visible" : "hidden"}
-                whileHover="visible"
                 transition={{
                   delay: 0.2,
                   duration: 0.4,
                   ease: "easeOut",
                 }}
-                className="transform transition-transform duration-500 group-hover:translate-y-[-5px]"
+                className="transform transition-transform duration-500 group-hover:-translate-y-1"
               >
                 <h3 className="text-white text-xl font-semibold mb-1 tracking-tight">
                   {project.title}
@@ -113,7 +116,7 @@ export default function Work() {
         ))}
       </div>
 
-      {/* Call to Action */}
+      {/* CTA Button */}
       <motion.a
         href="#contact"
         whileHover={{ scale: 1.05 }}
