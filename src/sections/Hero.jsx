@@ -1,51 +1,36 @@
 import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { fadeInUp } from "@/utils/animations";
 import { Play, ChevronDown } from "lucide-react";
 
 export default function Hero() {
-  // ─────────────────────────────────────────────
-  // Smooth parallax background movement
-  // ─────────────────────────────────────────────
-  const { scrollY } = useScroll();
-  const yBg = useTransform(scrollY, [0, 600], [0, 80]);
-
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center text-center overflow-hidden bg-gradient-to-b from-[#0a0f1f] via-[#0a0a0a] to-[#050505]"
+      className="relative min-h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-gradient-to-b from-[#0a0f1f] via-[#0a0a0a] to-[#050505]"
     >
       {/* Animated background gradients */}
-      <motion.div
-        className="absolute inset-0 overflow-hidden"
-        style={{ y: yBg }}
-      >
-        {/* Cyan glow */}
+      <div className="absolute inset-0 overflow-hidden">
         <motion.div
-          className="absolute w-[800px] h-[800px] rounded-full bg-cyan-400/15 blur-[180px] top-[-250px] left-[-250px]"
+          className="absolute w-[800px] h-[800px] rounded-full bg-cyan-500/10 blur-[220px] top-[-200px] left-[-200px]"
           animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 90, ease: "linear" }}
+          transition={{ repeat: Infinity, duration: 50, ease: "linear" }}
         />
-
-        {/* Blue glow */}
         <motion.div
-          className="absolute w-[750px] h-[750px] rounded-full bg-blue-500/15 blur-[180px] bottom-[-250px] right-[-250px]"
+          className="absolute w-[700px] h-[700px] rounded-full bg-blue-500/10 blur-[220px] bottom-[-200px] right-[-200px]"
           animate={{ rotate: -360 }}
-          transition={{ repeat: Infinity, duration: 100, ease: "linear" }}
+          transition={{ repeat: Infinity, duration: 60, ease: "linear" }}
         />
-
-        {/* Soft overlay for color blending */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f1f]/70 via-[#050505]/50 to-black/80 mix-blend-overlay" />
-      </motion.div>
+      </div>
 
       {/* Hero Content */}
       <motion.div
         variants={fadeInUp}
         initial="hidden"
         animate="show"
-        className="relative z-10 max-w-4xl px-6"
+        className="relative z-10 max-w-4xl px-6 flex flex-col items-center justify-center"
       >
-        <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 leading-tight drop-shadow-[0_0_20px_rgba(56,189,248,0.15)]">
+        <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 leading-[1.1] md:leading-[1.15] pt-2">
           We make brands unforgettable.
         </h1>
 
@@ -55,9 +40,10 @@ export default function Hero() {
           we create experiences that define identities.
         </p>
 
+        {/* CTA Button */}
         <motion.a
           href="#work"
-          whileHover={{ scale: 1.05, y: -2 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
           className="inline-flex items-center px-8 py-4 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-xl hover:shadow-cyan-500/30 transition-all"
         >
@@ -65,12 +51,12 @@ export default function Hero() {
           View Our Work
         </motion.a>
 
-        {/* Floating arrow */}
+        {/* Chevron BELOW the button */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2 }}
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
+          className="mt-8"
         >
           <ChevronDown className="text-cyan-400 animate-bounce" size={28} />
         </motion.div>
