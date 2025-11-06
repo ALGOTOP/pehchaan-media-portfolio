@@ -1,5 +1,11 @@
 import React from "react";
-import { Instagram, Twitter, Facebook, Linkedin } from "lucide-react";
+import {
+  Instagram,
+  Facebook,
+  Linkedin,
+  MessageCircle,
+} from "lucide-react";
+import { SiX } from "react-icons/si"; // X icon
 
 export default function Footer() {
   return (
@@ -13,18 +19,61 @@ export default function Footer() {
             A full-service creative agency crafting digital experiences,
             cinematic visuals, and brand stories that connect on a human level.
           </p>
+
+          {/* Contact Info */}
+          <p className="text-gray-300">
+            📩 <span className="text-cyan-400">infopehchaanmedia@gmail.com</span>
+          </p>
+          <p className="text-gray-300 mb-6">
+            📞 <span className="text-cyan-400">+92 335 5312242</span>
+          </p>
+
+          {/* Social Icons */}
           <div className="flex space-x-4">
-            <a href="#" className="hover:text-cyan-400 transition">
+            <a
+              href="https://www.instagram.com/pehchaanmediahouse/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-pink-500 transition"
+            >
               <Instagram size={18} />
             </a>
-            <a href="#" className="hover:text-cyan-400 transition">
-              <Twitter size={18} />
+
+            <a
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-black hover:bg-white rounded transition p-1"
+            >
+              <SiX size={16} />
             </a>
-            <a href="#" className="hover:text-cyan-400 transition">
+
+            <a
+              href="https://facebook.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-500 transition"
+            >
               <Facebook size={18} />
             </a>
-            <a href="#" className="hover:text-cyan-400 transition">
+
+            <a
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#0A66C2] transition"
+            >
               <Linkedin size={18} />
+            </a>
+
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/923355312242?text=Hello%20Pehchaan%20Media%20team!"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-green-500 transition"
+            >
+              <MessageCircle size={18} />
             </a>
           </div>
         </div>
@@ -55,6 +104,7 @@ export default function Footer() {
             Subscribe to get insights, updates, and behind-the-scenes from our
             creative team.
           </p>
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
