@@ -68,23 +68,29 @@ export default function Work() {
               duration: 0.6,
               ease: [0.25, 0.1, 0.25, 1],
             }}
-            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md hover:shadow-cyan-500/10 cursor-pointer"
+            whileHover={{
+              y: -6, // slight lift
+              boxShadow: "0px 12px 20px rgba(0, 255, 255, 0.1)",
+            }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md cursor-pointer"
           >
             {/* Image */}
             <div className="overflow-hidden bg-black flex items-center justify-center">
               <motion.img
                 src={project.image}
                 alt={project.title}
-                className="object-contain w-full h-64 md:h-72 lg:h-80 group-hover:scale-105 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                className="object-contain w-full h-64 md:h-72 lg:h-80 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
               />
             </div>
 
-            {/* Overlay (hover anywhere triggers) */}
+            {/* Overlay — visible on hover */}
             <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              {/* Text lift effect */}
               <motion.div
-                className="transition-transform duration-500 ease-out"
-                whileHover={{ y: -8 }} // 👈 text lifts slightly up on hover
+                initial={{ y: 10, opacity: 0 }}
+                whileHover={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
+                className="transform transition-transform duration-500"
               >
                 <h3 className="text-white text-xl font-semibold mb-1 tracking-tight">
                   {project.title}
