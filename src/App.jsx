@@ -78,8 +78,9 @@ export default function App() {
                 <Hero />
                 <About />
                 <Services />
-                <Work />
+                <CaseStudiesPreview />
                 <Studio />
+                <Work />
                 <Testimonials />
                 <Contact />
               </>
