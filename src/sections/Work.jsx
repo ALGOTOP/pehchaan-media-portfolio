@@ -68,7 +68,6 @@ export default function Work() {
               duration: 0.6,
               ease: [0.25, 0.1, 0.25, 1],
             }}
-            whileHover={{ scale: 1.03 }}
             className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md hover:shadow-cyan-500/10 cursor-pointer"
           >
             {/* Image */}
@@ -85,7 +84,7 @@ export default function Work() {
               {/* Text lift effect */}
               <motion.div
                 className="transition-transform duration-500 ease-out"
-                whileHover={{ y: -8 }} // 👈 subtle upward lift on hover
+                whileHover={{ y: -8 }} // 👈 text lifts slightly up on hover
               >
                 <h3 className="text-white text-xl font-semibold mb-1 tracking-tight">
                   {project.title}
