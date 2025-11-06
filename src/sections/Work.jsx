@@ -10,18 +10,18 @@ export default function Work() {
   // Project Data
   const projects = [
     {
-      title: "AWSIM",
-      category: "Immersive Simulation",
+      title: "AMWAJ",
+      category: "Web Redesign & Development",
       image: "https://i.ibb.co/d4p5RzTB/awsim.jpg",
     },
     {
       title: "Tech Launch",
-      category: "Product Marketing",
+      category: "Product Launch Planning & Marketing",
       image: "https://i.ibb.co/YBDkQ69X/tech-launch.jpg",
     },
     {
       title: "Streams",
-      category: "Digital Campaign",
+      category: "Digital Infrastructure & Product Photography",
       image: "https://i.ibb.co/zTvZF0G3/streams.png",
     },
     {
@@ -35,9 +35,9 @@ export default function Work() {
       image: "https://i.ibb.co/0j97mTS5/matrix.jpg",
     },
     {
-      title: "AWSIM Vision",
-      category: "Cinematic Design",
-      image: "https://i.ibb.co/d4p5RzTB/awsim.jpg",
+      title: "LUMINA",
+      category: "Creative Direction & Complete Marketing",
+      image: "https://i.ibb.co/RkwzFn42/lumina.jpg",
     },
   ];
 
