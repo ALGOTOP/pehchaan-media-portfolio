@@ -7,36 +7,37 @@ export default function Work() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.3 });
 
+  // Project Data
   const projects = [
     {
-      title: "Luminous Skincare Campaign",
-      category: "Film Production",
-      image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=1000&q=80",
+      title: "AWSIM",
+      category: "Immersive Simulation",
+      image: "https://i.ibb.co/d4p5RzTB/awsim.jpg",
     },
     {
-      title: "Drift E-Sports Branding",
-      category: "Brand Identity",
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80",
+      title: "Tech Launch",
+      category: "Product Marketing",
+      image: "https://i.ibb.co/YBDkQ69X/tech-launch.jpg",
     },
     {
-      title: "OceanX Web Experience",
-      category: "Web Design",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80",
+      title: "Streams",
+      category: "Digital Campaign",
+      image: "https://i.ibb.co/zTvZF0G3/streams.png",
     },
     {
-      title: "Aurum Fashion Film",
-      category: "Cinematography",
-      image: "https://images.unsplash.com/photo-1542744173-05336fcc7ad4?auto=format&fit=crop&w=1000&q=80",
-    },
-    {
-      title: "Rise Coffee Rebrand",
+      title: "Rise Coffee",
       category: "Creative Strategy",
-      image: "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?auto=format&fit=crop&w=1000&q=80",
+      image: "https://i.ibb.co/dw32jwLQ/rise-coffee.jpg",
     },
     {
-      title: "Urban Tech Product Launch",
-      category: "Marketing Campaign",
-      image: "https://images.unsplash.com/photo-1581093588401-22c1f0af9ab9?auto=format&fit=crop&w=1000&q=80",
+      title: "Matrix",
+      category: "Brand Identity",
+      image: "https://i.ibb.co/0j97mTS5/matrix.jpg",
+    },
+    {
+      title: "AWSIM Vision",
+      category: "Cinematic Design",
+      image: "https://i.ibb.co/d4p5RzTB/awsim.jpg",
     },
   ];
 
@@ -46,6 +47,7 @@ export default function Work() {
       ref={ref}
       className="relative py-24 md:py-36 bg-[#0a0a0a] flex flex-col items-center overflow-hidden"
     >
+      {/* Section Title */}
       <motion.h2
         variants={fadeInUp}
         initial="hidden"
@@ -55,38 +57,61 @@ export default function Work() {
         Our Work
       </motion.h2>
 
+      {/* Project Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl px-6">
         {projects.map((project, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: i * 0.1, duration: 0.6 }}
-            whileHover={{ scale: 1.02 }}
-            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md"
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+            transition={{
+              delay: i * 0.1,
+              duration: 0.6,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            whileHover={{ scale: 1.03 }}
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md hover:shadow-cyan-500/10"
           >
-            <div className="overflow-hidden">
+            {/* Image container */}
+            <div className="overflow-hidden bg-black flex items-center justify-center">
               <motion.img
                 src={project.image}
                 alt={project.title}
-                className="object-cover w-full h-64 group-hover:scale-110 transition-transform duration-700"
+                className="object-contain w-full h-64 md:h-72 lg:h-80 group-hover:scale-105 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                whileHover={{ rotate: 0.5, scale: 1.05 }}
+                transition={{ duration: 0.6 }}
               />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
-              <h3 className="text-white text-xl font-semibold mb-2">
-                {project.title}
-              </h3>
-              <p className="text-cyan-400 text-sm font-medium">
-                {project.category}
-              </p>
-            </div>
+
+            {/* Overlay info (fade + slide up) */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6"
+              initial={{ opacity: 0 }}
+              whileHover={{ opacity: 1 }}
+            >
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                whileHover={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <h3 className="text-white text-xl font-semibold mb-1">
+                  {project.title}
+                </h3>
+                <p className="text-cyan-400 text-sm font-medium">
+                  {project.category}
+                </p>
+              </motion.div>
+            </motion.div>
           </motion.div>
         ))}
       </div>
 
+      {/* Call to Action */}
       <motion.a
         href="#contact"
         whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.97 }}
+        transition={{ type: "spring", stiffness: 250 }}
         className="mt-16 inline-flex items-center bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold px-8 py-4 rounded-full shadow-xl hover:shadow-cyan-400/30 transition-all"
       >
         Start Your Project
