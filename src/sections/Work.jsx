@@ -69,7 +69,7 @@ export default function Work() {
               ease: [0.25, 0.1, 0.25, 1],
             }}
             whileHover={{
-              y: -6, // slight lift
+              y: -6, // subtle lift
               boxShadow: "0px 12px 20px rgba(0, 255, 255, 0.1)",
             }}
             transition={{ duration: 0.3, ease: "easeOut" }}
@@ -84,13 +84,22 @@ export default function Work() {
               />
             </div>
 
-            {/* Overlay — visible on hover */}
+            {/* Overlay — now activates when hovering anywhere */}
             <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <motion.div
-                initial={{ y: 10, opacity: 0 }}
-                whileHover={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
-                className="transform transition-transform duration-500"
+                variants={{
+                  hidden: { y: 15, opacity: 0 },
+                  visible: { y: 0, opacity: 1 },
+                }}
+                initial="hidden"
+                animate={inView ? "visible" : "hidden"}
+                whileHover="visible"
+                transition={{
+                  delay: 0.2,
+                  duration: 0.4,
+                  ease: "easeOut",
+                }}
+                className="transform transition-transform duration-500 group-hover:translate-y-[-5px]"
               >
                 <h3 className="text-white text-xl font-semibold mb-1 tracking-tight">
                   {project.title}
