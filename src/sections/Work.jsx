@@ -35,9 +35,9 @@ export default function Work() {
       image: "https://i.ibb.co/0j97mTS5/matrix.jpg",
     },
     {
-      title: "Lumina",
+      title: "AWSIM Vision",
       category: "Cinematic Design",
-      image: "https://i.ibb.co/RkwzFn42/lumina.jpg",
+      image: "https://i.ibb.co/d4p5RzTB/awsim.jpg",
     },
   ];
 
@@ -83,13 +83,16 @@ export default function Work() {
               />
             </div>
 
-            {/* Overlay info — triggers from the entire card hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6">
+            {/* Overlay info (fade + slide up) */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6"
+              initial={{ opacity: 0 }}
+              whileHover={{ opacity: 1 }}
+            >
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 whileHover={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-                className="group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500"
+                transition={{ duration: 0.4, ease: "easeOut" }}
               >
                 <h3 className="text-white text-xl font-semibold mb-1">
                   {project.title}
@@ -98,7 +101,7 @@ export default function Work() {
                   {project.category}
                 </p>
               </motion.div>
-            </div>
+            </motion.div>
           </motion.div>
         ))}
       </div>
