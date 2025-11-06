@@ -9,7 +9,6 @@ export const caseStudies = [
       "A complete rebranding initiative focused on clarity, minimalism, and digital adaptability.",
     image: "/images/case-studies/lumina-cover.jpg",
     category: "Brand Strategy",
-    // 🔽 Optional rich fields for CaseStudyDetail.jsx
     intro:
       "Lumina approached Pehchaan Media to redefine its digital identity and align visuals with its futuristic brand philosophy.",
     challenge:
@@ -44,7 +43,6 @@ export const caseStudies = [
       "/images/case-studies/aurix-2.jpg",
     ],
   },
-  // ✅ You can add similar optional fields for the rest later as needed
   {
     id: 3,
     title: "E-Commerce Launch for NovaSkin",
@@ -109,3 +107,6 @@ export const caseStudies = [
     category: "Brand Design",
   },
 ];
+
+// ✅ Correct default export
+export default caseStudies;
