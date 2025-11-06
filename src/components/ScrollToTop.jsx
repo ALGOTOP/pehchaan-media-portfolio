@@ -1,25 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { ChevronUp } from "lucide-react";
+// src/components/ScrollToTop.jsx
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 export default function ScrollToTop() {
-  const [visible, setVisible] = useState(false);
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    const toggleVisible = () => setVisible(window.scrollY > 500);
-    window.addEventListener("scroll", toggleVisible);
-    return () => window.removeEventListener("scroll", toggleVisible);
-  }, []);
+    // If lenis is present on window (we expose it in App.jsx below), use it for smooth scrolling.
+    const lenis = window.__lenis;
 
-  return (
-    <motion.button
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      initial={{ opacity: 0, y: 100 }}
-      animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 100 }}
-      transition={{ duration: 0.4 }}
-      className="fixed bottom-8 left-8 bg-[#0e0e0e] border border-white/10 text-cyan-400 rounded-full p-3 hover:bg-cyan-400 hover:text-black transition-all z-50"
-    >
-      <ChevronUp size={20} />
-    </motion.button>
-  );
+    if (lenis && typeof lenis.scrollTo === "function") {
+      // small timeout to allow route/DOM to settle
+      setTimeout(() => {
+        try {
+          lenis.scrollTo(0, { duration: 600, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+        } catch (e) {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }, 12);
+    } else {
+      // Fallback native smooth scroll
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 12);
+    }
+  }, [pathname]);
+
+  return null;
 }
