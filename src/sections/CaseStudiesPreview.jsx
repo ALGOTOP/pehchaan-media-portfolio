@@ -1,55 +1,110 @@
-import { motion } from "framer-motion";
+// src/sections/CaseStudiesPreview.jsx
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
-import CaseStudiesData from "../CaseStudiesData";
-import { fadeInUp } from "@/utils/animations";
+import { motion, useInView } from "framer-motion";
+import caseStudies from "@/data/caseStudiesData";
+import { ArrowRight } from "lucide-react";
 
 export default function CaseStudiesPreview() {
-  const preview = CaseStudiesData.slice(0, 3);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.3 });
+
+  // Use the exact same layout/spacing as Work and show only first 3 items
+  const preview = caseStudies.slice(0, 3);
 
   return (
-    <section className="py-20 bg-black text-white">
-      <div className="container mx-auto px-6">
-        <motion.h2
-          variants={fadeInUp}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true }}
-          className="text-4xl font-bold mb-8"
-        >
-          Featured Case Studies
-        </motion.h2>
+    <section
+      id="case-studies-preview"
+      ref={ref}
+      className="relative py-24 md:py-36 bg-[#0a0a0a] flex flex-col items-center overflow-hidden"
+    >
+      {/* Title (glided gradient text like Work) */}
+      <motion.h2
+        initial="hidden"
+        animate={inView ? "show" : "hidden"}
+        className="text-4xl md:text-6xl font-extrabold mb-12 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500"
+      >
+        Case Studies
+      </motion.h2>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-10">
-          {preview.map((item, i) => (
-            <motion.div
-              key={i}
-              variants={fadeInUp}
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true }}
-              className="bg-neutral-900 rounded-2xl overflow-hidden shadow-lg hover:scale-[1.02] transition-transform"
-            >
-              <img src={item.cover} alt={item.title} className="w-full h-48 object-cover" />
-              <div className="p-5">
-                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                <p className="text-neutral-400 text-sm mb-4">{item.description}</p>
-                <Link to={`/case-studies/${item.slug}`} className="text-indigo-400 hover:text-indigo-300">
-                  View Case Study →
-                </Link>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="text-center">
-          <Link
-            to="/case-studies"
-            className="inline-block bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-neutral-200 transition"
+      {/* Grid - same dimensions & spacing as Work */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl px-6">
+        {preview.map((item, i) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+            transition={{
+              delay: i * 0.1,
+              duration: 0.6,
+              ease: [0.25, 0.1, 0.25, 1],
+            }}
+            whileHover={{
+              y: -6,
+              boxShadow: "0px 12px 20px rgba(0, 255, 255, 0.1)",
+              transition: { duration: 0.3, ease: "easeOut" },
+            }}
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md cursor-pointer"
           >
-            View Detailed Case Studies
-          </Link>
-        </div>
+            {/* Make the whole thumbnail (image) a link to the detail page */}
+            <Link to={`/case-studies/${item.slug}`} aria-label={`Open ${item.title} case study`}>
+              <div className="overflow-hidden bg-black flex items-center justify-center">
+                <motion.img
+                  src={item.image}
+                  alt={item.title}
+                  className="object-contain w-full h-64 md:h-72 lg:h-80 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                  whileHover={{ scale: 1.06, rotate: -0.7 }}
+                  transition={{ duration: 0.4 }}
+                />
+              </div>
+
+              {/* Overlay (reveals on hover exactly like Work) */}
+              <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <motion.div
+                  variants={{
+                    hidden: { y: 15, opacity: 0 },
+                    visible: { y: 0, opacity: 1 },
+                  }}
+                  initial="hidden"
+                  animate={inView ? "visible" : "hidden"}
+                  whileHover="visible"
+                  transition={{
+                    delay: 0.2,
+                    duration: 0.4,
+                    ease: "easeOut",
+                  }}
+                  className="transform transition-transform duration-500 group-hover:-translate-y-1"
+                >
+                  <h3 className="text-white text-xl font-semibold mb-1 tracking-tight">
+                    {item.title}
+                  </h3>
+                  <p className="text-cyan-400 text-sm font-medium">{item.category}</p>
+                </motion.div>
+              </div>
+
+              {/* Text block under image (same spacing & sizes as Work) */}
+              <div className="p-6">
+                <p className="text-xs uppercase text-cyan-400 tracking-wider">{item.category}</p>
+                <h4 className="text-xl font-semibold mt-2">{item.title}</h4>
+                <p className="text-gray-400 mt-2 text-sm leading-relaxed">{item.description}</p>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
       </div>
+
+      {/* CTA - pill style identical to Work's CTA */}
+      <motion.a
+        href="/case-studies"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.97 }}
+        transition={{ type: "spring", stiffness: 250 }}
+        className="mt-16 inline-flex items-center bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold px-8 py-4 rounded-full shadow-xl hover:shadow-cyan-400/30 transition-all"
+        aria-label="View detailed case studies"
+      >
+        View detailed case studies
+        <ArrowRight size={18} className="ml-2" />
+      </motion.a>
     </section>
   );
 }
