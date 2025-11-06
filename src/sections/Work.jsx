@@ -7,11 +7,10 @@ export default function Work() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.3 });
 
-  // Project Data
   const projects = [
     {
       title: "AMWAJ",
-      category: "Web Redesign & Development",
+      category: "Website Redesign & Development",
       image: "https://i.ibb.co/d4p5RzTB/awsim.jpg",
     },
     {
@@ -36,7 +35,7 @@ export default function Work() {
     },
     {
       title: "LUMINA",
-      category: "Creative Direction & Complete Marketing",
+      category: "Creative Direction & Complete Marketing Rebrand",
       image: "https://i.ibb.co/RkwzFn42/lumina.jpg",
     },
   ];
@@ -69,41 +68,29 @@ export default function Work() {
               duration: 0.6,
               ease: [0.25, 0.1, 0.25, 1],
             }}
-            whileHover={{
-              rotateX: 5,
-              rotateY: -5,
-              scale: 1.05,
-              transition: { type: "spring", stiffness: 200, damping: 15 },
-            }}
-            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md hover:shadow-cyan-500/10 perspective-[1000px]"
+            whileHover={{ scale: 1.03 }}
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#101010] hover:border-cyan-400/30 transition-all shadow-md hover:shadow-cyan-500/10 cursor-pointer"
           >
-            {/* Image container */}
+            {/* Image */}
             <div className="overflow-hidden bg-black flex items-center justify-center">
               <motion.img
                 src={project.image}
                 alt={project.title}
                 className="object-contain w-full h-64 md:h-72 lg:h-80 group-hover:scale-105 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                transition={{ duration: 0.6 }}
               />
             </div>
 
-            {/* Overlay info (fades on full hover) */}
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6"
-            >
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.4, ease: "easeOut" }}
-              >
-                <h3 className="text-white text-xl font-semibold mb-1">
+            {/* Overlay — now works when hovering anywhere */}
+            <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              <div className="transition-all duration-500">
+                <h3 className="text-white text-xl font-semibold mb-1 tracking-tight">
                   {project.title}
                 </h3>
                 <p className="text-cyan-400 text-sm font-medium">
                   {project.category}
                 </p>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           </motion.div>
         ))}
       </div>
