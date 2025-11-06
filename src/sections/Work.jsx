@@ -80,16 +80,20 @@ export default function Work() {
               />
             </div>
 
-            {/* Overlay — now works when hovering anywhere */}
+            {/* Overlay (hover anywhere triggers) */}
             <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <div className="transition-all duration-500">
+              {/* Text lift effect */}
+              <motion.div
+                className="transition-transform duration-500 ease-out"
+                whileHover={{ y: -8 }} // 👈 subtle upward lift on hover
+              >
                 <h3 className="text-white text-xl font-semibold mb-1 tracking-tight">
                   {project.title}
                 </h3>
                 <p className="text-cyan-400 text-sm font-medium">
                   {project.category}
                 </p>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
         ))}
