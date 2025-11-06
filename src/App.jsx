@@ -20,8 +20,9 @@ import MetaTags from "@/components/MetaTags";
 import Hero from "@/sections/Hero";
 import About from "@/sections/About";
 import Services from "@/sections/Services";
-import Work from "@/sections/Work";
+import CaseStudiesPreview from "@/sections/CaseStudiesPreview";
 import Studio from "@/sections/Studio";
+import Work from "@/sections/Work";
 import Testimonials from "@/sections/Testimonials";
 import Contact from "@/sections/Contact";
 
