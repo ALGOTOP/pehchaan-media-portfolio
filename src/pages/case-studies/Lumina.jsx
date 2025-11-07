@@ -102,7 +102,7 @@ export default function Lumina() {
           whileInView="visible"
           custom={1}
           viewport={{ once: true }}
-          src="https://images.unsplash.com/photo-1618005198919-d3d4b5a92e56?auto=format&fit=crop&w=1200&q=80"
+          src="https://i.ibb.co/RkCd8Gcq/Chat-GPT-Image-Nov-7-2025-09-12-02-AM.png"
           alt="Pain point visualization"
           className="rounded-xl shadow-lg border border-white/10 mt-12 w-full"
         />
