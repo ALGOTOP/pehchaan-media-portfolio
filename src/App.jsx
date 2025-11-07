@@ -19,8 +19,8 @@ import MetaTags from "@/components/MetaTags";
 // ─────────────────────────────────────────────
 import Hero from "@/sections/Hero";
 import About from "@/sections/About";
-import CaseStudiesPreview from "@/sections/CaseStudiesPreview";
 import Services from "@/sections/Services";
+import CaseStudiesPreview from "@/sections/CaseStudiesPreview";
 import Studio from "@/sections/Studio";
 import Work from "@/sections/Work";
 import Testimonials from "@/sections/Testimonials";
@@ -80,8 +80,8 @@ export default function App() {
               <>
                 <Hero />
                 <About />
-                <CaseStudiesPreview />    {/* ✅ Inserted here */}
                 <Services />
+                <CaseStudiesPreview />    {/* ✅ Inserted here */}
                 <Studio />
                 <Work />                  {/* ✅ Moved down */}
                 <Testimonials />
