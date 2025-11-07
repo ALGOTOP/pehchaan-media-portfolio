@@ -75,9 +75,9 @@ export default function Navbar() {
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
     { name: "Services", href: "#services" },
-    { name: "Work", href: "#work" },
     { name: "Case Studies", href: "/case-studies" }, // ✅ Updated route-based link
     { name: "Showreel", href: "#showreel" },
+    { name: "Work", href: "#work" },
     { name: "Testimonials", href: "#testimonials" },
     { name: "Contact", href: "#contact" },
   ];
