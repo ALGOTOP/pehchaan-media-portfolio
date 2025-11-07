@@ -46,7 +46,7 @@ export default function Lumina() {
           whileInView="visible"
           custom={2}
           viewport={{ once: true }}
-          src="https://images.unsplash.com/photo-1585218354497-1c72b1f36c1c?auto=format&fit=crop&w=1200&q=80"
+          src="https://i.ibb.co/7xLcJ2Xm/lumina-cropped-1.jpg"
           alt="Lumina Project Mockup"
           className="mt-12 rounded-2xl shadow-2xl border border-white/10 max-w-5xl w-full"
         />
