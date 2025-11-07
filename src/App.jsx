@@ -21,7 +21,6 @@ import Hero from "@/sections/Hero";
 import About from "@/sections/About";
 import Services from "@/sections/Services";
 import CaseStudiesPreview from "@/sections/CaseStudiesPreview";
-import Studio from "@/sections/Studio";
 import Work from "@/sections/Work";
 import Testimonials from "@/sections/Testimonials";
 import Contact from "@/sections/Contact";
@@ -82,7 +81,6 @@ export default function App() {
                 <About />
                 <Services />
                 <CaseStudiesPreview />    {/* ✅ Inserted here */}
-                <Studio />
                 <Work />                  {/* ✅ Moved down */}
                 <Testimonials />
                 <Contact />
