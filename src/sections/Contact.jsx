@@ -104,18 +104,18 @@ export default function Contact() {
         className="flex flex-col items-center mt-20 space-y-4 text-gray-400"
       >
         <div className="flex space-x-4">
-          <a href="#" className="hover:text-cyan-400 transition">
+          <a href="https://www.instagram.com/pehchaanmediahouse/" className="hover:text-cyan-400 transition">
             <Instagram size={24} />
           </a>
-          <a href="mailto:info@pehchaanmedia.com" className="hover:text-cyan-400 transition">
+          <a href="mailto:infopehchaanmedia@gmail.com" className="hover:text-cyan-400 transition">
             <Mail size={24} />
           </a>
-          <a href="tel:+923001234567" className="hover:text-cyan-400 transition">
+          <a href="tel:+923355312242" className="hover:text-cyan-400 transition">
             <Phone size={24} />
           </a>
         </div>
-        <p className="text-sm">info@pehchaanmedia.com</p>
-        <p className="text-sm">+92 300 1234567</p>
+        <p className="text-sm">infopehchaanmedia@gmail.com</p>
+        <p className="text-sm">+92 335 5312242 </p>
       </motion.div>
     </section>
   );
