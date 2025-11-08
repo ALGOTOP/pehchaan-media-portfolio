@@ -1,60 +1,63 @@
-import React, { useRef, useState } from "react";
+// src/sections/Showreel.jsx
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Play } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 
-// ─────────────────────────────────────────────
-// REEL DATA
-// ─────────────────────────────────────────────
+// ───────────────────────────────
+// Reels Data
+// ───────────────────────────────
 const reels = [
   {
     title: "Olipo Drink — 3D Motion Ad",
-    tools: "Blender • After Effects • Premiere Pro",
-    src: "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/Motion%203D%20Refreshingly%20Citrus%20Olipo%20Drink%20Final.Cut%286%29.mp4",
-    thumb: "/thumbnails/olipo.jpg",
-  },
-  {
-    title: "Truly Drinks — Motion Design",
-    tools: "Cinema 4D • Redshift • After Effects",
-    src: "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/110c2cbf42fc32faec789114fdda0196.mp4",
-    thumb: "/thumbnails/truly.jpg",
+    brand: "Olipo",
+    tools: "Cinema 4D • After Effects • Octane Render",
+    video:
+      "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/Motion%203D%20Refreshingly%20Citrus%20Olipo%20Drink%20Final.Cut%286%29.mp4",
   },
   {
     title: "Denver Fragrance Videography",
+    brand: "Denver",
     tools: "Sony FX3 • DaVinci Resolve • Lightroom",
-    src: "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/Denver%20Fragrance%20Videography%20adverts%20Final.Cut%289%29~2.mp4",
-    thumb: "/thumbnails/denver.jpg",
+    video:
+      "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/Denver%20Fragrance%20Videography%20adverts%20Final.Cut%289%29~2.mp4",
   },
   {
-    title: "Aloe Vera — The Refreshing Element",
-    tools: "Cinema 4D • Redshift • Premiere Pro",
-    src: "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/From%20KlickPin%20CF%20Aloe%20Vera%20The%20Refreshing%20Element.mp4",
-    thumb: "/thumbnails/aloe.jpg",
+    title: "Aloe Vera — Refresh Campaign",
+    brand: "KlickPin CF",
+    tools: "Blender • After Effects • Photoshop",
+    video:
+      "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/From%20KlickPin%20CF%20Aloe%20Vera%20The%20Refreshing%20Element.mp4",
   },
   {
     title: "CellCosmet — Motion Inspiration",
-    tools: "Cinema 4D • After Effects • Resolve",
-    src: "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/From%20KlickPin%20CF%20Motion%20inspiration%20-%20cellCosmet%20%5BVideo%5D%20en%202025%20_%20Anuncios%20creativos%20Disenos%20de%20unas%20Fondos%20para%20fotografia.mp4",
-    thumb: "/thumbnails/cellcosmet.jpg",
+    brand: "CellCosmet",
+    tools: "After Effects • Redshift • DaVinci Resolve",
+    video:
+      "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/From%20KlickPin%20CF%20Motion%20inspiration%20-%20cellCosmet%20%5BVideo%5D%20en%202025%20_%20Anuncios%20creativos%20Disenos%20de%20unas%20Fondos%20para%20fotografia.mp4",
   },
   {
     title: "Aurora — Conceptual Product Ad",
+    brand: "Aurora",
     tools: "Blender • Octane • Premiere Pro",
-    src: "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/Motion%203D%20Refreshingly%20Citrus%20Olipo%20Drink%20Final.Cut%286%29.mp4",
-    thumb: "/thumbnails/aurora.jpg",
+    video:
+      "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/Motion%203D%20Refreshingly%20Citrus%20Olipo%20Drink%20Final.Cut%286%29.mp4",
   },
 ];
 
-// ─────────────────────────────────────────────
-// MAIN SECTION
-// ─────────────────────────────────────────────
+// ───────────────────────────────
+// Main Component
+// ───────────────────────────────
 export default function Showreel() {
-  const [activeReel, setActiveReel] = useState(null);
+  const [hovered, setHovered] = useState(null);
+  const [activeVideo, setActiveVideo] = useState(null);
 
   return (
     <section
       id="showreel"
       className="relative bg-black text-white py-32 px-6 md:px-16 overflow-hidden"
     >
+      {/* Header */}
       <div className="max-w-7xl mx-auto text-center mb-16">
         <motion.h2
           initial={{ opacity: 0, y: 40 }}
@@ -75,80 +78,55 @@ export default function Showreel() {
         </motion.p>
       </div>
 
-      {/* ─── GRID LAYOUT ─── */}
+      {/* Reels Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {reels.map((reel, i) => (
-          <ReelCard key={i} {...reel} onClick={() => setActiveReel(reel)} />
+          <ReelCard
+            key={i}
+            reel={reel}
+            hovered={hovered === i}
+            onHover={() => setHovered(i)}
+            onLeave={() => setHovered(null)}
+            onClick={() => setActiveVideo(reel)}
+            index={i}
+          />
         ))}
       </div>
 
-      {/* ─── MOBILE MODAL ─── */}
+      {/* Modal */}
       <AnimatePresence>
-        {activeReel && (
-          <ModalReel reel={activeReel} onClose={() => setActiveReel(null)} />
+        {activeVideo && (
+          <ModalReel reel={activeVideo} onClose={() => setActiveVideo(null)} />
         )}
       </AnimatePresence>
     </section>
   );
 }
 
-// ─────────────────────────────────────────────
-// REEL CARD COMPONENT
-// ─────────────────────────────────────────────
-function ReelCard({ title, tools, src, thumb, onClick }) {
-  const videoRef = useRef(null);
-  const [hovered, setHovered] = useState(false);
+// ───────────────────────────────
+// Reel Card Component
+// ───────────────────────────────
+function ReelCard({ reel, hovered, onHover, onLeave, onClick, index }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.3 });
-
-  const fadeVolume = (video, from, to, duration) => {
-    const step = 50;
-    const diff = to - from;
-    const steps = duration / step;
-    let current = 0;
-    const fade = setInterval(() => {
-      current++;
-      video.volume = from + (diff * current) / steps;
-      if (current >= steps) clearInterval(fade);
-    }, step);
-  };
-
-  const handleEnter = () => {
-    const v = videoRef.current;
-    if (v) {
-      v.muted = false;
-      fadeVolume(v, 0, 1, 700);
-      setHovered(true);
-      v.play().catch(() => {});
-    }
-  };
-
-  const handleLeave = () => {
-    const v = videoRef.current;
-    if (v) {
-      fadeVolume(v, 1, 0, 800);
-      v.muted = true;
-      setHovered(false);
-      // Keep playing muted
-    }
-  };
+  const videoRef = useRef(null);
 
   return (
     <motion.div
       ref={ref}
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-      onClick={onClick}
-      initial={{ opacity: 0, y: 40 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.8, delay: 0.1 }}
       className={`relative rounded-3xl overflow-hidden cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
         hovered
           ? "scale-[1.05] shadow-[0_0_40px_rgba(255,255,255,0.1)]"
           : "scale-100"
       }`}
       style={{ aspectRatio: "16/9", background: "#0a0a0a" }}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+      onClick={onClick}
+      initial={{ opacity: 0, y: 40 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.8, delay: index * 0.1 }}
     >
-      {/* Gleam light sweep */}
+      {/* Gleam effect */}
       <motion.div
         className="absolute inset-0 pointer-events-none overflow-hidden"
         animate={hovered ? { opacity: 1 } : { opacity: 0 }}
@@ -169,40 +147,54 @@ function ReelCard({ title, tools, src, thumb, onClick }) {
       {/* Video */}
       <video
         ref={videoRef}
-        src={src}
-        poster={thumb}
-        playsInline
+        src={reel.video}
         muted
-        preload="metadata"
+        loop
+        autoPlay
+        playsInline
         className="w-full h-full object-cover transition-all duration-700"
-        style={{ filter: hovered ? "brightness(1)" : "brightness(0.8)" }}
+        style={{
+          filter: hovered ? "brightness(1)" : "brightness(0.75)",
+        }}
       />
 
-      {/* Text Overlay */}
+      {/* Overlay Text */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 flex flex-col justify-end p-6">
-        <h3 className="text-xl font-semibold mb-1">{title}</h3>
-        <p className="text-gray-400 text-sm">{tools}</p>
+        <h3 className="text-xl font-semibold mb-1">{reel.brand}</h3>
+        <p className="text-gray-400 text-sm">{reel.tools}</p>
       </div>
+
+      {/* Play Button */}
+      <motion.div
+        className="absolute inset-0 flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">
+          <Play size={36} className="text-white" />
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
 
-// ─────────────────────────────────────────────
-// MOBILE MODAL
-// ─────────────────────────────────────────────
+// ───────────────────────────────
+// Modal Reel
+// ───────────────────────────────
 function ModalReel({ reel, onClose }) {
   const videoRef = useRef(null);
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[999]"
+      className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[999] p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
       <motion.div
-        className="relative w-[90%] max-w-3xl rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-[90%] max-w-4xl rounded-2xl overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -210,14 +202,14 @@ function ModalReel({ reel, onClose }) {
       >
         <video
           ref={videoRef}
-          src={reel.src}
+          src={reel.video}
           autoPlay
           controls
           playsInline
           className="w-full h-auto rounded-2xl"
         />
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 p-4 text-white">
-          <h3 className="text-lg font-semibold">{reel.title}</h3>
+          <h3 className="text-lg font-semibold">{reel.brand}</h3>
           <p className="text-gray-400 text-sm">{reel.tools}</p>
         </div>
       </motion.div>
