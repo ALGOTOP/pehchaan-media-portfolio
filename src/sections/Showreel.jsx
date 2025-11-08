@@ -39,13 +39,12 @@ const showreels = [
 ];
 
 // ─────────────────────────────────────────────
-// ─── COMPONENT
+// ─── MAIN COMPONENT
 // ─────────────────────────────────────────────
 export default function Showreel() {
   const [active, setActive] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect screen size
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -58,6 +57,7 @@ export default function Showreel() {
       id="showreel"
       className="relative bg-black text-white py-24 px-4 md:px-12 overflow-hidden"
     >
+      {/* Header */}
       <div className="text-center mb-16">
         <h2 className="text-4xl md:text-6xl font-bold text-white">
           Our Showreel
@@ -67,14 +67,15 @@ export default function Showreel() {
         </p>
       </div>
 
+      {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {showreels.map((item, i) => (
           <ReelCard
             key={i}
             data={item}
+            index={i}
             active={active}
             setActive={setActive}
-            index={i}
             isMobile={isMobile}
           />
         ))}
@@ -112,46 +113,53 @@ export default function Showreel() {
 }
 
 // ─────────────────────────────────────────────
-// ─── Reel Card Component
+// ─── CARD COMPONENT (Optimized)
 // ─────────────────────────────────────────────
 function ReelCard({ data, index, active, setActive, isMobile }) {
   const videoRef = useRef(null);
   const [isHovered, setHovered] = useState(false);
 
-  // Sound fade in/out
-  useEffect(() => {
+  const fadeVolume = (video, from, to, duration) => {
+    const step = 50;
+    const diff = to - from;
+    const steps = duration / step;
+    let current = 0;
+    const fade = setInterval(() => {
+      current++;
+      video.volume = from + (diff * current) / steps;
+      if (current >= steps) clearInterval(fade);
+    }, step);
+  };
+
+  const handleEnter = () => {
     const video = videoRef.current;
-    if (!video) return;
-
-    let fadeInterval;
-    if (isHovered) {
+    if (video) {
       video.muted = false;
-      video.volume = 0;
-      video.play();
-      fadeInterval = setInterval(() => {
-        if (video.volume < 1) video.volume = Math.min(1, video.volume + 0.1);
-      }, 100);
-    } else {
-      fadeInterval = setInterval(() => {
-        if (video.volume > 0) video.volume = Math.max(0, video.volume - 0.1);
-        else video.muted = true;
-      }, 100);
+      fadeVolume(video, 0, 1, 700);
+      setHovered(true);
+      video.play().catch(() => {});
     }
+  };
 
-    return () => clearInterval(fadeInterval);
-  }, [isHovered]);
+  const handleLeave = () => {
+    const video = videoRef.current;
+    if (video) {
+      fadeVolume(video, 1, 0, 700);
+      setHovered(false);
+      video.muted = true;
+    }
+  };
 
   return (
     <motion.div
       className={`relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-700 ease-out ${
         active === index ? "z-20" : ""
       }`}
-      onMouseEnter={() => !isMobile && setHovered(true)}
-      onMouseLeave={() => !isMobile && setHovered(false)}
+      onMouseEnter={() => !isMobile && handleEnter()}
+      onMouseLeave={() => !isMobile && handleLeave()}
       onClick={() => isMobile && setActive(index)}
       animate={{
         scale: isHovered ? 1.05 : 1,
-        width: isHovered ? "110%" : "100%",
         zIndex: isHovered ? 10 : 1,
       }}
       transition={{ type: "spring", stiffness: 150, damping: 20 }}
@@ -174,7 +182,7 @@ function ReelCard({ data, index, active, setActive, isMobile }) {
         <p className="text-sm text-gray-300 mt-1">{data.tools}</p>
       </div>
 
-      {/* Light Flare */}
+      {/* Light Flare Animation */}
       <motion.div
         className="absolute top-0 left-0 w-full h-full pointer-events-none bg-gradient-to-r from-white/5 via-transparent to-white/5 mix-blend-screen"
         animate={{ opacity: isHovered ? [0.2, 0.4, 0.2] : 0 }}
@@ -182,3 +190,4 @@ function ReelCard({ data, index, active, setActive, isMobile }) {
       />
     </motion.div>
   );
+}
