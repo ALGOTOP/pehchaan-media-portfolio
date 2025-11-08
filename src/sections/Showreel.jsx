@@ -44,6 +44,7 @@ const showreels = [
 export default function Showreel() {
   const [active, setActive] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const videoRefs = useRef([]); // Track all video elements
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -51,6 +52,16 @@ export default function Showreel() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Pause all other videos
+  const pauseOthers = (currentIndex) => {
+    videoRefs.current.forEach((vid, idx) => {
+      if (vid && idx !== currentIndex) {
+        vid.pause();
+        vid.muted = true;
+      }
+    });
+  };
 
   return (
     <section
@@ -77,6 +88,8 @@ export default function Showreel() {
             active={active}
             setActive={setActive}
             isMobile={isMobile}
+            videoRefs={videoRefs}
+            pauseOthers={pauseOthers}
           />
         ))}
       </div>
@@ -115,9 +128,21 @@ export default function Showreel() {
 // ─────────────────────────────────────────────
 // ─── CARD COMPONENT (Optimized)
 // ─────────────────────────────────────────────
-function ReelCard({ data, index, active, setActive, isMobile }) {
+function ReelCard({
+  data,
+  index,
+  active,
+  setActive,
+  isMobile,
+  videoRefs,
+  pauseOthers,
+}) {
   const videoRef = useRef(null);
   const [isHovered, setHovered] = useState(false);
+
+  useEffect(() => {
+    videoRefs.current[index] = videoRef.current;
+  }, [index, videoRefs]);
 
   const fadeVolume = (video, from, to, duration) => {
     const step = 50;
@@ -134,6 +159,8 @@ function ReelCard({ data, index, active, setActive, isMobile }) {
   const handleEnter = () => {
     const video = videoRef.current;
     if (video) {
+      pauseOthers(index);
+      video.currentTime = 0;
       video.muted = false;
       fadeVolume(video, 0, 1, 700);
       setHovered(true);
