@@ -182,4 +182,3 @@ function ReelCard({ data, index, active, setActive, isMobile }) {
       />
     </motion.div>
   );
-}
