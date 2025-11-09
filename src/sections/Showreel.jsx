@@ -40,7 +40,7 @@ const showreels = [
     title: "URÉE — 3D Motion Ad",
     tools: "Blender • After Effects • Premiere Pro",
     video:
-      "https://ia600501.us.archive.org/26/items/ure-e-serums-oils-luxury-graphic-design-motion-graphics-design-cut-8-finalized/UR%C3%88E%20Serums%20%26%20Oils%20Luxury%20graphic%20design%20Motion%20graphics%20design%20Cut%288%29%20Finalized.mp4,
+      "https://ia600501.us.archive.org/26/items/ure-e-serums-oils-luxury-graphic-design-motion-graphics-design-cut-8-finalized/UR%C3%88E%20Serums%20%26%20Oils%20Luxury%20graphic%20design%20Motion%20graphics%20design%20Cut%288%29%20Finalized.mp4",
   },
 ];
 
@@ -85,10 +85,10 @@ export default function Showreel() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 will-change-transform">
         {showreels.map((item, i) => (
           <ReelCard
-            key={i}
+            key={item.title}
             data={item}
             index={i}
             active={active}
@@ -145,20 +145,24 @@ function ReelCard({
 }) {
   const videoRef = useRef(null);
   const [isHovered, setHovered] = useState(false);
+  const fadeInterval = useRef(null);
 
   useEffect(() => {
     videoRefs.current[index] = videoRef.current;
   }, [index, videoRefs]);
 
   const fadeVolume = (video, from, to, duration) => {
+    if (!video) return;
+    clearInterval(fadeInterval.current);
     const step = 50;
     const diff = to - from;
     const steps = duration / step;
     let current = 0;
-    const fade = setInterval(() => {
+
+    fadeInterval.current = setInterval(() => {
       current++;
       video.volume = from + (diff * current) / steps;
-      if (current >= steps) clearInterval(fade);
+      if (current >= steps) clearInterval(fadeInterval.current);
     }, step);
   };
 
