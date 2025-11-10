@@ -54,7 +54,7 @@ export default function Footer() {
             </a>
 
             <a
-              href="https://www.linkedin.com/"
+              href="https://www.linkedin.com/company/pehchaan-media/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-[#0A66C2] transition"
