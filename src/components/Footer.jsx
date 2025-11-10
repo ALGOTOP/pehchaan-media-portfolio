@@ -45,7 +45,7 @@ export default function Footer() {
             </a>
 
             <a
-              href="https://facebook.com/"
+              href="https://www.facebook.com/people/Pehchaan-Media/61583589837999/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-blue-500 transition"
