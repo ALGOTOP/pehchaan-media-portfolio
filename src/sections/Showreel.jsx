@@ -79,6 +79,19 @@ export default function Showreel() {
       id="showreel"
       className="relative bg-black text-white py-24 px-4 md:px-12 overflow-hidden"
     >
+      {/* Cinematic Intro Text */}
+<motion.div
+  initial={{ opacity: 0, y: 80, scale: 1.1 }}
+  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+  transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
+  viewport={{ once: true }}
+  className="relative mb-20"
+>
+  <h2 className="text-center text-[3.5rem] md:text-[6rem] font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-[0_0_15px_rgba(0,255,255,0.3)]">
+    Stories in Motion
+  </h2>
+  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70 pointer-events-none" />
+</motion.div>
       {/* Header */}
       <motion.div
         className="text-center mb-20"
