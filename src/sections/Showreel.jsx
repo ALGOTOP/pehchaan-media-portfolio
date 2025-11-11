@@ -90,7 +90,7 @@ export default function Showreel() {
         viewport={{ once: true, amount: 0.4 }}
         className="relative mb-20"
       >
-        <h2 className="text-center text-[3.5rem] md:text-[6rem] font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-[0_0_15px_rgba(0,255,255,0.3)]">
+        <h2 className="text-center text-[3.5rem] md:text-[6rem] font-extrabold tracking-tight uppercase text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 drop-shadow-[0_0_8px_rgba(56,189,248,0.3)]">
           Stories in Motion
         </h2>
         {/* Preserve your original gradient overlay */}
@@ -106,7 +106,7 @@ export default function Showreel() {
         viewport={{ once: true }}
       >
         <p className="text-gray-400 mt-4 text-lg">
-          Every frame crafted with intention, emotion, and identity.
+          Every frame crafted with intention, emotion, and identity, that makes your content stand-out and make people stop scrolling.
         </p>
       </motion.div>
 
