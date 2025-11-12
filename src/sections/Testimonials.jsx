@@ -89,7 +89,7 @@ export default function Testimonials() {
           {[
             { num: "40+", label: "International Brands", desc: "Built identities and campaigns that traveled globally." },
             { num: "3.2×", label: "Higher Noticeability", desc: "Average visual recall improvement across digital assets." },
-            { num: "98%", label: "Client Retention", desc: "Most of our partners stay with us for multiple projects." },
+            { num: "92%", label: "Client Retention", desc: "Most of our partners stay with us for multiple projects." },
             { num: "70+", label: "Global Campaigns", desc: "Executed across 4 continents in film, digital & print." },
             { num: "28 days", label: "Avg. Turnaround", desc: "Swift creative delivery without compromising detail." },
           ].map((stat, i) => (
