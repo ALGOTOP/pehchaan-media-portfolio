@@ -7,7 +7,12 @@ export default function Contact() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
   const [status, setStatus] = useState(null); // "success" | "error" | null
 
   const handleChange = (e) => {
@@ -26,15 +31,22 @@ export default function Contact() {
         body: JSON.stringify(formData),
       });
 
-      const result = await res.json();
-      if (result.success) {
-        setStatus("success");
-        setFormData({ name: "", email: "", subject: "", message: "" });
-      } else {
-        setStatus("error");
+      // Try to safely parse JSON — avoid “Unexpected token” crash
+      let result;
+      try {
+        result = await res.json();
+      } catch (parseErr) {
+        const text = await res.text();
+        console.error("Non-JSON response from /api/contact:", text);
+        throw new Error("Server returned an invalid response. Check logs.");
       }
+
+      if (!res.ok || !result.success) throw new Error(result.error || "Failed to send");
+
+      setStatus("success");
+      setFormData({ name: "", email: "", subject: "", message: "" });
     } catch (err) {
-      console.error(err);
+      console.error("Contact form error:", err);
       setStatus("error");
     } finally {
       setLoading(false);
@@ -134,7 +146,9 @@ export default function Contact() {
           <p className="text-green-400 text-center">Message sent successfully!</p>
         )}
         {status === "error" && (
-          <p className="text-red-400 text-center">Failed to send message. Please try again.</p>
+          <p className="text-red-400 text-center">
+            Failed to send message. Please try again.
+          </p>
         )}
       </motion.form>
 
@@ -147,10 +161,16 @@ export default function Contact() {
         className="flex flex-col items-center mt-20 space-y-4 text-gray-400"
       >
         <div className="flex space-x-4">
-          <a href="https://www.instagram.com/pehchaanmediahouse/" className="hover:text-cyan-400 transition">
+          <a
+            href="https://www.instagram.com/pehchaanmediahouse/"
+            className="hover:text-cyan-400 transition"
+          >
             <Instagram size={24} />
           </a>
-          <a href="mailto:infopehchaanmedia@gmail.com" className="hover:text-cyan-400 transition">
+          <a
+            href="mailto:infopehchaanmedia@gmail.com"
+            className="hover:text-cyan-400 transition"
+          >
             <Mail size={24} />
           </a>
           <a href="tel:+923355312242" className="hover:text-cyan-400 transition">
