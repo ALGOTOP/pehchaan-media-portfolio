@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { fadeInUp, delayFade } from "@/utils/animations";
 import { Instagram, Mail, Phone } from "lucide-react";
@@ -6,52 +6,6 @@ import { Instagram, Mail, Phone } from "lucide-react";
 export default function Contact() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-  const [status, setStatus] = useState(null); // "success" | "error" | null
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setStatus(null);
-
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      // Try to safely parse JSON — avoid “Unexpected token” crash
-      let result;
-      try {
-        result = await res.json();
-      } catch (parseErr) {
-        const text = await res.text();
-        console.error("Non-JSON response from /api/contact:", text);
-        throw new Error("Server returned an invalid response. Check logs.");
-      }
-
-      if (!res.ok || !result.success) throw new Error(result.error || "Failed to send");
-
-      setStatus("success");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch (err) {
-      console.error("Contact form error:", err);
-      setStatus("error");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <section
@@ -87,8 +41,20 @@ export default function Contact() {
         initial="hidden"
         animate={inView ? "show" : "hidden"}
         transition={{ delay: 0.3 }}
-        onSubmit={handleSubmit}
         className="w-full max-w-2xl space-y-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const btn = e.currentTarget.querySelector("button");
+          if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Sending...";
+            setTimeout(() => {
+              btn.disabled = false;
+              btn.innerText = "Send Message";
+              alert("Message submitted (demo). Connect backend to send real messages.");
+            }, 900);
+          }
+        }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <input
@@ -96,8 +62,6 @@ export default function Contact() {
             name="name"
             placeholder="Your Name"
             required
-            value={formData.name}
-            onChange={handleChange}
             className="w-full bg-[#0e0e0e] border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
           />
           <input
@@ -105,28 +69,19 @@ export default function Contact() {
             name="email"
             placeholder="Your Email"
             required
-            value={formData.email}
-            onChange={handleChange}
             className="w-full bg-[#0e0e0e] border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
           />
         </div>
-
         <input
           type="text"
           name="subject"
           placeholder="Subject"
-          value={formData.subject}
-          onChange={handleChange}
           className="w-full bg-[#0e0e0e] border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
         />
-
         <textarea
           name="message"
           rows="5"
           placeholder="Your Message"
-          required
-          value={formData.message}
-          onChange={handleChange}
           className="w-full bg-[#0e0e0e] border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
         ></textarea>
 
@@ -134,22 +89,10 @@ export default function Contact() {
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
           type="submit"
-          disabled={loading}
-          className={`w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold py-4 rounded-xl shadow-xl hover:shadow-cyan-400/30 transition-all ${
-            loading ? "opacity-70 cursor-not-allowed" : ""
-          }`}
+          className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold py-4 rounded-xl shadow-xl hover:shadow-cyan-400/30 transition-all"
         >
-          {loading ? "Sending..." : "Send Message"}
+          Send Message
         </motion.button>
-
-        {status === "success" && (
-          <p className="text-green-400 text-center">Message sent successfully!</p>
-        )}
-        {status === "error" && (
-          <p className="text-red-400 text-center">
-            Failed to send message. Please try again.
-          </p>
-        )}
       </motion.form>
 
       {/* Social Links */}
@@ -161,16 +104,10 @@ export default function Contact() {
         className="flex flex-col items-center mt-20 space-y-4 text-gray-400"
       >
         <div className="flex space-x-4">
-          <a
-            href="https://www.instagram.com/pehchaanmediahouse/"
-            className="hover:text-cyan-400 transition"
-          >
+          <a href="https://www.instagram.com/pehchaanmediahouse/" className="hover:text-cyan-400 transition">
             <Instagram size={24} />
           </a>
-          <a
-            href="mailto:infopehchaanmedia@gmail.com"
-            className="hover:text-cyan-400 transition"
-          >
+          <a href="mailto:infopehchaanmedia@gmail.com" className="hover:text-cyan-400 transition">
             <Mail size={24} />
           </a>
           <a href="tel:+923355312242" className="hover:text-cyan-400 transition">
@@ -178,7 +115,7 @@ export default function Contact() {
           </a>
         </div>
         <p className="text-sm">infopehchaanmedia@gmail.com</p>
-        <p className="text-sm">+92 335 5312242</p>
+        <p className="text-sm">+92 335 5312242 </p>
       </motion.div>
     </section>
   );
