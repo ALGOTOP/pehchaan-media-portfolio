@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Instagram,
   Facebook,
@@ -9,6 +9,25 @@ import {
 } from "lucide-react";
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    const res = await fetch("/api/newsletter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    const result = await res.json();
+    if (result.success) {
+      alert("Thanks for subscribing!");
+      setEmail("");
+    } else {
+      alert("Subscription failed.");
+    }
+  };
+
   return (
     <footer className="relative bg-[#050505] border-t border-white/10 py-16 px-6 text-gray-400 text-sm md:text-base">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -103,17 +122,13 @@ export default function Footer() {
             Subscribe to get insights, behind-the-scenes, and updates from our creative team.
           </p>
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert("Subscribed (demo). Hook up a backend to capture emails.");
-            }}
-            className="flex items-center space-x-2"
-          >
+          <form onSubmit={handleSubscribe} className="flex items-center space-x-2">
             <input
               type="email"
               placeholder="Your email"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="flex-1 bg-[#0e0e0e] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
             />
             <button className="bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-3 rounded-xl text-black font-semibold hover:shadow-cyan-400/30 transition">
