@@ -11,26 +11,26 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Email is required" });
   }
 
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: "newsletter@pehchaanmedia.com",
+    to: "infopehchaanmedia@gmail.com",
+    subject: "New Newsletter Signup",
+    text: `New subscriber: ${email}`,
+  };
+
   try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: "infopehchaanmedia@gmail.com",
-      subject: "New Newsletter Signup",
-      text: `New subscriber: ${email}`,
-    };
-
     await transporter.sendMail(mailOptions);
     return res.status(200).json({ success: true });
   } catch (err) {
-    console.error("Newsletter mail error:", err);
+    console.error(err);
     return res.status(500).json({ error: "Failed to send email" });
   }
 }
