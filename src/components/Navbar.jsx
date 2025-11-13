@@ -14,7 +14,7 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   // ───────────────────────────────
-  // SCROLL DETECTION FOR NAV STYLING
+  // SCROLL DETECTION
   // ───────────────────────────────
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -41,35 +41,30 @@ export default function Navbar() {
   }, [location.pathname]);
 
   // ───────────────────────────────
-  // LINK HANDLER
+  // HANDLE LINKS
   // ───────────────────────────────
   const handleNavClick = (e, href) => {
     e.preventDefault();
     setMenuOpen(false);
 
-    if (href === "/case-studies" && !location.pathname.startsWith("/case-studies")) {
-      window.open(href, "_blank");
+    // Open external or full pages
+    if (href.startsWith("http")) return window.open(href, "_blank");
+    if (href.startsWith("/case-studies")) return window.open(href, "_blank");
+
+    // Navigate to homepage section if not already there
+    if (href.startsWith("#") && location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        const target = document.querySelector(href);
+        if (target)
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 800);
       return;
     }
 
-    if (href.startsWith("http")) {
-      window.open(href, "_blank");
-      return;
-    }
-
-    if (href.startsWith("/")) {
-      navigate(href);
-      return;
-    }
-
+    // Normal in-page scroll
     const target = document.querySelector(href);
-    if (!target) return;
-
-    if (window.lenis && typeof window.lenis.scrollTo === "function") {
-      window.lenis.scrollTo(href);
-    } else {
-      target.scrollIntoView({ behavior: "smooth" });
-    }
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   // ───────────────────────────────
@@ -82,7 +77,7 @@ export default function Navbar() {
     {
       name: "Case Studies",
       submenu: [
-        { label: "View Some", href: "#case-studies" }, // 👈 make sure this matches your homepage section ID
+        { label: "View Some", href: "#case-studies" }, // ✅ scrolls correctly now
         { label: "View All", href: "/case-studies" },
       ],
     },
@@ -91,7 +86,7 @@ export default function Navbar() {
       name: "Work",
       submenu: [
         { label: "View Some", href: "#work" },
-        { label: "View All", href: "https://placeholder.workpage.com" }, // 👈 placeholder link
+        { label: "View All", href: "https://placeholder.workpage.com" },
       ],
     },
     { name: "Testimonials", href: "#testimonials" },
@@ -99,7 +94,7 @@ export default function Navbar() {
   ];
 
   // ───────────────────────────────
-  // JSX MARKUP
+  // COMPONENT
   // ───────────────────────────────
   return (
     <motion.nav
@@ -122,7 +117,7 @@ export default function Navbar() {
           Pehchaan Media
         </a>
 
-        {/* DESKTOP LINKS */}
+        {/* DESKTOP NAVIGATION */}
         <div className="hidden md:flex space-x-10">
           {links.map((link) =>
             link.submenu ? (
@@ -135,8 +130,10 @@ export default function Navbar() {
                 }}
                 onMouseLeave={() => {
                   const timeout = setTimeout(() => {
-                    setSubmenuOpen((prev) => (prev === link.name ? null : prev));
-                  }, 1200); // 👈 1.2s delay before closing
+                    setSubmenuOpen((prev) =>
+                      prev === link.name ? null : prev
+                    );
+                  }, 1200); // 👈 hover delay
                   setHoverTimeout(timeout);
                 }}
               >
@@ -151,19 +148,24 @@ export default function Navbar() {
                   <ChevronDown
                     size={14}
                     className={`ml-1 mt-[2px] transition-transform duration-300 ${
-                      submenuOpen === link.name ? "rotate-180 text-cyan-400" : "text-gray-400"
+                      submenuOpen === link.name
+                        ? "rotate-180 text-cyan-400"
+                        : "text-gray-400"
                     }`}
                   />
                 </button>
 
-                {/* DROPDOWN MENU */}
+                {/* APPLE-STYLE DROPDOWN */}
                 <AnimatePresence>
                   {submenuOpen === link.name && (
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
+                      initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.25, ease: "easeOut" }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{
+                        duration: 0.25,
+                        ease: [0.25, 0.1, 0.25, 1], // cubic ease for soft motion
+                      }}
                       className="absolute left-0 mt-2 w-40 rounded-md bg-black/90 border border-white/10 shadow-lg backdrop-blur-md py-2 z-40"
                     >
                       {link.submenu.map((item) => (
@@ -207,7 +209,7 @@ export default function Navbar() {
           </motion.a>
         </div>
 
-        {/* MOBILE MENU TOGGLE */}
+        {/* MOBILE MENU BUTTON */}
         <button
           className="md:hidden text-gray-300 hover:text-white transition"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -232,7 +234,9 @@ export default function Navbar() {
                 <div key={link.name} className="w-full text-center">
                   <button
                     onClick={() =>
-                      setSubmenuOpen(submenuOpen === link.name ? null : link.name)
+                      setSubmenuOpen(
+                        submenuOpen === link.name ? null : link.name
+                      )
                     }
                     className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition flex justify-center items-center w-full"
                   >
@@ -240,7 +244,9 @@ export default function Navbar() {
                     <ChevronDown
                       size={16}
                       className={`ml-2 transition-transform duration-300 ${
-                        submenuOpen === link.name ? "rotate-180 text-cyan-400" : ""
+                        submenuOpen === link.name
+                          ? "rotate-180 text-cyan-400"
+                          : ""
                       }`}
                     />
                   </button>
