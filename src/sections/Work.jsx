@@ -27,9 +27,9 @@ export default function Work() {
       image: "https://i.ibb.co/zTvZF0G3/streams.png",
     },
     {
-      title: "Rise Coffee",
+      title: "Zarrafa Coffee",
       category: "Creative Strategy",
-      image: "https://i.ibb.co/dw32jwLQ/rise-coffee.jpg",
+      image: "https://i.ibb.co/LXdzRmFW/Zarraffa-s-id-IDzk-CXha-0.png",
     },
     {
       title: "Matrix",
