@@ -11,42 +11,42 @@ const showreels = [
     tools: "Blender • After Effects • Premiere Pro • DaVinci",
     video:
       "https://ia803108.us.archive.org/17/items/ketone.-drink.-2025.final-6/Ketone.Drink.2025.final%286%29.mp4",
-    poster: "/thumbnails/olipo.jpg",
+    poster: "/thumbnails/kenetik.jpg",
   },
   {
     title: "TRULY - 4D Graphic Post + Ad",
     tools: "Cinema 4D • Redshift • After Effects",
     video:
       "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/110c2cbf42fc32faec789114fdda0196.mp4",
-    poster: "/thumbnails/olipo.jpg",
+    poster: "/thumbnails/truly.jpg",
   },
   {
     title: "Denver Fragrances - Videography",
     tools: "Sony FX3 • DaVinci Resolve • Lightroom",
     video:
       "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/Denver%20Fragrance%20Videography%20adverts%20Final.Cut%289%29~2.mp4",
-    poster: "/thumbnails/olipo.jpg",
+    poster: "/thumbnails/denver.jpg",
   },
   {
     title: "Kinstu By BRIZO - Motion Ad + Major Rebranding",
-    tools: "Canon R5 • After Effects • Adobe Premier Pro • Cinema 4D",
+    tools: "Canon R5 • After Effects • Adobe Premiere Pro • Cinema 4D",
     video:
       "https://ia600504.us.archive.org/32/items/from-klick-pin-cf-kintsur-kitchen-collection-by-brizo-video-in-2025-kitchen-coll/From%20KlickPin%20CF%20Kintsu%C2%AE%20Kitchen%20Collection%20by%20Brizo%20%5BVideo%5D%20in%202025%20_%20Kitchen%20collection%20Motion%20design%20Motion%20design%20video.mp4",
-    poster: "/thumbnails/olipo.jpg",
+    poster: "/thumbnails/kinstu.jpg",
   },
   {
-    title: "CellCosmet - Creatives Direction",
+    title: "CellCosmet - Creative Direction",
     tools: "Illustrator • After Effects • Premiere Pro • Maxon Cinema 4D",
     video:
       "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/From%20KlickPin%20CF%20Motion%20inspiration%20-%20cellCosmet%20%5BVideo%5D%20en%202025%20_%20Anuncios%20creativos%20Disenos%20de%20unas%20Fondos%20para%20fotografia.mp4",
-    poster: "/thumbnails/olipo.jpg",
+    poster: "/thumbnails/cellcosmet.jpg",
   },
   {
     title: "URÉE - 3D Motion Ad",
     tools: "Blender • After Effects • Premiere Pro",
     video:
       "https://ia600501.us.archive.org/26/items/ure-e-serums-oils-luxury-graphic-design-motion-graphics-design-cut-8-finalized/UR%C3%88E%20Serums%20%26%20Oils%20Luxury%20graphic%20design%20Motion%20graphics%20design%20Cut%288%29%20Finalized.mp4",
-    poster: "/thumbnails/olipo.jpg",
+    poster: "/thumbnails/uree.jpg",
   },
 ];
 
@@ -56,7 +56,7 @@ const showreels = [
 export default function Showreel() {
   const [active, setActive] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
-  const videoRefs = useRef([]); // Track all video elements
+  const videoRefs = useRef([]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -65,7 +65,6 @@ export default function Showreel() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Pause all other videos
   const pauseOthers = (currentIndex) => {
     videoRefs.current.forEach((vid, idx) => {
       if (vid && idx !== currentIndex) {
@@ -82,12 +81,24 @@ export default function Showreel() {
     >
       {/* Header */}
       <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-6xl font-bold text-white">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500"
+        >
           Our Showreel
-        </h2>
-        <p className="text-gray-400 mt-4 text-lg">
-          Cinematic creations — each frame, a crafted story.
-        </p>
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="text-gray-400 mt-4 text-lg max-w-2xl mx-auto"
+        >
+          Every frame tells a story. Every story defines a brand.
+        </motion.p>
       </div>
 
       {/* Grid */}
@@ -191,6 +202,10 @@ function ReelCard({
 
   return (
     <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
       className={`relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-700 ease-out ${
         active === index ? "z-20" : ""
       }`}
@@ -207,26 +222,42 @@ function ReelCard({
       <video
         ref={videoRef}
         src={data.video}
+        poster={data.poster}
         autoPlay
         loop
         playsInline
         muted
         preload="metadata"
+        loading="lazy"
         className="object-cover w-full h-72 md:h-96 brightness-90 transition-all duration-700 group-hover:brightness-100"
       />
 
-      {/* Overlay Text */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-90 flex flex-col justify-end p-6">
-        <h3 className="text-xl md:text-2xl font-semibold">{data.title}</h3>
-        <p className="text-sm text-gray-300 mt-1">{data.tools}</p>
-      </div>
-
-      {/* Light Flare Animation */}
+      {/* Cyan Glow on Hover */}
       <motion.div
-        className="absolute top-0 left-0 w-full h-full pointer-events-none bg-gradient-to-r from-white/5 via-transparent to-white/5 mix-blend-screen"
-        animate={{ opacity: isHovered ? [0.2, 0.4, 0.2] : 0 }}
-        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute inset-0 rounded-2xl pointer-events-none"
+        animate={{
+          boxShadow: isHovered
+            ? "0px 0px 60px 5px rgba(34, 211, 238, 0.25)"
+            : "0px 0px 0px rgba(0,0,0,0)",
+        }}
+        transition={{ duration: 0.4 }}
       />
+
+      {/* Overlay Text */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        viewport={{ once: true, amount: 0.4 }}
+        className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-6 rounded-2xl"
+      >
+        <h3 className="text-xl md:text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 drop-shadow-lg">
+          {data.title}
+        </h3>
+        <p className="text-sm text-gray-300 mt-1 font-light tracking-wide">
+          {data.tools}
+        </p>
+      </motion.div>
     </motion.div>
   );
 }
