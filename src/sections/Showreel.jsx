@@ -251,7 +251,7 @@ function ReelCard({
         viewport={{ once: true, amount: 0.4 }}
         className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-6 rounded-2xl"
       >
-        <h3 className="text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-gray-400 text-lg md:text-xl font-semibold mb-2 tracking-wide">
+        <h3 className="text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-gray-400 text-lg md:text-xl font-semibold mb-1 tracking-wide">
           {data.title}
         </h3>
         <p className="text-sm text-gray-300 mt-1 font-light tracking-wide">
