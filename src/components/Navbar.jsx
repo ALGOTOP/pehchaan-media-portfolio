@@ -77,7 +77,7 @@ export default function Navbar() {
     {
       name: "Case Studies",
       submenu: [
-        { label: "View Some", href: "#case-studies" }, // ✅ scrolls correctly now
+        { label: "View Some", href: "#case-studies-preview" }, // ✅ scrolls correctly now
         { label: "View All", href: "/case-studies" },
       ],
     },
