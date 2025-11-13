@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 // ─────────────────────────────────────────────
 const showreels = [
   {
-    title: "KENETIK Drink - 3D Motion Ad + Brand Identity",
+    title: "KENETIK - 3D Motion Ad + Brand Identity",
     tools: "Blender • After Effects • Premiere Pro • DaVinci",
     video:
       "https://ia803108.us.archive.org/17/items/ketone.-drink.-2025.final-6/Ketone.Drink.2025.final%286%29.mp4",
