@@ -28,10 +28,10 @@ const showreels = [
     poster: "/thumbnails/olipo.jpg",
   },
   {
-    title: "IMPLORA - Aloe Vera Campaign",
-    tools: "Canon R5 • After Effects • Photoshop",
+    title: "KINSTU BY BRIZO - Motion AD + Major Rebranding",
+    tools: "Canon R5 • After Effects • Adobe Premier Pro • Cinema 4D",
     video:
-      "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/From%20KlickPin%20CF%20Aloe%20Vera%20The%20Refreshing%20Element.mp4",
+      "https://ia600504.us.archive.org/32/items/from-klick-pin-cf-kintsur-kitchen-collection-by-brizo-video-in-2025-kitchen-coll/From%20KlickPin%20CF%20Kintsu%C2%AE%20Kitchen%20Collection%20by%20Brizo%20%5BVideo%5D%20in%202025%20_%20Kitchen%20collection%20Motion%20design%20Motion%20design%20video.mp4",
     poster: "/thumbnails/olipo.jpg",
   },
   {
