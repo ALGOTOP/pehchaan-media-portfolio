@@ -39,7 +39,7 @@ export default function Work() {
     {
       title: "LUMINA",
       category: "Creative Direction & Complete Marketing Rebrand",
-      image: "https://i.ibb.co/pNrgqMN/lumina-resized-736x736.jpg",
+      image: "https://i.ibb.co/HfLRJCR6/Lumina-uzma.jpg",
     },
   ];
 
