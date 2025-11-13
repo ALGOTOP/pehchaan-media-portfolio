@@ -7,10 +7,10 @@ import { X } from "lucide-react";
 // ─────────────────────────────────────────────
 const showreels = [
   {
-    title: "Olipo Drink — 3D Motion Ad",
-    tools: "Blender • After Effects • Premiere Pro",
+    title: "KENETIK Drink - 3D Motion Ad + Brand Identity",
+    tools: "Blender • After Effects • Premiere Pro • DaVinci",
     video:
-      "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/Motion%203D%20Refreshingly%20Citrus%20Olipo%20Drink%20Final.Cut%286%29.mp4",
+      "https://ia803108.us.archive.org/17/items/ketone.-drink.-2025.final-6/Ketone.Drink.2025.final%286%29.mp4",
     poster: "/thumbnails/olipo.jpg",
   },
   {
@@ -28,7 +28,7 @@ const showreels = [
     poster: "/thumbnails/olipo.jpg",
   },
   {
-    title: "IMPLORA — Aloe Vera Campaign",
+    title: "IMPLORA - Aloe Vera Campaign",
     tools: "Canon R5 • After Effects • Photoshop",
     video:
       "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/From%20KlickPin%20CF%20Aloe%20Vera%20The%20Refreshing%20Element.mp4",
@@ -42,7 +42,7 @@ const showreels = [
     poster: "/thumbnails/olipo.jpg",
   },
   {
-    title: "URÉE — 3D Motion Ad",
+    title: "URÉE - 3D Motion Ad",
     tools: "Blender • After Effects • Premiere Pro",
     video:
       "https://ia600501.us.archive.org/26/items/ure-e-serums-oils-luxury-graphic-design-motion-graphics-design-cut-8-finalized/UR%C3%88E%20Serums%20%26%20Oils%20Luxury%20graphic%20design%20Motion%20graphics%20design%20Cut%288%29%20Finalized.mp4",
