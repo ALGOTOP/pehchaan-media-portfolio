@@ -1,182 +1,244 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
-export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
+const Navbar = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const dropdownRef = useRef(null);
 
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // ───────────────────────────────
-  // SCROLL DETECTION FOR NAV STYLING
-  // ───────────────────────────────
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // ───────────────────────────────
-  // ACTIVE SECTION HIGHLIGHT
-  // ───────────────────────────────
-  useEffect(() => {
-    if (location.pathname !== "/") return;
-    const sections = document.querySelectorAll("section[id]");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveSection(entry.target.id);
-        });
-      },
-      { threshold: 0.4 }
-    );
-    sections.forEach((sec) => observer.observe(sec));
-    return () => sections.forEach((sec) => observer.unobserve(sec));
-  }, [location.pathname]);
-
-  // ───────────────────────────────
-  // LINK HANDLER (SMART CASE STUDIES LOGIC)
-  // ───────────────────────────────
-  const handleNavClick = (e, href) => {
-    e.preventDefault();
-    setMenuOpen(false);
-
-    // ✅ CASE 1: Case Studies link from main site → open in new tab
-    if (href === "/case-studies" && !location.pathname.startsWith("/case-studies")) {
-      window.open(href, "_blank");
-      return;
-    }
-
-    // ✅ CASE 2: Internal route navigation (within case studies)
-    if (href.startsWith("/")) {
-      navigate(href);
-      return;
-    }
-
-    // ✅ CASE 3: Smooth scroll for in-page sections
-    const target = document.querySelector(href);
-    if (!target) return;
-
-    if (window.lenis && typeof window.lenis.scrollTo === "function") {
-      window.lenis.scrollTo(href);
-    } else {
-      target.scrollIntoView({ behavior: "smooth" });
-    }
+  // ─── Animation Variants ───────────────────────────────
+  const dropdownAnim = {
+    hidden: { opacity: 0, y: -6 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" } },
+    exit: { opacity: 0, y: -6, transition: { duration: 0.2, ease: "easeIn" } },
   };
 
-  // ───────────────────────────────
-  // NAVIGATION LINKS
-  // ───────────────────────────────
-  const links = [
-    { name: "Home", href: "#home" },
-    { name: "About", href: "#about" },
-    { name: "Services", href: "#services" },
-    { name: "Case Studies", href: "/case-studies" }, // ✅ Updated route-based link
-    { name: "Showreel", href: "#showreel" },
-    { name: "Work", href: "#work" },
-    { name: "Testimonials", href: "#testimonials" },
-    { name: "Contact", href: "#contact" },
-  ];
+  // ─── Click Outside to Close (Desktop) ─────────────────
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  // ───────────────────────────────
-  // JSX MARKUP
-  // ───────────────────────────────
   return (
-    <motion.nav
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-black/70 backdrop-blur-xl border-b border-white/10 shadow-lg"
-          : "bg-transparent"
-      }`}
-    >
+    <nav className="fixed w-full z-50 bg-black/80 backdrop-blur-md text-white border-b border-white/10">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        {/* LOGO */}
-        <a
-          href="#home"
-          onClick={(e) => handleNavClick(e, "#home")}
-          className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text hover:opacity-90 transition"
+        <Link to="/" className="text-2xl font-bold tracking-wide">
+          Agency
+        </Link>
+
+        {/* ─── Desktop Menu ─────────────────────────────── */}
+        <div
+          ref={dropdownRef}
+          className="hidden md:flex items-center space-x-8 text-sm font-medium relative"
         >
-          Pehchaan Media
-        </a>
+          <Link to="/" className="hover:text-cyan-400 transition-colors">
+            Home
+          </Link>
 
-        {/* DESKTOP LINKS */}
-        <div className="hidden md:flex space-x-10">
-          {links.map((link) => (
-            <button
-              key={link.name}
-              onClick={(e) => handleNavClick(e, link.href)}
-              className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
-                activeSection === link.href.replace("#", "")
-                  ? "text-cyan-400"
-                  : "text-gray-300 hover:text-cyan-400"
-              }`}
-            >
-              {link.name}
-            </button>
-          ))}
-        </div>
-
-        {/* CTA BUTTON */}
-        <div className="hidden md:flex items-center space-x-4">
-          <motion.a
-            href="#contact"
-            onClick={(e) => handleNavClick(e, "#contact")}
-            whileHover={{ scale: 1.05 }}
-            className="px-4 py-2 text-sm rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-md hover:shadow-cyan-400/30 transition"
+          {/* Case Studies Dropdown */}
+          <div
+            className="relative group"
+            onMouseEnter={() => setOpenDropdown("case")}
+            onMouseLeave={() => setOpenDropdown(null)}
           >
-            Let’s Talk
-          </motion.a>
+            <button className="hover:text-cyan-400 transition-colors">
+              Case Studies
+            </button>
+            <AnimatePresence>
+              {openDropdown === "case" && (
+                <motion.div
+                  variants={dropdownAnim}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="absolute top-full left-0 mt-2 w-40 bg-black/90 border border-white/10 rounded-lg shadow-lg overflow-hidden"
+                >
+                  <a
+                    href="#case-studies"
+                    className="block px-4 py-2 text-gray-300 hover:bg-white/10"
+                  >
+                    View Some
+                  </a>
+                  <a
+                    href="/case-studies"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-4 py-2 text-gray-300 hover:bg-white/10"
+                  >
+                    View All
+                  </a>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Work Dropdown */}
+          <div
+            className="relative group"
+            onMouseEnter={() => setOpenDropdown("work")}
+            onMouseLeave={() => setOpenDropdown(null)}
+          >
+            <button className="hover:text-cyan-400 transition-colors">
+              Work
+            </button>
+            <AnimatePresence>
+              {openDropdown === "work" && (
+                <motion.div
+                  variants={dropdownAnim}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="absolute top-full left-0 mt-2 w-40 bg-black/90 border border-white/10 rounded-lg shadow-lg overflow-hidden"
+                >
+                  <a
+                    href="#work"
+                    className="block px-4 py-2 text-gray-300 hover:bg-white/10"
+                  >
+                    View Some
+                  </a>
+                  <a
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-4 py-2 text-gray-300 hover:bg-white/10"
+                  >
+                    View All
+                  </a>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <Link to="/contact" className="hover:text-cyan-400 transition-colors">
+            Let’s Work
+          </Link>
         </div>
 
-        {/* MOBILE MENU TOGGLE */}
+        {/* ─── Mobile Menu Toggle ───────────────────────── */}
         <button
-          className="md:hidden text-gray-300 hover:text-white transition"
-          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden text-white"
+          onClick={() => setMobileOpen(!mobileOpen)}
         >
-          {menuOpen ? <X size={26} /> : <Menu size={26} />}
+          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* MOBILE MENU */}
+      {/* ─── Mobile Menu ───────────────────────────────── */}
       <AnimatePresence>
-        {menuOpen && (
+        {mobileOpen && (
           <motion.div
-            key="mobile-menu"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 flex flex-col items-center py-6 space-y-4"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="md:hidden bg-black/95 border-t border-white/10"
           >
-            {links.map((link) => (
-              <button
-                key={link.name}
-                onClick={(e) => handleNavClick(e, link.href)}
-                className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
+            <div className="flex flex-col px-6 py-4 space-y-4">
+              <Link
+                to="/"
+                className="hover:text-cyan-400 transition-colors"
+                onClick={() => setMobileOpen(false)}
               >
-                {link.name}
-              </button>
-            ))}
+                Home
+              </Link>
 
-            <motion.a
-              href="#contact"
-              onClick={(e) => handleNavClick(e, "#contact")}
-              whileHover={{ scale: 1.05 }}
-              className="mt-4 inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold shadow-md hover:shadow-cyan-400/30 transition-all"
-            >
-              <Sparkles size={18} className="mr-2" />
-              Get in Touch
-            </motion.a>
+              {/* Case Studies (Mobile Submenu) */}
+              <div>
+                <button
+                  onClick={() =>
+                    setOpenDropdown(openDropdown === "case" ? null : "case")
+                  }
+                  className="w-full text-left hover:text-cyan-400 transition-colors"
+                >
+                  Case Studies
+                </button>
+                <AnimatePresence>
+                  {openDropdown === "case" && (
+                    <motion.div
+                      variants={dropdownAnim}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      className="ml-4 mt-2 flex flex-col space-y-2"
+                    >
+                      <a
+                        href="#case-studies"
+                        className="text-gray-300 hover:text-white text-sm"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        View Some
+                      </a>
+                      <a
+                        href="/case-studies"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-300 hover:text-white text-sm"
+                      >
+                        View All
+                      </a>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Work (Mobile Submenu) */}
+              <div>
+                <button
+                  onClick={() =>
+                    setOpenDropdown(openDropdown === "work" ? null : "work")
+                  }
+                  className="w-full text-left hover:text-cyan-400 transition-colors"
+                >
+                  Work
+                </button>
+                <AnimatePresence>
+                  {openDropdown === "work" && (
+                    <motion.div
+                      variants={dropdownAnim}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      className="ml-4 mt-2 flex flex-col space-y-2"
+                    >
+                      <a
+                        href="#work"
+                        className="text-gray-300 hover:text-white text-sm"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        View Some
+                      </a>
+                      <a
+                        href="#"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-300 hover:text-white text-sm"
+                      >
+                        View All
+                      </a>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <Link
+                to="/contact"
+                className="hover:text-cyan-400 transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                Let’s Work
+              </Link>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </nav>
   );
-}
+};
+
+export default Navbar;
