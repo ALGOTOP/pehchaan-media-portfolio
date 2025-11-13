@@ -5,19 +5,26 @@ import { Menu, X, Sparkles, ChevronDown } from "lucide-react";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [submenuOpen, setSubmenuOpen] = useState(null); // For mobile submenu control
+  const [submenuOpen, setSubmenuOpen] = useState(null);
+  const [hoverTimeout, setHoverTimeout] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
   const location = useLocation();
   const navigate = useNavigate();
 
+  // ───────────────────────────────
+  // SCROLL DETECTION FOR NAV STYLING
+  // ───────────────────────────────
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // ───────────────────────────────
+  // ACTIVE SECTION HIGHLIGHT
+  // ───────────────────────────────
   useEffect(() => {
     if (location.pathname !== "/") return;
     const sections = document.querySelectorAll("section[id]");
@@ -33,15 +40,24 @@ export default function Navbar() {
     return () => sections.forEach((sec) => observer.unobserve(sec));
   }, [location.pathname]);
 
+  // ───────────────────────────────
+  // LINK HANDLER
+  // ───────────────────────────────
   const handleNavClick = (e, href) => {
     e.preventDefault();
     setMenuOpen(false);
 
-    if (href.startsWith("http") || href.startsWith("/")) {
-      if (href === "/case-studies/all" || href === "/work/all") {
-        window.open(href, "_blank");
-        return;
-      }
+    if (href === "/case-studies" && !location.pathname.startsWith("/case-studies")) {
+      window.open(href, "_blank");
+      return;
+    }
+
+    if (href.startsWith("http")) {
+      window.open(href, "_blank");
+      return;
+    }
+
+    if (href.startsWith("/")) {
       navigate(href);
       return;
     }
@@ -56,6 +72,9 @@ export default function Navbar() {
     }
   };
 
+  // ───────────────────────────────
+  // NAVIGATION LINKS
+  // ───────────────────────────────
   const links = [
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
@@ -63,8 +82,8 @@ export default function Navbar() {
     {
       name: "Case Studies",
       submenu: [
-        { label: "View Some", href: "#case-studies" },
-        { label: "View All", href: "/case-studies/all" },
+        { label: "View Some", href: "#case-studies" }, // 👈 make sure this matches your homepage section ID
+        { label: "View All", href: "/case-studies" },
       ],
     },
     { name: "Showreel", href: "#showreel" },
@@ -72,13 +91,16 @@ export default function Navbar() {
       name: "Work",
       submenu: [
         { label: "View Some", href: "#work" },
-        { label: "View All", href: "/work/all" },
+        { label: "View All", href: "https://placeholder.workpage.com" }, // 👈 placeholder link
       ],
     },
     { name: "Testimonials", href: "#testimonials" },
     { name: "Contact", href: "#contact" },
   ];
 
+  // ───────────────────────────────
+  // JSX MARKUP
+  // ───────────────────────────────
   return (
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
@@ -100,11 +122,24 @@ export default function Navbar() {
           Pehchaan Media
         </a>
 
-        {/* DESKTOP NAVIGATION */}
-        <div className="hidden md:flex space-x-10 relative">
+        {/* DESKTOP LINKS */}
+        <div className="hidden md:flex space-x-10">
           {links.map((link) =>
             link.submenu ? (
-              <div key={link.name} className="relative group">
+              <div
+                key={link.name}
+                className="relative group"
+                onMouseEnter={() => {
+                  if (hoverTimeout) clearTimeout(hoverTimeout);
+                  setSubmenuOpen(link.name);
+                }}
+                onMouseLeave={() => {
+                  const timeout = setTimeout(() => {
+                    setSubmenuOpen((prev) => (prev === link.name ? null : prev));
+                  }, 1200); // 👈 1.2s delay before closing
+                  setHoverTimeout(timeout);
+                }}
+              >
                 <button
                   className={`flex items-center text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
                     activeSection === link.href?.replace("#", "")
@@ -115,29 +150,33 @@ export default function Navbar() {
                   {link.name}
                   <ChevronDown
                     size={14}
-                    className="ml-1 mt-[2px] text-gray-400 group-hover:text-cyan-400 transition-transform duration-300 group-hover:rotate-180"
+                    className={`ml-1 mt-[2px] transition-transform duration-300 ${
+                      submenuOpen === link.name ? "rotate-180 text-cyan-400" : "text-gray-400"
+                    }`}
                   />
                 </button>
 
                 {/* DROPDOWN MENU */}
                 <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute left-0 mt-2 w-40 bg-black/90 border border-white/10 rounded-xl shadow-lg overflow-hidden hidden group-hover:block"
-                  >
-                    {link.submenu.map((item) => (
-                      <button
-                        key={item.label}
-                        onClick={(e) => handleNavClick(e, item.href)}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-cyan-400 hover:bg-white/5 transition-colors duration-200"
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </motion.div>
+                  {submenuOpen === link.name && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
+                      className="absolute left-0 mt-2 w-40 rounded-md bg-black/90 border border-white/10 shadow-lg backdrop-blur-md py-2 z-40"
+                    >
+                      {link.submenu.map((item) => (
+                        <button
+                          key={item.label}
+                          onClick={(e) => handleNavClick(e, item.href)}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-cyan-400 hover:bg-white/5 transition-colors duration-200"
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
                 </AnimatePresence>
               </div>
             ) : (
@@ -186,22 +225,22 @@ export default function Navbar() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 flex flex-col items-center py-6 space-y-3"
+            className="md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 flex flex-col items-center py-6 space-y-4"
           >
             {links.map((link) =>
               link.submenu ? (
-                <div key={link.name} className="w-full flex flex-col items-center">
+                <div key={link.name} className="w-full text-center">
                   <button
                     onClick={() =>
                       setSubmenuOpen(submenuOpen === link.name ? null : link.name)
                     }
-                    className="flex items-center text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
+                    className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition flex justify-center items-center w-full"
                   >
                     {link.name}
                     <ChevronDown
                       size={16}
-                      className={`ml-1 transition-transform duration-300 ${
-                        submenuOpen === link.name ? "rotate-180" : ""
+                      className={`ml-2 transition-transform duration-300 ${
+                        submenuOpen === link.name ? "rotate-180 text-cyan-400" : ""
                       }`}
                     />
                   </button>
@@ -218,7 +257,7 @@ export default function Navbar() {
                           <button
                             key={item.label}
                             onClick={(e) => handleNavClick(e, item.href)}
-                            className="text-gray-400 hover:text-cyan-400 text-base transition"
+                            className="text-gray-400 hover:text-cyan-400 text-sm transition"
                           >
                             {item.label}
                           </button>
@@ -231,7 +270,7 @@ export default function Navbar() {
                 <button
                   key={link.name}
                   onClick={(e) => handleNavClick(e, link.href)}
-                  className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition"
+                  className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
                 >
                   {link.name}
                 </button>
