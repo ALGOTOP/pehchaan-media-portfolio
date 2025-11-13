@@ -14,7 +14,7 @@ const showreels = [
     poster: "/thumbnails/olipo.jpg",
   },
   {
-    title: "TRULY - 4D Graphic Post + AD",
+    title: "TRULY - 4D Graphic Post + Ad",
     tools: "Cinema 4D • Redshift • After Effects",
     video:
       "https://ia601506.us.archive.org/2/items/110c-2cbf-42fc-32faec-789114fdda-0196/110c2cbf42fc32faec789114fdda0196.mp4",
@@ -28,7 +28,7 @@ const showreels = [
     poster: "/thumbnails/olipo.jpg",
   },
   {
-    title: "Kinstu By BRIZO - Motion AD + Major Rebranding",
+    title: "Kinstu By BRIZO - Motion Ad + Major Rebranding",
     tools: "Canon R5 • After Effects • Adobe Premier Pro • Cinema 4D",
     video:
       "https://ia600504.us.archive.org/32/items/from-klick-pin-cf-kintsur-kitchen-collection-by-brizo-video-in-2025-kitchen-coll/From%20KlickPin%20CF%20Kintsu%C2%AE%20Kitchen%20Collection%20by%20Brizo%20%5BVideo%5D%20in%202025%20_%20Kitchen%20collection%20Motion%20design%20Motion%20design%20video.mp4",
