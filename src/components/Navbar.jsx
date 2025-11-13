@@ -1,28 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X, Sparkles, ChevronDown } from "lucide-react";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [submenuOpen, setSubmenuOpen] = useState(null); // For mobile submenu control
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ───────────────────────────────
-  // SCROLL DETECTION FOR NAV STYLING
-  // ───────────────────────────────
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ───────────────────────────────
-  // ACTIVE SECTION HIGHLIGHT
-  // ───────────────────────────────
   useEffect(() => {
     if (location.pathname !== "/") return;
     const sections = document.querySelectorAll("section[id]");
@@ -38,26 +33,19 @@ export default function Navbar() {
     return () => sections.forEach((sec) => observer.unobserve(sec));
   }, [location.pathname]);
 
-  // ───────────────────────────────
-  // LINK HANDLER (SMART CASE STUDIES LOGIC)
-  // ───────────────────────────────
   const handleNavClick = (e, href) => {
     e.preventDefault();
     setMenuOpen(false);
 
-    // ✅ CASE 1: Case Studies link from main site → open in new tab
-    if (href === "/case-studies" && !location.pathname.startsWith("/case-studies")) {
-      window.open(href, "_blank");
-      return;
-    }
-
-    // ✅ CASE 2: Internal route navigation (within case studies)
-    if (href.startsWith("/")) {
+    if (href.startsWith("http") || href.startsWith("/")) {
+      if (href === "/case-studies/all" || href === "/work/all") {
+        window.open(href, "_blank");
+        return;
+      }
       navigate(href);
       return;
     }
 
-    // ✅ CASE 3: Smooth scroll for in-page sections
     const target = document.querySelector(href);
     if (!target) return;
 
@@ -68,23 +56,29 @@ export default function Navbar() {
     }
   };
 
-  // ───────────────────────────────
-  // NAVIGATION LINKS
-  // ───────────────────────────────
   const links = [
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
     { name: "Services", href: "#services" },
-    { name: "Case Studies", href: "/case-studies" }, // ✅ Updated route-based link
+    {
+      name: "Case Studies",
+      submenu: [
+        { label: "View Some", href: "#case-studies" },
+        { label: "View All", href: "/case-studies/all" },
+      ],
+    },
     { name: "Showreel", href: "#showreel" },
-    { name: "Work", href: "#work" },
+    {
+      name: "Work",
+      submenu: [
+        { label: "View Some", href: "#work" },
+        { label: "View All", href: "/work/all" },
+      ],
+    },
     { name: "Testimonials", href: "#testimonials" },
     { name: "Contact", href: "#contact" },
   ];
 
-  // ───────────────────────────────
-  // JSX MARKUP
-  // ───────────────────────────────
   return (
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
@@ -106,21 +100,60 @@ export default function Navbar() {
           Pehchaan Media
         </a>
 
-        {/* DESKTOP LINKS */}
-        <div className="hidden md:flex space-x-10">
-          {links.map((link) => (
-            <button
-              key={link.name}
-              onClick={(e) => handleNavClick(e, link.href)}
-              className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
-                activeSection === link.href.replace("#", "")
-                  ? "text-cyan-400"
-                  : "text-gray-300 hover:text-cyan-400"
-              }`}
-            >
-              {link.name}
-            </button>
-          ))}
+        {/* DESKTOP NAVIGATION */}
+        <div className="hidden md:flex space-x-10 relative">
+          {links.map((link) =>
+            link.submenu ? (
+              <div key={link.name} className="relative group">
+                <button
+                  className={`flex items-center text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
+                    activeSection === link.href?.replace("#", "")
+                      ? "text-cyan-400"
+                      : "text-gray-300 hover:text-cyan-400"
+                  }`}
+                >
+                  {link.name}
+                  <ChevronDown
+                    size={14}
+                    className="ml-1 mt-[2px] text-gray-400 group-hover:text-cyan-400 transition-transform duration-300 group-hover:rotate-180"
+                  />
+                </button>
+
+                {/* DROPDOWN MENU */}
+                <AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute left-0 mt-2 w-40 bg-black/90 border border-white/10 rounded-xl shadow-lg overflow-hidden hidden group-hover:block"
+                  >
+                    {link.submenu.map((item) => (
+                      <button
+                        key={item.label}
+                        onClick={(e) => handleNavClick(e, item.href)}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-cyan-400 hover:bg-white/5 transition-colors duration-200"
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            ) : (
+              <button
+                key={link.name}
+                onClick={(e) => handleNavClick(e, link.href)}
+                className={`text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${
+                  activeSection === link.href.replace("#", "")
+                    ? "text-cyan-400"
+                    : "text-gray-300 hover:text-cyan-400"
+                }`}
+              >
+                {link.name}
+              </button>
+            )
+          )}
         </div>
 
         {/* CTA BUTTON */}
@@ -153,17 +186,57 @@ export default function Navbar() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 flex flex-col items-center py-6 space-y-4"
+            className="md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 flex flex-col items-center py-6 space-y-3"
           >
-            {links.map((link) => (
-              <button
-                key={link.name}
-                onClick={(e) => handleNavClick(e, link.href)}
-                className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
-              >
-                {link.name}
-              </button>
-            ))}
+            {links.map((link) =>
+              link.submenu ? (
+                <div key={link.name} className="w-full flex flex-col items-center">
+                  <button
+                    onClick={() =>
+                      setSubmenuOpen(submenuOpen === link.name ? null : link.name)
+                    }
+                    className="flex items-center text-gray-300 hover:text-cyan-400 text-lg font-medium transition-colors duration-200"
+                  >
+                    {link.name}
+                    <ChevronDown
+                      size={16}
+                      className={`ml-1 transition-transform duration-300 ${
+                        submenuOpen === link.name ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  <AnimatePresence>
+                    {submenuOpen === link.name && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex flex-col mt-2 space-y-2"
+                      >
+                        {link.submenu.map((item) => (
+                          <button
+                            key={item.label}
+                            onClick={(e) => handleNavClick(e, item.href)}
+                            className="text-gray-400 hover:text-cyan-400 text-base transition"
+                          >
+                            {item.label}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <button
+                  key={link.name}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className="text-gray-300 hover:text-cyan-400 text-lg font-medium transition"
+                >
+                  {link.name}
+                </button>
+              )
+            )}
 
             <motion.a
               href="#contact"
