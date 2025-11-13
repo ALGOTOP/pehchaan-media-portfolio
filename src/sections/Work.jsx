@@ -117,16 +117,16 @@ export default function Work() {
       </div>
 
       {/* CTA Button */}
-      <motion.a
-        href="#contact"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.97 }}
-        transition={{ type: "spring", stiffness: 250 }}
-        className="mt-16 inline-flex items-center bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold px-8 py-4 rounded-full shadow-xl hover:shadow-cyan-400/30 transition-all"
-      >
-        Start Your Project
-        <ArrowRight size={18} className="ml-2" />
-      </motion.a>
-    </section>
-  );
+<motion.a
+  href="/view-all-placeholder" // ✅ Placeholder link
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.97 }}
+  transition={{ type: "spring", stiffness: 250 }}
+  className="mt-16 inline-flex items-center bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold px-8 py-4 rounded-full shadow-xl hover:shadow-cyan-400/30 transition-all"
+>
+  View All
+  <ArrowRight size={18} className="ml-2" />
+</motion.a>
+</section>
+);
 }
