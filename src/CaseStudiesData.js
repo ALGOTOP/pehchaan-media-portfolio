@@ -57,7 +57,7 @@ export const caseStudies = [
     title: "Video Campaign for Mi-Vida",
     slug: "mi-vida",
     description:
-      "A cinematic storytelling approach highlighting innovation in drone tech through emotional motion design.",
+      "A cinematic storytelling approach highlighting their food, the mexican culture, the fabulous experience, and personal menu's which sets the restaurant apart from others & gives it that premium or excluive feel.",
     image: "https://i.ibb.co/PGnwVn0v/MI-VIDA-LOGO-FINAL-FINE-QUALITY.png",
     category: "Film & Motion",
   },
