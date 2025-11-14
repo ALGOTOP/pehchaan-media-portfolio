@@ -54,29 +54,29 @@ export const caseStudies = [
   },
   {
     id: 4,
-    title: "Video Campaign for AerialX",
-    slug: "aerialx",
+    title: "Video Campaign for Mi-Vida",
+    slug: "awesomic",
     description:
       "A cinematic storytelling approach highlighting innovation in drone tech through emotional motion design.",
-    image: "https://i.ibb.co/9YFB1Fd/aerialx-cover.jpg",
+    image: "https://i.ibb.co/PGnwVn0v/MI-VIDA-LOGO-FINAL-FINE-QUALITY.png",
     category: "Film & Motion",
   },
   {
     id: 5,
-    title: "Web Redesign for BuildSmart",
+    title: "Web Redesign for Awesomic",
     slug: "buildsmart",
     description:
-      "We restructured the user experience for a construction SaaS company to drive clarity and trust.",
-    image: "https://i.ibb.co/nMRp0fn/buildsmart-cover.jpg",
+      "We restructured the user experience for one of the top talent marketplaces for startups & enterprises in the west to drive clarity, connection, and trust.",
+    image: "https://i.ibb.co/NnSmbCS5/awesomic-logo-final-fine-quality.png",
     category: "UI/UX Design",
   },
   {
     id: 6,
-    title: "Product Branding for Velo",
+    title: "Product Branding for Howie's Hockey",
     slug: "velo",
     description:
-      "Developed a cohesive brand system and packaging design for a global mobility startup.",
-    image: "https://i.ibb.co/4mYcqGw/velo-cover.jpg",
+      "Developed a cohesive brand system and packaging design for an out-of-the box sports startup.",
+    image: "https://i.ibb.co/cSZcY30f/Howies-hockey-logo-finalised-fine-quality.png",
     category: "Product Branding",
   },
   {
