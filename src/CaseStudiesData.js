@@ -103,7 +103,7 @@ export const caseStudies = [
     slug: "zenith",
     description:
       "Refined the visual identity and website for a creative production house with global reach.",
-    image: "https://i.ibb.co/HqZKqT2/zenith-cover.jpg",
+    image: "https://i.ibb.co/cSCPr0WZ/Zenith-Studio-Logo-finalised-fine-quality.jpg",
     category: "Brand Design",
   },
 ];
