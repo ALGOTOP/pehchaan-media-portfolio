@@ -55,7 +55,7 @@ export const caseStudies = [
   {
     id: 4,
     title: "Video Campaign for Mi-Vida",
-    slug: "awesomic",
+    slug: "mi-vida",
     description:
       "A cinematic storytelling approach highlighting innovation in drone tech through emotional motion design.",
     image: "https://i.ibb.co/PGnwVn0v/MI-VIDA-LOGO-FINAL-FINE-QUALITY.png",
@@ -64,7 +64,7 @@ export const caseStudies = [
   {
     id: 5,
     title: "Web Redesign for Awesomic",
-    slug: "buildsmart",
+    slug: "awesomic",
     description:
       "We restructured the user experience for one of the top talent marketplaces for startups & enterprises in the west to drive clarity, connection, and trust.",
     image: "https://i.ibb.co/NnSmbCS5/awesomic-logo-final-fine-quality.png",
@@ -73,7 +73,7 @@ export const caseStudies = [
   {
     id: 6,
     title: "Product Branding for Howie's Hockey",
-    slug: "velo",
+    slug: "howies-hockey",
     description:
       "Developed a cohesive brand system and packaging design for an out-of-the box sports startup.",
     image: "https://i.ibb.co/cSZcY30f/Howies-hockey-logo-finalised-fine-quality.png",
