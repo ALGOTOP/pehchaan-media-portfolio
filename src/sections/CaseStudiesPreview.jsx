@@ -73,21 +73,6 @@ export default function CaseStudiesPreview() {
                 </motion.div>
               </div>
 
-              {/* Text Block */}
-              <div className="p-6">
-                <p className="text-xs uppercase text-cyan-400 tracking-wider">
-                  {item.category}
-                </p>
-                <h4 className="text-xl font-semibold mt-2">{item.title}</h4>
-                <p className="text-gray-400 mt-2 text-sm leading-relaxed">
-                  {item.description}
-                </p>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
-      </div>
-
       {/* CTA */}
       <motion.a
         href="/case-studies"
