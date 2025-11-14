@@ -7,7 +7,7 @@ export const caseStudies = [
     slug: "lumina",
     description:
       "A complete rebranding initiative focused on clarity, minimalism, and digital adaptability.",
-    image: "https://i.ibb.co/8DM2RjH/lumina-cover.jpg",
+    image: "https://i.ibb.co/0R864csh/Your-paragraph-text-1.jpg",
     category: "Brand Strategy",
     intro:
       "Lumina approached Pehchaan Media to redefine its digital identity and align visuals with its futuristic brand philosophy.",
