@@ -28,7 +28,7 @@ export const caseStudies = [
     slug: "aurix",
     description:
       "Pehchaan Media designed and executed a content strategy that elevated engagement by 230%.",
-    image: "https://i.ibb.co/9qgVR30/aurix-cover.jpg",
+    image: "https://i.ibb.co/ymVx6YM0/Aurix-A-logo-A-letter-Modern-logo-UI-AI-Tech-Behance.jpg",
     category: "Social Media",
     intro:
       "Aurix needed a social-first visual identity to break through saturated fashion feeds.",
@@ -49,7 +49,7 @@ export const caseStudies = [
     slug: "novaskin",
     description:
       "We built a high-conversion digital identity and Shopify storefront optimized for modern skincare audiences.",
-    image: "https://i.ibb.co/ZhMsKPR/novaskin-cover.jpg",
+    image: "https://i.ibb.co/bgs9yw3X/Screenshot-2025-11-14-215235.jpg",
     category: "E-Commerce",
   },
   {
