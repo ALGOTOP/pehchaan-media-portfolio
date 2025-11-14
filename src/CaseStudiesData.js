@@ -85,7 +85,7 @@ export const caseStudies = [
     slug: "ecorise",
     description:
       "Executed a 360° digital campaign emphasizing sustainability and visual storytelling.",
-    image: "https://i.ibb.co/JshwgVQ/ecorise-cover.jpg",
+    image: "https://i.ibb.co/fVXQ9PN2/ecorise-logo-fine-quality-but-a-bit-pixelated.jpg",
     category: "Digital Campaign",
   },
   {
@@ -94,7 +94,7 @@ export const caseStudies = [
     slug: "helix-health",
     description:
       "Created an SEO-driven content strategy and web redesign for a health tech innovator.",
-    image: "https://i.ibb.co/6BxmDBC/helix-health-cover.jpg",
+    image: "https://i.ibb.co/22ZDsG1/Helix-Health-logo-finalised-finequality.png",
     category: "Content Strategy",
   },
   {
