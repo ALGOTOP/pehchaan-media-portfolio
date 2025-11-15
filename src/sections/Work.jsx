@@ -118,7 +118,7 @@ export default function Work() {
 
       {/* CTA Button */}
 <motion.a
-  href="/view-all-placeholder" // ✅ Placeholder link
+  href="/extended-work"
   whileHover={{ scale: 1.05 }}
   whileTap={{ scale: 0.97 }}
   transition={{ type: "spring", stiffness: 250 }}
