@@ -95,7 +95,7 @@ export default function App() {
           <Route path="/case-studies" element={<CaseStudiesHub />} />
           <Route path="/case-studies/lumina" element={<Lumina />} /> {/* ✅ Custom Page */}
           <Route path="/case-studies/:slug" element={<CaseStudyDetail />} /> {/* fallback */}
-          <Route path="/work-detailed" element={<ExtendedWork />} />
+          <Route path="/extended-work" element={<ExtendedWork />} />>
 
           {/* ─── 404 Fallback ─── */}
           <Route
