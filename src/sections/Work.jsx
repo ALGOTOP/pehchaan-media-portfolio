@@ -118,7 +118,7 @@ export default function Work() {
 
       {/* CTA Button */}
 <motion.a
-  href="/extended-work"
+  href="#Extended-Work.jsx"
   whileHover={{ scale: 1.05 }}
   whileTap={{ scale: 0.97 }}
   transition={{ type: "spring", stiffness: 250 }}
