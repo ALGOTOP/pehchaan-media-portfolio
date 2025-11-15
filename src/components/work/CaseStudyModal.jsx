@@ -30,18 +30,21 @@ export default function CaseStudyModal({ open, item, onClose }) {
           </button>
 
           {/* Thumbnail */}
-          <img
-            src={item.thumbnail}
-            alt={item.title}
-            className="w-full h-72 object-cover rounded-xl mb-6 border border-white/10"
-          />
+          {item.thumbnail && (
+            <img
+              src={item.thumbnail}
+              alt={item.title}
+              className="w-full h-72 object-cover rounded-xl mb-6 border border-white/10"
+            />
+          )}
 
           {/* Text */}
           <h2 className="text-white text-2xl font-semibold">{item.title}</h2>
           <p className="text-gray-400 text-sm">{item.category}</p>
 
           <p className="mt-4 text-gray-300 leading-relaxed">
-            {item.description || "This is a placeholder description. You will replace this with real case study content later."}
+            {item.description ||
+              "This is a placeholder description. You will replace this with real case study content later."}
           </p>
 
           {/* Placeholder button */}
