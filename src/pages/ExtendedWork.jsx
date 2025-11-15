@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import CategoryHeader from "../components/work/CategoryHeader";
 import WorkGrid from "../components/work/WorkGrid";
 import CaseStudyModal from "../components/work/CaseStudyModal";
-import { fadeInUp } from "../utils/workAnimations.js";
+import { fadeInUp } from "../utils/motionVariants";
+import "../styles/work-detailed.css";
 
 /**
  * ExtendedWork
