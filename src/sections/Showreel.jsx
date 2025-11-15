@@ -202,22 +202,24 @@ function ReelCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
-      className={`relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-700 ease-out ${
-        active === index ? "z-20" : ""
-      }`}
-      onMouseEnter={() => !isMobile && handleEnter()}
-      onMouseLeave={() => !isMobile && handleLeave()}
-      onClick={() => isMobile && setActive(index)}
-      animate={{
-        scale: isHovered ? 1.05 : 1,
-        zIndex: isHovered ? 10 : 1,
-      }}
-      transition={{ type: "spring", stiffness: 150, damping: 20 }}
-    >
+  initial={{ opacity: 0, y: 40 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true, amount: 0.3 }}
+  className={`relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-700 ease-out ${
+    active === index ? "z-20" : ""
+  }`}
+  onMouseEnter={() => !isMobile && handleEnter()}
+  onMouseLeave={() => !isMobile && handleLeave()}
+  onClick={() => isMobile && setActive(index)}
+  animate={{
+    scale: isHovered ? 1.05 : 1,
+    zIndex: isHovered ? 10 : 1,
+  }}
+  transition={{
+    default: { duration: 0.6, delay: index * 0.1, ease: "easeOut" },
+    scale: { type: "spring", stiffness: 150, damping: 20 }
+  }}
+>
       {/* Video */}
       <video
         ref={videoRef}
