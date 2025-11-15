@@ -86,7 +86,7 @@ export default function Navbar() {
       name: "Work",
       submenu: [
         { label: "View Some", href: "#work" },
-        { label: "View All", href: "#Extended-Work" },
+        { label: "View All", href: "#Extended-Work.jsx" },
       ],
     },
     { name: "Testimonials", href: "#testimonials" },
