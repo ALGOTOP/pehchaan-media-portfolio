@@ -5,7 +5,6 @@ import CategoryHeader from "../components/work/CategoryHeader";
 import WorkGrid from "../components/work/WorkGrid";
 import CaseStudyModal from "../components/work/CaseStudyModal";
 import { fadeInUp } from "../utils/workAnimations.js";
-import workData from "../data/workData.js";
 
 /**
  * ExtendedWork
