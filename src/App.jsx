@@ -32,6 +32,7 @@ import Contact from "@/sections/Contact";
 import CaseStudiesHub from "@/pages/case-studies";
 import CaseStudyDetail from "@/pages/case-studies/CaseStudyDetail";
 import Lumina from "@/pages/case-studies/Lumina"; // ✅ Custom Lumina Page
+import ExtendedWork from "./pages/ExtendedWork";
 
 // ─────────────────────────────────────────────
 // MAIN APP COMPONENT
@@ -94,6 +95,7 @@ export default function App() {
           <Route path="/case-studies" element={<CaseStudiesHub />} />
           <Route path="/case-studies/lumina" element={<Lumina />} /> {/* ✅ Custom Page */}
           <Route path="/case-studies/:slug" element={<CaseStudyDetail />} /> {/* fallback */}
+          <Route path="/work-detailed" element={<ExtendedWork />} />
 
           {/* ─── 404 Fallback ─── */}
           <Route
