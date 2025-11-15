@@ -86,7 +86,7 @@ export default function Navbar() {
       name: "Work",
       submenu: [
         { label: "View Some", href: "#work" },
-        { label: "View All", href: "https://placeholder.workpage.com" },
+        { label: "View All", href: "extended-work" },
       ],
     },
     { name: "Testimonials", href: "#testimonials" },
