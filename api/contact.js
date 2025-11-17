@@ -1,3 +1,4 @@
+// api/contact.js
 import nodemailer from "nodemailer";
 
 export default async function handler(req, res) {
@@ -11,32 +12,43 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
-  // Setup transporter
+  // Use environment variables for credentials
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  const from = process.env.FROM_EMAIL || user;
+  const to = "infopehchaanmedia@gmail.com";
+
+  if (!user || !pass) {
+    console.error("Missing GMAIL_USER or GMAIL_APP_PASSWORD env vars");
+    return res.status(500).json({ error: "Email server not configured" });
+  }
+
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // true for 465
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user,
+      pass,
     },
   });
 
   const mailOptions = {
-    from: `"${name}" <${email}>`,
-    to: "infopehchaanmedia@gmail.com",
-    subject: `New Contact Form Submission from ${name}`,
-    text: `
-Name: ${name}
-Email: ${email}
-Message:
-${message}
-    `,
+    from,
+    to,
+    subject: `New message from ${name} <${email}>`,
+    text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+    html: `<p><strong>Name:</strong> ${name}</p>
+           <p><strong>Email:</strong> ${email}</p>
+           <p><strong>Message:</strong><br/>${message.replace(/\n/g, '<br/>')}</p>`,
   };
 
   try {
+    // Optional: await transporter.verify();
     await transporter.sendMail(mailOptions);
     return res.status(200).json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error("sendMail error:", err);
     return res.status(500).json({ error: "Failed to send message" });
   }
 }
