@@ -13,8 +13,8 @@ export default async function handler(req, res) {
   }
 
   // Load environment variables
-  const user = process.env.EMAIL_USER;
-  const pass = process.env.EMAIL_APP_PASSWORD;
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
   const from = process.env.FROM_EMAIL || user;
   const to = user; // emails sent to yourself
 
