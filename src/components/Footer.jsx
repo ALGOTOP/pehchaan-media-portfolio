@@ -10,21 +10,37 @@ import {
 
 export default function Footer() {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
-    const res = await fetch("/api/newsletter", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
+    setLoading(true);
+    setSuccess("");
+    setError("");
 
-    const result = await res.json();
-    if (result.success) {
-      alert("Thanks for subscribing!");
+    const cleanedEmail = email.trim().toLowerCase();
+
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: cleanedEmail }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Subscription failed.");
+      }
+
+      setSuccess("Thanks for subscribing!");
       setEmail("");
-    } else {
-      alert("Subscription failed.");
+    } catch (err) {
+      setError(err.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,7 +97,6 @@ export default function Footer() {
               <Linkedin size={18} />
             </a>
 
-            {/* WhatsApp */}
             <a
               href="https://wa.me/923355312242?text=Hello%20Pehchaan%20Media%20team!"
               target="_blank"
@@ -131,10 +146,16 @@ export default function Footer() {
               onChange={(e) => setEmail(e.target.value)}
               className="flex-1 bg-[#0e0e0e] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-cyan-400 outline-none transition"
             />
-            <button className="bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-3 rounded-xl text-black font-semibold hover:shadow-cyan-400/30 transition">
-              Join
+            <button
+              disabled={loading}
+              className="bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-3 rounded-xl text-black font-semibold hover:shadow-cyan-400/30 transition"
+            >
+              {loading ? "..." : "Join"}
             </button>
           </form>
+
+          {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
+          {success && <p className="text-green-400 text-sm mt-2">{success}</p>}
         </div>
       </div>
 
