@@ -9,16 +9,18 @@ export default async function handler(req, res) {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: "Email is required" });
 
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD;
+  // Load environment variables from Vercel
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS;
   const from = process.env.FROM_EMAIL || user;
-  const to = "infopehchaanmedia@gmail.com";
+  const to = user; // send newsletter signup to yourself
 
   if (!user || !pass) {
-    console.error("Missing GMAIL_USER or GMAIL_APP_PASSWORD env vars");
+    console.error("Missing EMAIL_USER or EMAIL_PASS env vars");
     return res.status(500).json({ error: "Email server not configured" });
   }
 
+  // Create transporter
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -36,7 +38,7 @@ export default async function handler(req, res) {
 
   try {
     await transporter.sendMail(mailOptions);
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: true, message: "Subscriber added successfully" });
   } catch (err) {
     console.error("sendMail error:", err);
     return res.status(500).json({ error: "Failed to send email" });
