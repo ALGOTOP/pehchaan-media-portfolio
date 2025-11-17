@@ -10,8 +10,8 @@ export default async function handler(req, res) {
   if (!email) return res.status(400).json({ error: "Email is required" });
 
   // Load environment variables from Vercel
-  const user = process.env.EMAIL_USER;
-  const pass = process.env.EMAIL_PASS;
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_PASS;
   const from = process.env.FROM_EMAIL || user;
   const to = user; // send newsletter signup to yourself
 
