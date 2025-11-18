@@ -49,7 +49,7 @@ export default function Navbar() {
 
     // Open external or full pages
     if (href.startsWith("http")) return window.open(href, "_blank");
-    if (href.startsWith("/case-studies")) return window.open(href, "_blank");
+    if (href.startsWith("/case-studies")) return navigate(href);
     if (href.startsWith("/extended-work")) return navigate(href);
 
     // Navigate to homepage section if not already there
