@@ -1,10 +1,3 @@
-Okay, I understand. The Vercel error occurred because the commented-out optional code blocks at the end of the file were missing their closing `*/` comment tags, causing a syntax error during the build process.
-
-Here is the corrected and refined `ExtendedWork.jsx` file. I have **removed the commented-out optional components** entirely, as they were just suggestions and not part of the main page component. I've also made some minor technical refinements for clarity and best practices.
-
-```jsx
-// src/pages/ExtendedWork.jsx
-
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
