@@ -13,30 +13,28 @@ import {
 export default function WorkHeroNew() {
   return (
     <section className="relative w-full h-[90vh] overflow-hidden bg-[#050505] flex items-center justify-center">
-      {/* ===== BACKGROUND LAYERS (PARALLAX / GRAIN / GRADIENTS) ===== */}
+      {/* Background layers */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-
-        {/* Noise Texture */}
+        {/* Noise */}
         <div className="absolute inset-0 opacity-20 mix-blend-soft-light bg-[url('/textures/noise.png')] bg-cover" />
 
-        {/* Radial Core Highlight */}
+        {/* Radial core */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_70%)]" />
 
-        {/* Horizontal Flow Gradient */}
+        {/* Horizontal light sweep */}
         <motion.div
           className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.05),transparent,rgba(255,255,255,0.05))]"
           animate={{ x: ["-20%", "20%", "-20%"] }}
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        {/* Color Wash Layers */}
+        {/* Color washes */}
         <motion.div
           className="absolute -top-20 -left-20 w-[500px] h-[500px] rounded-full blur-[120px] opacity-30"
           style={{ background: "radial-gradient(circle, #ff3e8f, transparent)" }}
           animate={{ x: [0, 30, -20, 0], y: [0, -20, 10, 0] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
-
         <motion.div
           className="absolute -bottom-24 -right-24 w-[500px] h-[500px] rounded-full blur-[140px] opacity-20"
           style={{ background: "radial-gradient(circle, #4ed2ff, transparent)" }}
@@ -44,12 +42,11 @@ export default function WorkHeroNew() {
           transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        {/* Soft Top Glow */}
+        {/* Top gradient fade */}
         <div className="absolute top-0 left-0 right-0 h-48 bg-gradient-to-b from-black via-black/40 to-transparent" />
-
       </div>
 
-      {/* ===== FLOATING ORBS (AWWARDS-STYLE) ===== */}
+      {/* Floating orbs */}
       {Array.from({ length: 4 }).map((_, i) => (
         <motion.div
           key={i}
@@ -61,7 +58,7 @@ export default function WorkHeroNew() {
         />
       ))}
 
-      {/* ===== TRAIL PARTICLES ===== */}
+      {/* Vertical trails */}
       {Array.from({ length: 10 }).map((_, i) => (
         <motion.div
           key={`trail-${i}`}
@@ -73,7 +70,7 @@ export default function WorkHeroNew() {
         />
       ))}
 
-      {/* ===== FOREGROUND TEXT ===== */}
+      {/* Foreground copy */}
       <motion.div
         className="relative z-10 text-center px-6 max-w-[900px] mx-auto"
         variants={heroContainer}
@@ -82,13 +79,13 @@ export default function WorkHeroNew() {
       >
         <motion.h1
           variants={heroTitleParent}
-          className="text-6xl md:text-8xl font-semibold leading-none tracking-tight text-white mb-8 drop-shadow-[0_4px_20px_rgb(255_255_255_/_15%)]"
+          className="text-5xl md:text-7xl lg:text-8xl font-semibold leading-none tracking-tight text-white mb-6 md:mb-8 drop-shadow-[0_4px_20px_rgb(255_255_255_/_15%)]"
         >
           {["Extended", "Work", "Collection"].map((word, i) => (
             <motion.span
               key={word}
               variants={heroTitleChild}
-              className="inline-block mx-2"
+              className="inline-block mx-1.5 md:mx-2"
               custom={i}
             >
               {word}
@@ -98,10 +95,10 @@ export default function WorkHeroNew() {
 
         <motion.p
           variants={heroSubtitle}
-          className="text-lg md:text-2xl text-gray-300 max-w-[600px] mx-auto leading-relaxed"
+          className="text-base md:text-xl text-gray-300 max-w-[620px] mx-auto leading-relaxed"
         >
-          A curated visual journey across categories — reimagined with cinematic
-          depth, refined details, and award-winning motion language.
+          A curated visual archive spanning campaigns, brands, film, and product —
+          designed with cinematic depth, layered motion, and gallery-level polish.
         </motion.p>
       </motion.div>
     </section>
