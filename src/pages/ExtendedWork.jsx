@@ -31,15 +31,6 @@ import { WORK_ITEMS, getWorkByCategory } from "@/data/workData";
 // Styles
 import "@/styles/work-detailed.css";
 
-// Animations
-import {
-  fadeInUp,
-  fadeDelayed,
-  fadeSlight,
-  slowStagger,
-  parallaxLayer,
-} from "@/utils/motionVariants";
-
 export default function ExtendedWork() {
   /* --------------------------------------------------------------------------
    * STATE MANAGEMENT
