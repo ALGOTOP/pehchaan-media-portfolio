@@ -1,33 +1,16 @@
-// src/hooks/useScrollRestore.js
+// src/components/work/useScrollRestore.js
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 
-/**
- * useScrollRestore
- * Stores scroll position on route change and restores it when user navigates back.
- * Applied specifically on highly interactive pages like /work-detailed.
- */
 export default function useScrollRestore() {
-  const location = useLocation();
-  const KEY = `scroll-pos:${location.pathname}`;
-
-  // Restore on mount
   useEffect(() => {
-    const saved = sessionStorage.getItem(KEY);
-    if (saved) {
-      const y = parseInt(saved, 10);
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: y, behavior: "instant" });
-      });
-    }
-  }, [location.pathname]);
+    const saved = sessionStorage.getItem("extendedWorkScroll");
 
-  // Save on unmount
-  useEffect(() => {
-    return () => {
-      sessionStorage.setItem(KEY, window.scrollY.toString());
-    };
-  }, [location.pathname]);
+    if (saved) window.scrollTo(0, parseInt(saved, 10));
 
-  return null;
+    const handle = () =>
+      sessionStorage.setItem("extendedWorkScroll", window.scrollY);
+
+    window.addEventListener("scroll", handle);
+    return () => window.removeEventListener("scroll", handle);
+  }, []);
 }
