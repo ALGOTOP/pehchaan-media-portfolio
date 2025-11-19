@@ -1,8 +1,3 @@
-Okay, let's rewrite the `workAnimations.js` file to include the missing `itemHover` animation and ensure it aligns perfectly with the `WorkItem.jsx` component you provided. The `WorkItem.jsx` uses `variants={itemHover}` and `whileHover="hover"`, so the `itemHover` object needs `initial`, `hover`, and potentially other named states if used elsewhere.
-
-Here is the complete, rewritten `src/utils/workAnimations.js` file:
-
-```javascript
 // src/utils/workAnimations.js
 
 // Animation variant for fading in elements from below
