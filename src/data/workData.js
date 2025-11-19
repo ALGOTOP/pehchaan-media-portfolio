@@ -12,83 +12,76 @@ export const CATEGORIES = [
   "YouTube",
 ];
 
-// ---- Temporary placeholder thumbnails ----
-// You can replace these later with your real links.
-
+// ---- Premium placeholder generator ----
 const placeholder = (id) =>
-  `https://images.unsplash.com/photo-155${1000 + id}-aac?auto=format&fit=crop&w=1200&q=60`;
-
-// ---- WORK ITEMS ----
-// These are all placeholders. You can replace them with real URLs later.
+  `https://images.unsplash.com/photo-15${900 + id}random?auto=format&fit=crop&w=1400&q=80`;
 
 export const WORK_ITEMS = [
   {
     id: 1,
-    title: "E-Commerce Style Revamp",
+    title: "E-Commerce Revamp",
     category: "Web Redesign",
     thumbnail: placeholder(1),
     description:
-      "A conversion-focused redesign blending premium aesthetics with UX clarity. Placeholder only — replace later.",
+      "A luxury conversion-maximised UI/UX revamp built around clarity, hierarchy and premium dark neo-aesthetic.",
   },
   {
     id: 2,
-    title: "Luxury Branding Poster",
+    title: "Luxury Brand Poster",
     category: "Graphics",
     thumbnail: placeholder(2),
-    description:
-      "A high-contrast luxury visual identity piece. Placeholder only — you will replace this later.",
+    description: "High-contrast brand identity visual crafted for impact.",
   },
   {
     id: 3,
-    title: "Cinematic Product Reel",
+    title: "Cinematic Reel",
     category: "Product Videography",
     thumbnail: placeholder(3),
-    description: "Short-form cinematic storytelling. Placeholder only.",
+    description: "Fluid slow-motion product storytelling with cinematic lighting.",
   },
   {
     id: 4,
-    title: "Premium Product Photo Set",
+    title: "Premium Photo Set",
     category: "Product Photography",
     thumbnail: placeholder(4),
-    description: "Studio-grade product photography. Placeholder only.",
+    description: "Studio-grade photographs focused on material richness.",
   },
   {
     id: 5,
-    title: "Animated Logo Sequence",
+    title: "Animated Logo ID",
     category: "Motion Design",
     thumbnail: placeholder(5),
-    description: "Smooth, energetic motion identity. Placeholder.",
+    description: "A hyper-smooth identity reveal with luxury easing curves.",
   },
   {
     id: 6,
-    title: "High-Converting Ad Creatives",
+    title: "Ad Creative Pack",
     category: "Ad Creatives",
     thumbnail: placeholder(6),
-    description: "CTR-optimized ad visuals. Placeholder.",
+    description: "CTR-driven creative pack engineered for scroll-stopping impact.",
   },
   {
     id: 7,
-    title: "Performance Marketing Shots",
+    title: "Marketing Visuals",
     category: "Digital Marketing",
     thumbnail: placeholder(7),
-    description: "Audience-driven digital campaign. Placeholder.",
+    description: "Performance-oriented visual angles for paid campaigns.",
   },
   {
     id: 8,
-    title: "SMM Visual Grid Layout",
+    title: "SMM Layout System",
     category: "Social Media Management",
     thumbnail: placeholder(8),
-    description: "Consistent identity-driven social layout. Placeholder.",
+    description: "Identity-driven social grid with consistency rules.",
   },
   {
     id: 9,
-    title: "YouTube Thumbnail Pack",
+    title: "YouTube Thumbnail Kit",
     category: "YouTube",
     thumbnail: placeholder(9),
-    description: "Click-through optimized video thumbnails. Placeholder.",
+    description: "Click-through focused visual system for channel growth.",
   },
 ];
 
-// Filtered items by category
 export const getWorkByCategory = (category) =>
   WORK_ITEMS.filter((w) => w.category === category);
