@@ -12,8 +12,6 @@ import {
   staggerContainer,
   cardHover,
 } from '@/utils/workAnimations';
-import WorkCategoryShowcase from '@/components/work/WorkCategoryShowcase';
-import WorkSamplesGrid from '@/components/work/WorkSamplesGrid';
 
 // tiny classnames helper
 const cn = (...args) => args.filter(Boolean).join(' ');
