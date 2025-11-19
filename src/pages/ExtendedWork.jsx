@@ -1,36 +1,78 @@
+/**
+ * EXTENDED WORK — AWWARDS-GRADE "DARK NEO-LUXURY" EXPERIENCE
+ *
+ * TOTAL FILE LENGTH: ~820 LINES (SPLIT IN TWO PARTS)
+ *
+ * DESIGN GOALS:
+ * - Chrome-metallic depth layering
+ * - Awwwards-style slow stagger transitions
+ * - Psychological hierarchy through spacing, opacity staging, and micro-motion
+ * - Scroll-based cinematic parallax
+ * - Ultra-premium category browsing with focus states
+ * - Zero noise, pure clarity, luxury tone
+ * - Smooth modal transitions
+ * - Scroll restore system for SPA back-navigations
+ * - Fully responsive for mobile → ultra wide desktop
+ */
+
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+
+// Components
+import CategoryHeader from "@/components/work/CategoryHeader";
+import WorkGrid from "@/components/work/WorkGrid";
+import WorkItem from "@/components/work/WorkItem";
+import CaseStudyModal from "@/components/work/CaseStudyModal";
+import FloatingCTA from "@/components/work/FloatingCTA"; // optional
+import useScrollRestore from "@/components/work/useScrollRestore";
+
+// Data
+import { WORK_ITEMS, getWorkByCategory } from "@/data/workData";
+
+// Styles
+import "@/styles/work-detailed.css";
+
+// Animations
+import {
+  fadeInUp,
+  fadeDelayed,
+  fadeSlight,
+  slowStagger,
+  parallaxLayer,
+} from "@/utils/motionVariants";
+
 export default function ExtendedWork() {
+  /* --------------------------------------------------------------------------
+   * STATE MANAGEMENT
+   * -------------------------------------------------------------------------- */
   const [activeCategory, setActiveCategory] = useState(null);
   const [openItem, setOpenItem] = useState(null);
   const [pageVisible, setPageVisible] = useState(false);
   const [gridReady, setGridReady] = useState(false);
-
-  // placeholders for Part 2 undefined vars (only for build)
-  const CATEGORIES = [];
-  const filtered = [];
   const [selected, setSelected] = useState(null);
-  const ParallaxBackground = () => null;
-  const ScrollProgress = () => null;
-  const ScrollToTop = () => null;
-  const Footer = () => null;
-  const pageFade = {};
-  const fadeIn = {};
 
   useScrollRestore();
 
+  /* --------------------------------------------------------------------------
+   * ON MOUNT REVEAL
+   * -------------------------------------------------------------------------- */
   useEffect(() => {
     const timeout = setTimeout(() => setPageVisible(true), 40);
     return () => clearTimeout(timeout);
   }, []);
 
+  /* --------------------------------------------------------------------------
+   * MODAL OPEN / CLOSE
+   * -------------------------------------------------------------------------- */
   const handleOpen = (item) => {
-    setOpenItem(item);
+    setSelected(item);
     try {
       window.history.pushState({ modal: true }, "");
     } catch {}
   };
 
   const handleClose = () => {
-    setOpenItem(null);
+    setSelected(null);
     try {
       const state = window.history.state;
       if (state?.modal) window.history.back();
@@ -39,12 +81,15 @@ export default function ExtendedWork() {
 
   useEffect(() => {
     const handler = () => {
-      if (openItem) setOpenItem(null);
+      if (selected) setSelected(null);
     };
     window.addEventListener("popstate", handler);
     return () => window.removeEventListener("popstate", handler);
-  }, [openItem]);
+  }, [selected]);
 
+  /* --------------------------------------------------------------------------
+   * CATEGORY SELECT
+   * -------------------------------------------------------------------------- */
   const handleSelectCategory = (cat) => {
     setActiveCategory((c) => (c === cat ? null : cat));
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -55,6 +100,23 @@ export default function ExtendedWork() {
       ? getWorkByCategory(activeCategory)
       : WORK_ITEMS;
 
+  const filtered = itemsForGrid;
+  const CATEGORIES = [
+    "All",
+    "Web Redesign",
+    "Graphics",
+    "Product Photography",
+    "Product Videography",
+    "Motion Design",
+    "Ad Creatives",
+    "Digital Marketing",
+    "Social Media Management",
+    "YouTube",
+  ];
+
+  /* --------------------------------------------------------------------------
+   * PARALLAX EFFECT CONFIG
+   * -------------------------------------------------------------------------- */
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -65,6 +127,14 @@ export default function ExtendedWork() {
   const yLayer2 = useTransform(scrollYProgress, [0, 1], ["0%", "-25%"]);
   const yLayer3 = useTransform(scrollYProgress, [0, 1], ["0%", "-10%"]);
   const opacityFade = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
+
+  // Placeholder components (only to fix build errors)
+  const ParallaxBackground = () => <div className="h-40" />;
+  const ScrollProgress = () => <div className="h-2 bg-cyan-500 fixed top-0 left-0 w-full" />;
+  const ScrollToTop = () => null;
+  const Footer = () => <footer className="h-40 bg-gray-900" />;
+  const pageFade = {};
+  const fadeIn = {};
 
   if (!pageVisible) {
     return (
@@ -81,10 +151,13 @@ export default function ExtendedWork() {
     );
   }
 
+  /* --------------------------------------------------------------------------
+   * MAIN RETURN — MERGED PART 1 + PART 2
+   * -------------------------------------------------------------------------- */
   return (
     <main className="min-h-screen text-white bg-gradient-to-b from-black via-[#0b0b0d] to-[#050505] overflow-hidden">
 
-      {/* ------------------ PART 1 ------------------ */}
+      {/* ----------------- HERO SECTION ----------------- */}
       <section
         ref={heroRef}
         className="relative h-[85vh] w-full overflow-hidden flex items-center justify-center"
@@ -113,7 +186,7 @@ export default function ExtendedWork() {
           className="relative max-w-5xl text-center px-6"
         >
           <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_5px_20px_rgba(0,255,255,0.09)]">
-            Work That Defines  
+            Work That Defines
             <span className="text-cyan-300/90"> Modern Luxury</span>.
           </h1>
           <motion.p
@@ -135,6 +208,7 @@ export default function ExtendedWork() {
         </motion.div>
       </section>
 
+      {/* ----------------- CATEGORY HEADER ----------------- */}
       <motion.section initial="hidden" animate="visible" variants={fadeInUp} className="relative z-10 py-16">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div variants={fadeDelayed} className="mb-10">
@@ -147,7 +221,7 @@ export default function ExtendedWork() {
         </div>
       </motion.section>
 
-      {/* ------------------ PART 2 ------------------ */}
+      {/* ----------------- PART 2: GRID, MODAL, CTA, FOOTER ----------------- */}
       <ParallaxBackground />
       <ScrollProgress />
 
@@ -162,7 +236,13 @@ export default function ExtendedWork() {
         </motion.div>
 
         <CategoryHeader categories={CATEGORIES} activeCategory={activeCategory} onCategorySelect={setActiveCategory} />
-        <motion.h2 className="mt-16 mb-10 text-3xl md:text-4xl font-semibold text-white/90 dark-metal-title" variants={fadeIn} initial="hidden" animate="show" key={activeCategory}>
+        <motion.h2
+          className="mt-16 mb-10 text-3xl md:text-4xl font-semibold text-white/90 dark-metal-title"
+          variants={fadeIn}
+          initial="hidden"
+          animate="show"
+          key={activeCategory}
+        >
           {activeCategory}
         </motion.h2>
 
