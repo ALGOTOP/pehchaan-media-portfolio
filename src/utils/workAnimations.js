@@ -69,8 +69,34 @@ export const itemHover = {
       ease: "easeInOut", // Easing for hover effect
     },
   },
-  // Add other states if needed by Framer Motion (e.g., tap, whileDrag)
-  // tap: {
-  //   scale: 0.98, // Example for tap effect
-  // },
+};
+
+// --- NEW: Animation variants for CaseStudyModal ---
+// Animation for the backdrop overlay
+export const modalBackdrop = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+};
+
+// Animation for the modal content container
+export const modalContent = {
+  hidden: { scale: 0.8, opacity: 0, y: 50 },
+  visible: {
+    scale: 1,
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      damping: 25,
+      stiffness: 300,
+      duration: 0.4,
+    },
+  },
+  exit: {
+    scale: 0.9,
+    opacity: 0,
+    y: 20,
+    transition: { duration: 0.2, ease: "easeOut" },
+  },
 };
