@@ -23,7 +23,6 @@ import CategoryHeader from "@/components/work/CategoryHeader";
 import WorkGrid from "@/components/work/WorkGrid";
 import WorkItem from "@/components/work/WorkItem";
 import CaseStudyModal from "@/components/work/CaseStudyModal";
-import FloatingCTA from "@/components/work/FloatingCTA"; // optional
 import useScrollRestore from "@/components/work/useScrollRestore";
 
 // Data
