@@ -2,7 +2,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CATEGORY_HERO, WORK_CATEGORIES, WORK_BY_CATEGORY } from '@/data/workData';
+import {
+  CATEGORY_HERO,
+  WORK_CATEGORIES,
+  WORK_BY_CATEGORY,
+} from '@/data/workData';
 import { pillVariant } from '@/utils/workAnimations';
 
 const cn = (...xs) => xs.filter(Boolean).join(' ');
