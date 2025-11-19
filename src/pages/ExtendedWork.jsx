@@ -7,7 +7,7 @@ import WorkHeroNew from "@/components/work/WorkHeroNew";
 import { CATEGORIES, CATEGORY_HERO } from "@/data/workData";
 import { heroContainer, thumbReveal } from "@/utils/workAnimations";
 
-// simple slug helper (matches what we use in data)
+// Helper
 const slugify = (str) =>
   String(str || "")
     .toLowerCase()
@@ -26,28 +26,53 @@ export default function ExtendedWork() {
   );
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white">
-      {/* Reuse the same hero */}
+    <main className="min-h-screen bg-[#050505] text-white relative overflow-hidden">
+
+      {/* ─────────────────────────────────────────────
+          Floating Ambient Light Glow
+      ───────────────────────────────────────────── */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-[20%] left-[10%] w-[420px] h-[420px] bg-cyan-500/10 blur-[160px]" />
+        <div className="absolute bottom-[10%] right-[5%] w-[360px] h-[360px] bg-purple-500/10 blur-[160px]" />
+      </div>
+
+      {/* ─────────────────────────────────────────────
+          Hero Shared Component
+      ───────────────────────────────────────────── */}
       <WorkHeroNew />
 
-      <section className="max-w-7xl mx-auto px-6 pt-10 pb-24">
-        {/* Header line */}
-        <motion.header
+      {/* ─────────────────────────────────────────────
+          Main Section
+      ───────────────────────────────────────────── */}
+      <section className="relative max-w-7xl mx-auto px-6 pt-16 pb-32">
+
+        {/* Section intro */}
+        <motion.div
           variants={heroContainer}
           initial="initial"
           animate="animate"
-          className="mb-10"
+          className="mb-14"
         >
-          <h2 className="text-xl md:text-2xl font-semibold tracking-tight">
-            Explore by capability
-          </h2>
-          <p className="text-sm text-white/60 mt-2 max-w-xl">
-            Choose a category to view detailed work for that specific capability.
-          </p>
-        </motion.header>
+          <div className="max-w-2xl">
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight leading-tight">
+              Explore Our Full Capability Spectrum
+            </h2>
+            <p className="text-white/60 mt-3 text-sm md:text-base leading-relaxed">
+              Every category opens into a dedicated, uniquely crafted page
+              showcasing real work samples, motion previews, case assets,
+              and content tailored to that capability.
+            </p>
+          </div>
 
-        {/* Category grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          {/* subtle divider */}
+          <div className="h-[1px] w-full bg-white/10 mt-10" />
+        </motion.div>
+
+        {/* ─────────────────────────────────────────────
+            Grid of Category Cards (3 per row)
+        ───────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+
           {categoryCards.map((cat, index) => (
             <motion.div
               key={cat.slug}
@@ -58,39 +83,49 @@ export default function ExtendedWork() {
             >
               <Link
                 to={`/work/${cat.slug}`}
-                className="group block h-full rounded-3xl overflow-hidden border border-white/10 bg-[#070707] shadow-[0_0_50px_-20px_rgba(255,255,255,0.25)]"
+                className="group block h-full rounded-3xl overflow-hidden border border-white/10 
+                           bg-[#080808] shadow-[0_0_60px_-25px_rgba(255,255,255,0.3)]
+                           hover:shadow-[0_0_80px_-20px_rgba(0,255,255,0.25)]
+                           transition-all duration-500"
               >
-                <div className="relative w-full aspect-[4/3] md:aspect-[4/3] overflow-hidden">
-                  {/* Background image */}
+                <div className="relative w-full aspect-[4/3] overflow-hidden">
+
+                  {/* Image */}
                   {cat.image && (
                     <img
                       src={cat.image}
-                      alt={`${cat.name} preview`}
-                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.04] transition-all duration-500"
+                      alt={cat.name}
                       loading="lazy"
+                      className="w-full h-full object-cover opacity-80 
+                                 group-hover:opacity-100 group-hover:scale-[1.06]
+                                 transition-all duration-[900ms] ease-[cubic-bezier(.23,.96,.52,.99)]"
                     />
                   )}
 
                   {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
-                  {/* Text overlay (top-left-ish) */}
-                  <div className="absolute inset-x-5 bottom-5 flex flex-col gap-1">
-                    <span className="text-xs uppercase tracking-[0.22em] text-white/60">
-                      Category
+                  {/* Text */}
+                  <div className="absolute left-6 bottom-6 flex flex-col">
+                    <span className="text-xs uppercase tracking-[0.22em] text-white/50">
+                      Capability
                     </span>
-                    <h3 className="text-lg md:text-xl font-semibold leading-tight">
+                    <h3 className="text-xl font-semibold tracking-tight leading-snug mt-1">
                       {cat.name}
                     </h3>
-                    <p className="text-xs md:text-sm text-white/70 max-w-xs">
-                      View detailed work created under this capability.
+                    <p className="text-xs mt-1 text-white/70 max-w-[80%]">
+                      Open category to view detailed samples and case outputs.
                     </p>
                   </div>
                 </div>
               </Link>
             </motion.div>
           ))}
+
         </div>
+
+        {/* Bottom spacing */}
+        <div className="h-16" />
       </section>
     </main>
   );
