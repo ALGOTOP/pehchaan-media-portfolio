@@ -36,8 +36,8 @@ export const CATEGORY_HERO = {
   YouTube: placeholder(29),
 };
 
-// --- Core extended work items ---
-// NOTE: try to keep IDs unique across all work/content types.
+// Core extended work items.
+// You can freely add more items later for each category (aim for 15–20 per category).
 export const WORK_ITEMS = [
   {
     id: 1,
@@ -167,55 +167,9 @@ export const WORK_ITEMS = [
   },
 ];
 
-// ---- Normalization helpers ----
-
-// slugify helper for urls / keys
-const slugify = (str = "") =>
-  String(str)
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-");
-
-// Shared normalized shape used across components
-export const normalizeWorkItem = (item) => {
-  if (!item) return null;
-
-  const slug = item.slug || `${slugify(item.title || "work")}-${item.id}`;
-  const categorySlug = slugify(item.category || "misc");
-
-  return {
-    id: item.id,
-    slug, // eg: "e-commerce-revamp-1"
-    title: item.title,
-    category: item.category,
-    categorySlug,
-    thumbnail: item.thumbnail,
-    // keep sampleUrl as "primary asset" URL
-    sampleUrl: item.sampleUrl || item.thumbnail,
-    description: item.description || "",
-    client: item.client || "",
-    year: item.year || "",
-    type: item.type || "",
-    tags: item.tags || [],
-    popularity:
-      typeof item.popularity === "number" ? item.popularity : 0,
-    // accessibility
-    alt:
-      item.alt ||
-      `${item.title || "Portfolio work"} – ${item.category || "Work"} by Pehchaan Media`,
-    // room for future fields:
-    // duration, platform, url, caseStudySlug, etc.
-  };
-};
-
 // Helper: list by category (raw)
 export const getWorkByCategory = (category) =>
   WORK_ITEMS.filter((w) => w.category === category);
-
-// Normalized list by category (what components should ideally use)
-export const getNormalizedWorkByCategory = (category) =>
-  getWorkByCategory(category).map(normalizeWorkItem);
 
 // Map-style structure for components that expect WORK_BY_CATEGORY
 export const WORK_BY_CATEGORY = WORK_CATEGORIES.reduce((acc, category) => {
@@ -223,14 +177,47 @@ export const WORK_BY_CATEGORY = WORK_CATEGORIES.reduce((acc, category) => {
   return acc;
 }, {});
 
-// Normalized map
-export const NORMALIZED_WORK_BY_CATEGORY = WORK_CATEGORIES.reduce(
-  (acc, category) => {
-    acc[category] = getNormalizedWorkByCategory(category);
-    return acc;
-  },
-  {}
-);
+// ===== Normalized items for Extended Work page =====
 
-// Flattened, normalized items (useful for search/filter across everything)
+const slugify = (str) =>
+  String(str || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+
+const normalizeWorkItem = (item) => {
+  const categorySlug = slugify(item.category);
+  const slugBase = slugify(item.title || `item-${item.id}`);
+  const slug = `${slugBase}-${item.id}`;
+
+  return {
+    id: item.id,
+    slug,
+    title: item.title,
+    category: item.category,
+    categorySlug,
+    thumbnail: item.thumbnail || CATEGORY_HERO[item.category] || placeholder(50),
+    sampleUrl: item.sampleUrl || item.thumbnail,
+    description: item.description || "",
+    client: item.client || "",
+    year: item.year || null,
+    type: item.type || "",
+    tags: Array.isArray(item.tags) ? item.tags : [],
+    popularity: item.popularity ?? 0,
+    alt:
+      item.alt ||
+      `${item.title} · ${item.client || item.category || "Work sample"}`,
+  };
+};
+
+// All normalized items used by ExtendedWork + filters
 export const ALL_WORK_ITEMS = WORK_ITEMS.map(normalizeWorkItem);
+
+// All unique tags across all items (used for filters)
+export const getAllTags = () => {
+  const tagSet = new Set();
+  ALL_WORK_ITEMS.forEach((item) => {
+    item.tags.forEach((t) => tagSet.add(t));
+  });
+  return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+};
