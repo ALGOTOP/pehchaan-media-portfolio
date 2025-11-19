@@ -2,6 +2,7 @@
 
 // ===== Extended Work Data (NOT case studies) =====
 
+// Base category list used across ExtendedWork, filters, and showcases
 export const CATEGORIES = [
   "Web Redesign",
   "Graphics",
@@ -13,6 +14,9 @@ export const CATEGORIES = [
   "Social Media Management",
   "YouTube",
 ];
+
+// Alias for components that expect WORK_CATEGORIES
+export const WORK_CATEGORIES = CATEGORIES;
 
 // ---- Premium placeholder generator ----
 // You can later replace with real image URLs
@@ -163,5 +167,12 @@ export const WORK_ITEMS = [
   },
 ];
 
+// Helper: list by category
 export const getWorkByCategory = (category) =>
   WORK_ITEMS.filter((w) => w.category === category);
+
+// Map-style structure for components that expect WORK_BY_CATEGORY
+export const WORK_BY_CATEGORY = WORK_CATEGORIES.reduce((acc, category) => {
+  acc[category] = getWorkByCategory(category);
+  return acc;
+}, {});
