@@ -1,9 +1,10 @@
 // src/components/work/WorkSampleCard.jsx
-import React, { useRef } from 'react';
-import { motion, useMotionValue, useTransform } from 'framer-motion';
-import { cardHover } from '@/utils/workAnimations';
+import React, { useRef } from "react";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import { cardHover } from "@/utils/workAnimations";
+import PropTypes from "prop-types";
 
-const cn = (...xs) => xs.filter(Boolean).join(' ');
+const cn = (...xs) => xs.filter(Boolean).join(" ");
 
 export default function WorkSampleCard({ item, onClick }) {
   const ref = useRef(null);
@@ -12,7 +13,7 @@ export default function WorkSampleCard({ item, onClick }) {
 
   const rotateX = useTransform(y, [-40, 40], [10, -10]);
   const rotateY = useTransform(x, [-40, 40], [-10, 10]);
-  const shineX = useTransform(x, [-40, 40], ['0%', '100%']);
+  const shineX = useTransform(x, [-40, 40], ["0%", "100%"]);
 
   const handleMouseMove = (e) => {
     if (!ref.current) return;
@@ -28,6 +29,9 @@ export default function WorkSampleCard({ item, onClick }) {
     y.set(0);
   };
 
+  const parallaxX = useTransform(x, (v) => v * -0.4);
+  const parallaxY = useTransform(y, (v) => v * -0.4);
+
   return (
     <motion.article
       ref={ref}
@@ -40,11 +44,14 @@ export default function WorkSampleCard({ item, onClick }) {
       onMouseLeave={handleMouseLeave}
       style={{ rotateX, rotateY }}
       className={cn(
-        'relative rounded-2xl overflow-hidden bg-white/5',
-        'border border-white/5 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,0,0,0.6)]',
-        'cursor-pointer group'
+        "relative rounded-2xl overflow-hidden bg-white/5",
+        "border border-white/5 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,0,0,0.6)]",
+        "cursor-pointer group"
       )}
       onClick={() => onClick?.(item)}
+      tabIndex={0}
+      role="button"
+      aria-label={`Open sample: ${item.title}`}
     >
       {/* Image */}
       <div className="relative overflow-hidden">
@@ -52,22 +59,19 @@ export default function WorkSampleCard({ item, onClick }) {
           src={item.thumbnail}
           alt={item.alt || item.title}
           className="w-full h-52 object-cover transform-gpu group-hover:scale-[1.03] transition-transform duration-500"
-          style={{
-            x: useTransform(x, (v) => v * -0.4),
-            y: useTransform(y, (v) => v * -0.4),
-          }}
+          style={{ x: parallaxX, y: parallaxY }}
           loading="lazy"
         />
 
-        {/* Shine animation */}
+        {/* Shine */}
         <motion.div
           aria-hidden
           className="pointer-events-none absolute inset-y-0 w-1/2 bg-gradient-to-r from-white/20 via-white/60 to-transparent opacity-0 group-hover:opacity-100"
           style={{ left: shineX }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
         />
 
-        {/* Upper overlays */}
+        {/* Upper gradient */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
       </div>
 
@@ -100,11 +104,11 @@ export default function WorkSampleCard({ item, onClick }) {
         <button
           type="button"
           className={cn(
-            'shrink-0 inline-flex items-center gap-1 rounded-full',
-            'bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white',
-            'border border-white/15 backdrop-blur-md',
-            'group-hover:bg-cyan-400 group-hover:text-black group-hover:border-cyan-200',
-            'transition-colors'
+            "shrink-0 inline-flex items-center gap-1 rounded-full",
+            "bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white",
+            "border border-white/15 backdrop-blur-md",
+            "group-hover:bg-cyan-400 group-hover:text-black group-hover:border-cyan-200",
+            "transition-colors"
           )}
         >
           <span>View</span>
@@ -117,3 +121,8 @@ export default function WorkSampleCard({ item, onClick }) {
     </motion.article>
   );
 }
+
+WorkSampleCard.propTypes = {
+  item: PropTypes.object.isRequired,
+  onClick: PropTypes.func,
+};
