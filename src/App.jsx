@@ -35,6 +35,19 @@ import Lumina from "@/pages/case-studies/Lumina"; // ✅ Custom Lumina Page
 import ExtendedWork from "@/pages/ExtendedWork";
 
 // ─────────────────────────────────────────────
+// WORK CATEGORY PAGES EXTENDED
+// ─────────────────────────────────────────────
+import WebRedesignWorkPage from "@/pages/work/WebRedesignWorkPage";
+import GraphicsWorkPage from "@/pages/work/GraphicsWorkPage";
+import ProductVideographyWorkPage from "@/pages/work/ProductVideographyWorkPage";
+import ProductPhotographyWorkPage from "@/pages/work/ProductPhotographyWorkPage";
+import MotionDesignWorkPage from "@/pages/work/MotionDesignWorkPage";
+import AdCreativesWorkPage from "@/pages/work/AdCreativesWorkPage";
+import DigitalMarketingWorkPage from "@/pages/work/DigitalMarketingWorkPage";
+import SocialMediaManagementWorkPage from "@/pages/work/SocialMediaManagementWorkPage";
+import YouTubeWorkPage from "@/pages/work/YouTubeWorkPage";
+
+// ─────────────────────────────────────────────
 // MAIN APP COMPONENT
 // ─────────────────────────────────────────────
 export default function App() {
@@ -95,7 +108,20 @@ export default function App() {
           <Route path="/case-studies" element={<CaseStudiesHub />} />
           <Route path="/case-studies/lumina" element={<Lumina />} /> {/* ✅ Custom Page */}
           <Route path="/case-studies/:slug" element={<CaseStudyDetail />} /> {/* fallback */}
+          
+          {/* ───EXTENDED WORK PAGE ─── */}
           <Route path="/extended-work" element={<ExtendedWork />} />
+         
+          {/* ───EXTENDED WORK PAGE ADDITONAL SPECIFIC WORK SAMPLE PAGE ─── */}
+          <Route path="/work/web-redesign" element={<WebRedesignWorkPage />} />
+          <Route path="/work/graphics" element={<GraphicsWorkPage />} />
+          <Route path="/work/product-videography" element={<ProductVideographyWorkPage />} />
+          <Route path="/work/product-photography" element={<ProductPhotographyWorkPage />} />
+          <Route path="/work/motion-design" element={<MotionDesignWorkPage />} />
+          <Route path="/work/ad-creatives" element={<AdCreativesWorkPage />} />
+          <Route path="/work/digital-marketing" element={<DigitalMarketingWorkPage />} />
+          <Route path="/work/social-media-management" element={<SocialMediaManagementWorkPage />} />
+          <Route path="/work/youtube" element={<YouTubeWorkPage />} />
 
           {/* ─── 404 Fallback ─── */}
           <Route
