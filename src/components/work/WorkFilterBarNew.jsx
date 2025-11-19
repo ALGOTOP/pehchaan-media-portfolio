@@ -1,5 +1,6 @@
 // src/components/work/WorkFilterBarNew.jsx
-import React, { useState, useMemo } from "react";
+
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   filterBarParent,
@@ -7,14 +8,118 @@ import {
   filterChipParent,
   filterChipChild,
 } from "@/utils/workAnimations";
-import PropTypes from "prop-types";
 
-const cn = (...xs) => xs.filter(Boolean).join(" ");
+// TAG SELECTOR
+function TagSelector({ availableTags, activeTags, onTagToggle }) {
+  return (
+    <div className="w-full mt-6">
+      <div className="text-xs uppercase tracking-widest text-gray-500 mb-3">
+        Filter by tags
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {availableTags.map((tag) => {
+          const active = activeTags.includes(tag);
+          return (
+            <button
+              key={tag}
+              onClick={() => onTagToggle(tag)}
+              className={`
+                px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300
+                backdrop-blur-md border  
+                ${
+                  active
+                    ? "bg-[#ffffff15] border-white/30 text-white shadow-lg shadow-white/10 scale-[1.03]"
+                    : "bg-black/20 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white"
+                }
+              `}
+            >
+              {tag}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
-// -----------------------------------------------------------------------------
+// MOBILE CATEGORY CARDS
+function CategoryCards({
+  categories,
+  activeCategory,
+  onCategoryChange,
+  categoryPreviews,
+}) {
+  return (
+    <div className="md:hidden mt-8 space-y-4">
+      {categories.map((cat) => {
+        const active = activeCategory === cat;
+        const preview = categoryPreviews?.[cat];
+
+        return (
+          <div
+            key={cat}
+            className={`
+              p-5 rounded-2xl transition-all duration-500 border 
+              backdrop-blur-xl
+              ${
+                active
+                  ? "border-white/20 bg-white/5 shadow-lg shadow-white/10 scale-[1.02]"
+                  : "border-white/10 bg-white/5 hover:bg-white/10"
+              }
+            `}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-white">{cat}</h3>
+
+              <button
+                onClick={() => onCategoryChange(cat)}
+                className="px-3 py-1 rounded-xl text-xs uppercase tracking-widest border border-white/10 bg-black/40 text-gray-300 hover:text-white hover:border-white/20 transition-all"
+              >
+                {active ? "Selected" : "Select"}
+              </button>
+            </div>
+
+            {preview && (
+              <div className="rounded-xl overflow-hidden relative group">
+                <img
+                  src={preview}
+                  alt={`${cat} category preview`}
+                  className="w-full h-40 object-cover opacity-80 group-hover:opacity-100 transition-all duration-500"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// SORT DROPDOWN
+function SortDropdown({ sortMode, onSortChange }) {
+  return (
+    <motion.select
+      variants={filterBarInput}
+      value={sortMode}
+      onChange={(e) => onSortChange(e.target.value)}
+      className="
+        w-full md:w-56 bg-black/30 border border-white/10 text-gray-300 
+        px-4 py-3 rounded-xl 
+        focus:outline-none focus:ring-2 focus:ring-white/30
+        backdrop-blur-xl transition-all
+      "
+    >
+      <option value="featured">Featured (Most Impact)</option>
+      <option value="recent">Newest First</option>
+      <option value="oldest">Oldest First</option>
+      <option value="alpha">A → Z</option>
+    </motion.select>
+  );
+}
+
 // MAIN FILTER BAR
-// -----------------------------------------------------------------------------
-
 export default function WorkFilterBarNew({
   categories,
   activeCategory,
@@ -26,275 +131,113 @@ export default function WorkFilterBarNew({
   onSearchChange,
   sortMode,
   onSortChange,
-  categoryPreviews = {},
+  categoryPreviews,
 }) {
-  const [showTagFilters, setShowTagFilters] = useState(false);
-
-  const sortedCategories = useMemo(
-    () => categories || [],
-    [categories]
-  );
+  const [showFilters, setShowFilters] = useState(true);
 
   return (
-    <motion.section
+    <motion.div
       variants={filterBarParent}
       initial="initial"
       animate="animate"
-      className="relative z-20 max-w-7xl mx-auto px-6 -mt-16 mb-14"
-      aria-label="Work filters"
+      className="
+        w-full
+        backdrop-blur-2xl
+        bg-[#050505]/80
+        border border-white/10
+        rounded-3xl
+        p-6 md:p-8
+        shadow-[0_0_80px_-10px_rgba(255,255,255,0.15)]
+      "
     >
-      <div
-        className={cn(
-          "w-full backdrop-blur-2xl bg-black/50",
-          "border border-white/10 rounded-3xl",
-          "px-5 sm:px-7 md:px-9 py-6 md:py-7",
-          "shadow-[0_0_80px_-10px_rgba(15,15,30,0.8)]"
-        )}
-      >
-        {/* TOP ROW — SEARCH + SORT + TAG TOGGLE */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6 mb-5">
-          {/* Search */}
-          <motion.div
-            variants={filterBarInput}
-            className="relative w-full md:flex-1"
-          >
-            <input
-              type="text"
-              placeholder="Search visual work by title, client, tag..."
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className={cn(
-                "w-full px-4 md:px-5 py-2.5 md:py-3 rounded-xl",
-                "bg-[#050505] text-gray-100 placeholder-gray-500",
-                "outline-none border border-white/10",
-                "focus:border-white/30 focus:ring-1 focus:ring-white/20",
-                "transition-all text-sm md:text-base"
-              )}
-            />
-          </motion.div>
-
-          {/* Sort Dropdown */}
-          <motion.div
-            variants={filterBarInput}
-            className="flex items-center gap-2 md:w-64"
-          >
-            <label className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/40 hidden md:block">
-              Sort
-            </label>
-            <select
-              value={sortMode}
-              onChange={(e) => onSortChange(e.target.value)}
-              className={cn(
-                "w-full bg-[#050505] border border-white/10 text-gray-100",
-                "px-4 py-2.5 rounded-xl text-sm",
-                "focus:outline-none focus:ring-1 focus:ring-white/30",
-                "backdrop-blur-xl transition-all"
-              )}
-            >
-              <option value="featured">Featured (Popularity)</option>
-              <option value="recent">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="alpha">A → Z</option>
-            </select>
-          </motion.div>
-
-          {/* Toggle Tag Filters */}
-          <motion.button
-            variants={filterBarInput}
-            type="button"
-            onClick={() => setShowTagFilters((prev) => !prev)}
-            className={cn(
-              "inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl",
-              "bg-white/5 text-white border border-white/15",
-              "hover:bg-white/10 hover:border-white/30",
-              "text-xs font-medium tracking-[0.14em] uppercase"
-            )}
-          >
-            {showTagFilters ? "Hide Tags" : "Filter by Tags"}
-          </motion.button>
-        </div>
-
-        {/* CATEGORY CHIPS — DESKTOP */}
+      {/* Top row — Search + Sort + Toggle filters */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {/* Search */}
         <motion.div
-          variants={filterChipParent}
-          className="hidden md:flex flex-wrap gap-2.5 mb-1"
+          variants={filterBarInput}
+          className="relative w-full md:flex-1"
         >
-          {sortedCategories.map((cat) => {
-            const isActive = activeCategory === cat;
-
-            return (
-              <motion.button
-                key={cat}
-                variants={filterChipChild}
-                type="button"
-                onClick={() => onCategoryChange(cat)}
-                className={cn(
-                  "px-4 py-2 rounded-full text-xs md:text-sm font-medium border transition-all",
-                  isActive
-                    ? "bg-white text-black border-white shadow-lg shadow-white/20"
-                    : "bg-white/5 text-gray-200 border-white/12 hover:bg-white/10 hover:text-white"
-                )}
-              >
-                {cat}
-              </motion.button>
-            );
-          })}
+          <input
+            type="text"
+            placeholder="Search visual work..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="
+              w-full px-5 py-3 rounded-xl 
+              bg-[#0a0a0a] text-gray-200 placeholder-gray-500 
+              outline-none border border-white/10 
+              focus:border-white/25 transition-all
+            "
+          />
         </motion.div>
 
-        {/* MOBILE CATEGORY CARDS */}
-        <CategoryCardsMobile
-          categories={sortedCategories}
-          activeCategory={activeCategory}
-          onCategoryChange={onCategoryChange}
-          categoryPreviews={categoryPreviews}
-        />
+        {/* Sort dropdown */}
+        <SortDropdown sortMode={sortMode} onSortChange={onSortChange} />
 
-        {/* TAG FILTERS (EXPANDABLE AREA) */}
-        <motion.div
-          initial={false}
-          animate={showTagFilters ? "open" : "collapsed"}
-          variants={{
-            open: { height: "auto", opacity: 1, marginTop: 14 },
-            collapsed: { height: 0, opacity: 0, marginTop: 0 },
-          }}
-          className="overflow-hidden"
+        {/* Toggle filters button (tags + mobile categories) */}
+        <motion.button
+          variants={filterBarInput}
+          type="button"
+          onClick={() => setShowFilters((prev) => !prev)}
+          className="
+            px-5 py-3 rounded-xl 
+            bg-white/10 text-white border border-white/20 
+            hover:bg-white/20 transition
+            text-sm
+          "
         >
+          {showFilters ? "Hide filters" : "Show filters"}
+        </motion.button>
+      </div>
+
+      {/* Category chips (desktop) */}
+      <motion.div
+        variants={filterChipParent}
+        className="hidden md:flex flex-wrap gap-3 mt-7"
+      >
+        {categories.map((cat) => (
+          <motion.button
+            key={cat}
+            variants={filterChipChild}
+            onClick={() => onCategoryChange(cat)}
+            className={`
+              px-5 py-2 rounded-full text-xs md:text-sm font-medium border 
+              ${
+                activeCategory === cat
+                  ? "bg-white text-black border-white"
+                  : "bg-white/5 text-gray-300 border-white/10 hover:bg-white/10"
+              }
+            `}
+          >
+            {cat}
+          </motion.button>
+        ))}
+      </motion.div>
+
+      {/* Expandable section: tags + mobile category cards */}
+      {showFilters && (
+        <motion.div
+          initial={{ opacity: 0, y: 10, height: 0 }}
+          animate={{ opacity: 1, y: 0, height: "auto" }}
+          exit={{ opacity: 0, y: -8, height: 0 }}
+          className="overflow-hidden mt-4 md:mt-2"
+        >
+          {/* Tag selector */}
           <TagSelector
             availableTags={availableTags}
             activeTags={activeTags}
             onTagToggle={onTagToggle}
           />
+
+          {/* Category cards (mobile) */}
+          <CategoryCards
+            categories={categories}
+            activeCategory={activeCategory}
+            onCategoryChange={onCategoryChange}
+            categoryPreviews={categoryPreviews}
+          />
         </motion.div>
-      </div>
-    </motion.section>
+      )}
+    </motion.div>
   );
 }
-
-WorkFilterBarNew.propTypes = {
-  categories: PropTypes.arrayOf(PropTypes.string).isRequired,
-  activeCategory: PropTypes.string.isRequired,
-  onCategoryChange: PropTypes.func.isRequired,
-  availableTags: PropTypes.arrayOf(PropTypes.string).isRequired,
-  activeTags: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onTagToggle: PropTypes.func.isRequired,
-  searchQuery: PropTypes.string.isRequired,
-  onSearchChange: PropTypes.func.isRequired,
-  sortMode: PropTypes.string.isRequired,
-  onSortChange: PropTypes.func.isRequired,
-  categoryPreviews: PropTypes.object,
-};
-
-// -----------------------------------------------------------------------------
-// TAG SELECTOR
-// -----------------------------------------------------------------------------
-
-function TagSelector({ availableTags, activeTags, onTagToggle }) {
-  if (!availableTags.length) return null;
-
-  return (
-    <div className="pt-3 border-t border-white/8 mt-2">
-      <div className="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-3">
-        Active tags
-      </div>
-      <div className="flex flex-wrap gap-2.5">
-        {availableTags.map((tag) => {
-          const isActive = activeTags.includes(tag);
-
-          return (
-            <button
-              key={tag}
-              type="button"
-              onClick={() => onTagToggle(tag)}
-              className={cn(
-                "px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
-                "backdrop-blur-md border",
-                isActive
-                  ? "bg-white text-black border-white shadow-lg shadow-white/10 scale-[1.02]"
-                  : "bg-black/40 border-white/12 text-gray-300 hover:bg-white/10 hover:text-white"
-              )}
-            >
-              {tag}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-TagSelector.propTypes = {
-  availableTags: PropTypes.arrayOf(PropTypes.string).isRequired,
-  activeTags: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onTagToggle: PropTypes.func.isRequired,
-};
-
-// -----------------------------------------------------------------------------
-// MOBILE CATEGORY CARDS
-// -----------------------------------------------------------------------------
-
-function CategoryCardsMobile({
-  categories,
-  activeCategory,
-  onCategoryChange,
-  categoryPreviews,
-}) {
-  if (!categories?.length) return null;
-
-  return (
-    <div className="md:hidden mt-4 space-y-3">
-      {categories.map((cat) => {
-        const isActive = activeCategory === cat;
-        const img = categoryPreviews[cat];
-
-        return (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => onCategoryChange(cat)}
-            className={cn(
-              "w-full flex items-center gap-3 rounded-2xl overflow-hidden",
-              "border transition-all duration-300 backdrop-blur-xl",
-              isActive
-                ? "border-white/25 bg-white/10 shadow-lg shadow-white/15 scale-[1.01]"
-                : "border-white/10 bg-white/[0.04] hover:bg-white/[0.08]"
-            )}
-          >
-            <div className="relative w-20 h-16 overflow-hidden rounded-xl flex-shrink-0 bg-black/40">
-              {img ? (
-                <img
-                  src={img}
-                  alt={`${cat} category preview`}
-                  className="w-full h-full object-cover opacity-90"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-[10px] text-white/40">
-                  {cat}
-                </div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-            </div>
-            <div className="flex-1 text-left">
-              <div className="text-xs uppercase tracking-[0.18em] text-white/40 mb-0.5">
-                Category
-              </div>
-              <div className="text-sm font-medium text-white">{cat}</div>
-              {isActive && (
-                <div className="text-[11px] text-emerald-300/80 mt-0.5">
-                  Active filter
-                </div>
-              )}
-            </div>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-CategoryCardsMobile.propTypes = {
-  categories: PropTypes.arrayOf(PropTypes.string).isRequired,
-  activeCategory: PropTypes.string.isRequired,
-  onCategoryChange: PropTypes.func.isRequired,
-  categoryPreviews: PropTypes.object,
-};
