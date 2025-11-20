@@ -1,63 +1,90 @@
-// src/components/work/WorkGridNew.jsx
-import React, { useMemo } from "react";
-import { motion } from "framer-motion";
-import WorkItemLargeCard from "./WorkItemLargeCard";
-import { staggerContainer } from "@/utils/workAnimations";
-import PropTypes from "prop-types";
+// src/components/work/MediaMasonry.jsx
+import React, { useState } from "react";
+import MediaCard from "./MediaCard";
+import MediaModal from "./MediaModal";
 
-export default function WorkGridNew({ items = [], layout = "masonry", columns = 3, colWidth = 340 }) {
-  const memoizedItems = useMemo(() => items || [], [items]);
+/**
+ * Masonry using CSS columns for performance.
+ * Props:
+ * - items: array of media items (id, media, title, caption, client, year)
+ * - initialFilter: 'all' | 'images' | 'videos'
+ */
+export default function MediaMasonry({ items = [], initialFilter = "all" }) {
+  const [filter, setFilter] = useState(initialFilter);
+  const [modalItem, setModalItem] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const isVideoUrl = (url) => {
+    if (!url) return false;
+    const u = url.toLowerCase();
+    if (u.includes("youtube.com") || u.includes("youtu.be") || u.includes("vimeo.com")) return true;
+    return /\.mp4|\.webm|\.mov|\.m3u8/i.test(u);
+  };
+
+  const filtered = items.filter((it) => {
+    if (filter === "all") return true;
+    if (filter === "images") return !isVideoUrl(it.media);
+    if (filter === "videos") return isVideoUrl(it.media);
+    return true;
+  });
+
+  const openModal = (item) => {
+    setModalItem(item);
+    setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalItem(null);
+  };
+
+  // CSS columns style inlined (tailwind classes plus custom style)
+  const colStyle = {
+    columnGap: "1.25rem",
+    MozColumnGap: "1.25rem",
+  };
 
   return (
-    <section aria-label="Work Grid" className="max-w-7xl mx-auto px-6 pb-28">
-      <motion.div variants={staggerContainer(0.03)} initial="initial" animate="animate">
-        {layout === "masonry" ? (
-          <MasonryContainer items={memoizedItems} colWidth={colWidth} />
-        ) : (
-          <GridContainer items={memoizedItems} columns={columns} />
-        )}
-      </motion.div>
-    </section>
-  );
-}
-
-WorkGridNew.propTypes = {
-  items: PropTypes.array,
-  layout: PropTypes.oneOf(["masonry", "grid"]),
-  columns: PropTypes.number,
-  colWidth: PropTypes.number,
-};
-
-// CSS columns masonry
-function MasonryContainer({ items, colWidth = 340, gap = 20 }) {
-  return (
-    <div style={{ columnGap: gap, columnWidth: colWidth }} className="masonry-grid">
-      {items.map((item) => (
-        <div key={item.id} style={{ breakInside: "avoid", marginBottom: gap }}>
-          <WorkItemLargeCard item={item} />
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <button onClick={() => setFilter("all")} className={`px-3 py-1 rounded-full text-sm ${filter === "all" ? "bg-white/6 text-white" : "text-white/60"}`}>All</button>
+          <button onClick={() => setFilter("images")} className={`px-3 py-1 rounded-full text-sm ${filter === "images" ? "bg-white/6 text-white" : "text-white/60"}`}>Images</button>
+          <button onClick={() => setFilter("videos")} className={`px-3 py-1 rounded-full text-sm ${filter === "videos" ? "bg-white/6 text-white" : "text-white/60"}`}>Reels</button>
         </div>
-      ))}
+        <div className="text-xs text-white/50">{filtered.length} items</div>
+      </div>
 
-      <style>{`
-        .masonry-grid { -webkit-column-gap: ${gap}px; column-gap: ${gap}px; }
-        @media (min-width: 1280px) { .masonry-grid { column-width: ${Math.max(300, colWidth)}px; } }
+      <div
+        className="masonry"
+        style={colStyle}
+      >
+        {filtered.map((it) => (
+          <MediaCard key={it.id} item={it} onOpen={openModal} />
+        ))}
+      </div>
+
+      <style jsx>{`
+        .masonry {
+          column-count: 1;
+        }
+        @media (min-width: 700px) {
+          .masonry {
+            column-count: 2;
+          }
+        }
+        @media (min-width: 1100px) {
+          .masonry {
+            column-count: 3;
+          }
+        }
+        /* ensure masonry children do not break */
+        .masonry > * {
+          display: inline-block;
+          width: 100%;
+        }
       `}</style>
+
+      <MediaModal open={modalOpen} onClose={closeModal} item={modalItem} />
     </div>
   );
 }
-
-MasonryContainer.propTypes = { items: PropTypes.array };
-
-// Regular grid fallback
-function GridContainer({ items, columns = 3, gap = 20 }) {
-  const min = Math.floor(1000 / Math.max(1, columns));
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, minmax(${min}px, 1fr))`, gap }}>
-      {items.map((it) => (
-        <WorkItemLargeCard key={it.id} item={it} />
-      ))}
-    </div>
-  );
-}
-
-GridContainer.propTypes = { items: PropTypes.array, columns: PropTypes.number, gap: PropTypes.number };
