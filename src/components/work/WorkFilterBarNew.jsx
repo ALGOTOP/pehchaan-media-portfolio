@@ -1,38 +1,243 @@
-// src/components/work/FilterBar.jsx
-import React from "react";
+// src/components/work/WorkFilterBarNew.jsx
 
-export default function FilterBar({ filter, setFilter }) {
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  filterBarParent,
+  filterBarInput,
+  filterChipParent,
+  filterChipChild,
+} from "@/utils/workAnimations";
+
+// TAG SELECTOR
+function TagSelector({ availableTags, activeTags, onTagToggle }) {
   return (
-    <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-      <div className="inline-flex items-center gap-2">
-        <button
-          onClick={() => setFilter("all")}
-          className={`px-3 py-1.5 rounded-full text-sm transition ${
-            filter === "all" ? "bg-white/6 text-white" : "text-white/60 bg-transparent"
-          }`}
-          aria-pressed={filter === "all"}
-        >
-          All
-        </button>
-        <button
-          onClick={() => setFilter("images")}
-          className={`px-3 py-1.5 rounded-full text-sm transition ${
-            filter === "images" ? "bg-white/6 text-white" : "text-white/60 bg-transparent"
-          }`}
-          aria-pressed={filter === "images"}
-        >
-          Images
-        </button>
-        <button
-          onClick={() => setFilter("videos")}
-          className={`px-3 py-1.5 rounded-full text-sm transition ${
-            filter === "videos" ? "bg-white/6 text-white" : "text-white/60 bg-transparent"
-          }`}
-          aria-pressed={filter === "videos"}
-        >
-          Reels
-        </button>
+    <div className="w-full mt-6">
+      <div className="text-xs uppercase tracking-widest text-gray-500 mb-3">
+        Filter by tags
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {availableTags.map((tag) => {
+          const active = activeTags.includes(tag);
+          return (
+            <button
+              key={tag}
+              onClick={() => onTagToggle(tag)}
+              className={`
+                px-4 py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300
+                backdrop-blur-md border  
+                ${
+                  active
+                    ? "bg-[#ffffff15] border-white/30 text-white shadow-lg shadow-white/10 scale-[1.03]"
+                    : "bg-black/20 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white"
+                }
+              `}
+            >
+              {tag}
+            </button>
+          );
+        })}
       </div>
     </div>
+  );
+}
+
+// MOBILE CATEGORY CARDS
+function CategoryCards({
+  categories,
+  activeCategory,
+  onCategoryChange,
+  categoryPreviews,
+}) {
+  return (
+    <div className="md:hidden mt-8 space-y-4">
+      {categories.map((cat) => {
+        const active = activeCategory === cat;
+        const preview = categoryPreviews?.[cat];
+
+        return (
+          <div
+            key={cat}
+            className={`
+              p-5 rounded-2xl transition-all duration-500 border 
+              backdrop-blur-xl
+              ${
+                active
+                  ? "border-white/20 bg-white/5 shadow-lg shadow-white/10 scale-[1.02]"
+                  : "border-white/10 bg-white/5 hover:bg-white/10"
+              }
+            `}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold text-white">{cat}</h3>
+
+              <button
+                onClick={() => onCategoryChange(cat)}
+                className="px-3 py-1 rounded-xl text-xs uppercase tracking-widest border border-white/10 bg-black/40 text-gray-300 hover:text-white hover:border-white/20 transition-all"
+              >
+                {active ? "Selected" : "Select"}
+              </button>
+            </div>
+
+            {preview && (
+              <div className="rounded-xl overflow-hidden relative group">
+                <img
+                  src={preview}
+                  alt={`${cat} category preview`}
+                  className="w-full h-40 object-cover opacity-80 group-hover:opacity-100 transition-all duration-500"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// SORT DROPDOWN
+function SortDropdown({ sortMode, onSortChange }) {
+  return (
+    <motion.select
+      variants={filterBarInput}
+      value={sortMode}
+      onChange={(e) => onSortChange(e.target.value)}
+      className="
+        w-full md:w-56 bg-black/30 border border-white/10 text-gray-300 
+        px-4 py-3 rounded-xl 
+        focus:outline-none focus:ring-2 focus:ring-white/30
+        backdrop-blur-xl transition-all
+      "
+    >
+      <option value="featured">Featured (Most Impact)</option>
+      <option value="recent">Newest First</option>
+      <option value="oldest">Oldest First</option>
+      <option value="alpha">A → Z</option>
+    </motion.select>
+  );
+}
+
+// MAIN FILTER BAR
+export default function WorkFilterBarNew({
+  categories,
+  activeCategory,
+  onCategoryChange,
+  availableTags,
+  activeTags,
+  onTagToggle,
+  searchQuery,
+  onSearchChange,
+  sortMode,
+  onSortChange,
+  categoryPreviews,
+}) {
+  const [showFilters, setShowFilters] = useState(true);
+
+  return (
+    <motion.div
+      variants={filterBarParent}
+      initial="initial"
+      animate="animate"
+      className="
+        w-full
+        backdrop-blur-2xl
+        bg-[#050505]/80
+        border border-white/10
+        rounded-3xl
+        p-6 md:p-8
+        shadow-[0_0_80px_-10px_rgba(255,255,255,0.15)]
+      "
+    >
+      {/* Top row — Search + Sort + Toggle filters */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {/* Search */}
+        <motion.div
+          variants={filterBarInput}
+          className="relative w-full md:flex-1"
+        >
+          <input
+            type="text"
+            placeholder="Search visual work..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="
+              w-full px-5 py-3 rounded-xl 
+              bg-[#0a0a0a] text-gray-200 placeholder-gray-500 
+              outline-none border border-white/10 
+              focus:border-white/25 transition-all
+            "
+          />
+        </motion.div>
+
+        {/* Sort dropdown */}
+        <SortDropdown sortMode={sortMode} onSortChange={onSortChange} />
+
+        {/* Toggle filters button (tags + mobile categories) */}
+        <motion.button
+          variants={filterBarInput}
+          type="button"
+          onClick={() => setShowFilters((prev) => !prev)}
+          className="
+            px-5 py-3 rounded-xl 
+            bg-white/10 text-white border border-white/20 
+            hover:bg-white/20 transition
+            text-sm
+          "
+        >
+          {showFilters ? "Hide filters" : "Show filters"}
+        </motion.button>
+      </div>
+
+      {/* Category chips (desktop) */}
+      <motion.div
+        variants={filterChipParent}
+        className="hidden md:flex flex-wrap gap-3 mt-7"
+      >
+        {categories.map((cat) => (
+          <motion.button
+            key={cat}
+            variants={filterChipChild}
+            onClick={() => onCategoryChange(cat)}
+            className={`
+              px-5 py-2 rounded-full text-xs md:text-sm font-medium border 
+              ${
+                activeCategory === cat
+                  ? "bg-white text-black border-white"
+                  : "bg-white/5 text-gray-300 border-white/10 hover:bg-white/10"
+              }
+            `}
+          >
+            {cat}
+          </motion.button>
+        ))}
+      </motion.div>
+
+      {/* Expandable section: tags + mobile category cards */}
+      {showFilters && (
+        <motion.div
+          initial={{ opacity: 0, y: 10, height: 0 }}
+          animate={{ opacity: 1, y: 0, height: "auto" }}
+          exit={{ opacity: 0, y: -8, height: 0 }}
+          className="overflow-hidden mt-4 md:mt-2"
+        >
+          {/* Tag selector */}
+          <TagSelector
+            availableTags={availableTags}
+            activeTags={activeTags}
+            onTagToggle={onTagToggle}
+          />
+
+          {/* Category cards (mobile) */}
+          <CategoryCards
+            categories={categories}
+            activeCategory={activeCategory}
+            onCategoryChange={onCategoryChange}
+            categoryPreviews={categoryPreviews}
+          />
+        </motion.div>
+      )}
+    </motion.div>
   );
 }
