@@ -1,89 +1,58 @@
 // src/hooks/useWorkFilter.js
-import { useMemo } from "react";
-import { ALL_WORK_ITEMS, normalizeWorkItem } from "@/data/workData";
+import { useMemo, useState } from "react";
 
 /**
  * useWorkFilter
+ * @param {Array} initialList - array of media items
+ * @param {Object} opts - { defaultType: 'all' }
  *
- * Centralized filter/sort logic for the Extended Work archive.
- * You can feed it:
- * - category
- * - searchQuery
- * - selectedTags (array)
- * - sortMode
- * - sourceItems (optional) – if you want to pass a custom list (e.g. only Graphics).
+ * Returns:
+ *  { list, setTypeFilter, typeFilter, setSearch, search, setTagFilter, tagFilter }
  */
-export function useWorkFilter({
-  category = "All",
-  searchQuery = "",
-  selectedTags = [],
-  sortMode = "featured", // 'featured' | 'recent' | 'oldest' | 'alpha'
-  sourceItems = ALL_WORK_ITEMS, // default: use everything
-} = {}) {
-  const normalizedSource = useMemo(
-    () => sourceItems.map(normalizeWorkItem),
-    [sourceItems]
-  );
+export default function useWorkFilter(initialList = [], opts = {}) {
+  const [typeFilter, setTypeFilter] = useState(opts.defaultType || "all"); // "all" | "image" | "video"
+  const [search, setSearch] = useState("");
+  const [tagFilter, setTagFilter] = useState("all"); // for future use
 
-  const query = searchQuery.trim().toLowerCase();
+  const list = useMemo(() => {
+    let out = initialList || [];
 
-  const filtered = useMemo(() => {
-    return normalizedSource
-      .filter((item) => {
-        // 1) Category filter (if not "All")
-        if (category && category !== "All" && category !== "Everything") {
-          if (item.category !== category) return false;
-        }
+    if (typeFilter === "image") {
+      out = out.filter((m) => (m.type || guessTypeFromSrc(m.src)) === "image");
+    } else if (typeFilter === "video") {
+      out = out.filter((m) => (m.type || guessTypeFromSrc(m.src)) === "video");
+    }
 
-        // 2) Tag filter (all selected tags must be present)
-        if (selectedTags.length > 0) {
-          const tagsLower = (item.tags || []).map((t) => t.toLowerCase());
-          const hasAllTags = selectedTags.every((tag) =>
-            tagsLower.includes(tag.toLowerCase())
-          );
-          if (!hasAllTags) return false;
-        }
+    if (tagFilter !== "all") {
+      out = out.filter((m) => (m.tags || []).includes(tagFilter));
+    }
 
-        // 3) Text search: title, client, category, type, tags, description
-        if (query) {
-          const haystack = [
-            item.title,
-            item.client,
-            item.category,
-            item.type,
-            item.description,
-            ...(item.tags || []),
-          ]
-            .join(" ")
-            .toLowerCase();
+    if (search && search.trim()) {
+      const s = search.trim().toLowerCase();
+      out = out.filter(
+        (m) =>
+          (m.title || "").toLowerCase().includes(s) ||
+          (m.tags || []).join(" ").toLowerCase().includes(s)
+      );
+    }
 
-          if (!haystack.includes(query)) return false;
-        }
-
-        return true;
-      })
-      .sort((a, b) => {
-        // 4) Sorting
-        switch (sortMode) {
-          case "recent":
-            return Number(b.year || 0) - Number(a.year || 0);
-          case "oldest":
-            return Number(a.year || 0) - Number(b.year || 0);
-          case "alpha":
-            return (a.title || "").localeCompare(b.title || "");
-          case "featured":
-          default:
-            // Use popularity as "featured" signal. Tie-breaker = recent.
-            if (b.popularity !== a.popularity) {
-              return b.popularity - a.popularity;
-            }
-            return Number(b.year || 0) - Number(a.year || 0);
-        }
-      });
-  }, [normalizedSource, category, query, selectedTags, sortMode]);
+    return out;
+  }, [initialList, typeFilter, search, tagFilter]);
 
   return {
-    items: filtered,
-    count: filtered.length,
+    list,
+    typeFilter,
+    setTypeFilter,
+    search,
+    setSearch,
+    tagFilter,
+    setTagFilter,
   };
 }
+
+// helper (same logic as in workdata)
+const guessTypeFromSrc = (src = "") => {
+  const ext = (src.split(".").pop() || "").toLowerCase();
+  if (["mp4", "webm", "mov", "m4v"].includes(ext)) return "video";
+  return "image";
+};
