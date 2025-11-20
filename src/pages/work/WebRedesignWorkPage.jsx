@@ -1,7 +1,7 @@
 // src/pages/work/WebRedesignWorkPage.jsx
 import React from "react";
 import WorkCategoryLayout from "../../layouts/WorkCategoryLayout";
-import { useWorkFilter } from "../../hooks/useWorkFilter";
+import useWorkFilter from "../../hooks/useWorkFilter";
 
 const webRedesignSamples = [
   { type: "video", src: "https://videos.pexels.com/video-files/3195399/3195399-uhd_2560_1440_25fps.mp4" },
