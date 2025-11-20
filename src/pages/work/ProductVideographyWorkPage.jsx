@@ -1,7 +1,7 @@
 // src/pages/work/ProductVideographyWorkPage.jsx
 import React from "react";
 import WorkCategoryLayout from "../../layouts/WorkCategoryLayout";
-import { useWorkFilter } from "../../hooks/useWorkFilter";
+import useWorkFilter from "../../hooks/useWorkFilter";
 
 const videographySamples = [
   { type: "video", src: "https://videos.pexels.com/video-files/3130141/3130141-hd_1920_1080_24fps.mp4" },
