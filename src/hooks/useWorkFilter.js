@@ -1,30 +1,24 @@
 // src/hooks/useWorkFilter.js
 import { useMemo, useState } from "react";
+import { guessMediaType } from "../utils/mediaType";
 
 /**
  * useWorkFilter
- * @param {Array} initialList - array of media items
- * @param {Object} opts - { defaultType: 'all' }
- *
- * Returns:
- *  { list, setTypeFilter, typeFilter, setSearch, search, setTagFilter, tagFilter }
+ * - initialList: array of media items
+ * - returns: { list, typeFilter, setTypeFilter, search, setSearch }
  */
-export default function useWorkFilter(initialList = [], opts = {}) {
-  const [typeFilter, setTypeFilter] = useState(opts.defaultType || "all"); // "all" | "image" | "video"
+export default function useWorkFilter(initialList = []) {
+  const [typeFilter, setTypeFilter] = useState("all"); // all | image | video
   const [search, setSearch] = useState("");
-  const [tagFilter, setTagFilter] = useState("all"); // for future use
 
   const list = useMemo(() => {
-    let out = initialList || [];
+    if (!Array.isArray(initialList)) return [];
+    let out = [...initialList];
 
     if (typeFilter === "image") {
-      out = out.filter((m) => (m.type || guessTypeFromSrc(m.src)) === "image");
+      out = out.filter((m) => (m.type ? m.type === "image" : guessMediaType(m.src) === "image"));
     } else if (typeFilter === "video") {
-      out = out.filter((m) => (m.type || guessTypeFromSrc(m.src)) === "video");
-    }
-
-    if (tagFilter !== "all") {
-      out = out.filter((m) => (m.tags || []).includes(tagFilter));
+      out = out.filter((m) => (m.type ? m.type === "video" : guessMediaType(m.src) === "video"));
     }
 
     if (search && search.trim()) {
@@ -37,22 +31,7 @@ export default function useWorkFilter(initialList = [], opts = {}) {
     }
 
     return out;
-  }, [initialList, typeFilter, search, tagFilter]);
+  }, [initialList, typeFilter, search]);
 
-  return {
-    list,
-    typeFilter,
-    setTypeFilter,
-    search,
-    setSearch,
-    tagFilter,
-    setTagFilter,
-  };
+  return { list, typeFilter, setTypeFilter, search, setSearch };
 }
-
-// helper (same logic as in workdata)
-const guessTypeFromSrc = (src = "") => {
-  const ext = (src.split(".").pop() || "").toLowerCase();
-  if (["mp4", "webm", "mov", "m4v"].includes(ext)) return "video";
-  return "image";
-};
