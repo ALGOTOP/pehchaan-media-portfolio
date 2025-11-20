@@ -1,7 +1,7 @@
 // src/pages/work/SocialMediaManagementWorkPage.jsx
 import React from "react";
 import WorkCategoryLayout from "../../layouts/WorkCategoryLayout";
-import { useWorkFilter } from "../../hooks/useWorkFilter";
+import useWorkFilter from "../../hooks/useWorkFilter";
 
 const socialSamples = [
   { type: "image", src: "https://images.unsplash.com/photo-1520975698519-59cde0b30a52" },
