@@ -1,7 +1,7 @@
 // src/pages/work/ProductPhotographyWorkPage.jsx
 import React from "react";
 import WorkCategoryLayout from "../../layouts/WorkCategoryLayout";
-import { useWorkFilter } from "../../hooks/useWorkFilter";
+import useWorkFilter from "../../hooks/useWorkFilter";
 
 const photographySamples = [
   { type: "image", src: "https://images.unsplash.com/photo-1551009175-0c2f5f42b38e" },
