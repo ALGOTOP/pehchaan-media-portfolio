@@ -1,7 +1,7 @@
 // src/components/work/MediaMasonry.jsx
 import React, { useState } from "react";
-import MediaCard from "./MediaCard";
-import MediaModal from "./MediaModal";
+import MediaCard from "./MediaCard.jsx";
+import MediaModal from "./MediaModal.jsx";
 
 /**
  * Masonry using CSS columns for performance.
