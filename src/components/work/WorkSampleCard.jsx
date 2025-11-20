@@ -1,125 +1,128 @@
-// src/components/work/MediaCard.jsx
-import React, { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+// src/components/work/WorkSampleCard.jsx
+import React, { useRef } from "react";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import { cardHover } from "@/utils/workAnimations";
+import PropTypes from "prop-types";
 
-/**
- * Props:
- * - item: { id, title, caption, client, year, media }  (media = url string)
- * - onOpen(item) -> open modal
- *
- * Behavior:
- * - Detects whether media is video (mp4, webm, mov) or embed (youtube/vimeo) and image otherwise
- * - Video plays on mouse enter with sound; on mouse leave it mutes and continues playing to end (no loop)
- * - Clicking opens modal
- */
+const cn = (...xs) => xs.filter(Boolean).join(" ");
 
-const isVideoUrl = (url) => {
-  if (!url) return false;
-  const u = url.toLowerCase();
-  if (u.includes("youtube.com") || u.includes("youtu.be") || u.includes("vimeo.com")) return true;
-  return /\.mp4|\.webm|\.mov|\.m3u8/i.test(u);
-};
+export default function WorkSampleCard({ item, onClick }) {
+  const ref = useRef(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
 
-export default function MediaCard({ item, onOpen }) {
-  const videoRef = useRef(null);
+  const rotateX = useTransform(y, [-40, 40], [10, -10]);
+  const rotateY = useTransform(x, [-40, 40], [-10, 10]);
+  const shineX = useTransform(x, [-40, 40], ["0%", "100%"]);
 
-  useEffect(() => {
-    // ensure videos are not looping by default
-    if (videoRef.current) {
-      videoRef.current.loop = false;
-      // do not autoplay
-    }
-  }, []);
-
-  const handleMouseEnter = () => {
-    try {
-      const vid = videoRef.current;
-      if (!vid) return;
-      // if ended, restart
-      if (vid.ended) vid.currentTime = 0;
-      vid.muted = false;
-      // attempt to play with sound
-      const p = vid.play();
-      if (p && p.catch) p.catch(() => {
-        // ignore autoplay block errors
-      });
-    } catch (e) { /* swallow */ }
+  const handleMouseMove = (e) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const relX = e.clientX - rect.left - rect.width / 2;
+    const relY = e.clientY - rect.top - rect.height / 2;
+    x.set(relX / 4);
+    y.set(relY / 4);
   };
 
   const handleMouseLeave = () => {
-    try {
-      const vid = videoRef.current;
-      if (!vid) return;
-      // mute and let it play to the end (no loop)
-      vid.muted = true;
-      vid.loop = false;
-      const p = vid.play();
-      if (p && p.catch) p.catch(() => {});
-    } catch (e) {}
+    x.set(0);
+    y.set(0);
   };
 
-  const isVideo = isVideoUrl(item.media);
-
-  const videoGlow = isVideo ? "shadow-[0_10px_30px_rgba(0,200,255,0.06)] ring-1 ring-cyan-400/6" : "";
+  const parallaxX = useTransform(x, (v) => v * -0.4);
+  const parallaxY = useTransform(y, (v) => v * -0.4);
 
   return (
-    <motion.div
+    <motion.article
+      ref={ref}
       layout
-      initial={{ opacity: 0, translateY: 12 }}
-      animate={{ opacity: 1, translateY: 0 }}
-      whileHover={{ scale: 1.01 }}
-      className={`mb-6 break-inside-avoid rounded-2xl overflow-hidden bg-[#070707] ${videoGlow}`}
+      variants={cardHover}
+      initial="initial"
+      animate="animate"
+      whileHover="hover"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ rotateX, rotateY }}
+      className={cn(
+        "relative rounded-2xl overflow-hidden bg-white/5",
+        "border border-white/5 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,0,0,0.6)]",
+        "cursor-pointer group"
+      )}
+      onClick={() => onClick?.(item)}
+      tabIndex={0}
+      role="button"
+      aria-label={`Open sample: ${item.title}`}
     >
-      <div
-        className={`relative w-full ${isVideo ? "aspect-[9/16]" : "w-full"} cursor-pointer`}
-        onClick={() => onOpen(item)}
-        onMouseEnter={isVideo ? handleMouseEnter : undefined}
-        onMouseLeave={isVideo ? handleMouseLeave : undefined}
-      >
-        {isVideo ? (
-          // For youtube/vimeo we could show an iframe thumbnail with play overlay (but not autoplay on load).
-          (item.media.includes("youtube") || item.media.includes("vimeo")) ? (
-            <div className="w-full h-full bg-black">
-              <iframe
-                src={item.media}
-                title={item.title}
-                className="w-full h-full"
-                frameBorder="0"
-                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          ) : (
-            <video
-              ref={videoRef}
-              src={item.media}
-              className="w-full h-full object-cover"
-              playsInline
-              muted
-              preload="metadata"
-            />
-          )
-        ) : (
-          <img src={item.media} alt={item.title} className="w-full h-auto object-cover" />
-        )}
+      {/* Image */}
+      <div className="relative overflow-hidden">
+        <motion.img
+          src={item.thumbnail}
+          alt={item.alt || item.title}
+          className="w-full h-52 object-cover transform-gpu group-hover:scale-[1.03] transition-transform duration-500"
+          style={{ x: parallaxX, y: parallaxY }}
+          loading="lazy"
+        />
 
-        {/* play icon overlay for videos */}
-        {isVideo && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-14 h-14 rounded-full bg-black/50 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none">
-                <path d="M8 5v14l11-7L8 5z" fill="currentColor" />
-              </svg>
-            </div>
-          </div>
-        )}
+        {/* Shine */}
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 w-1/2 bg-gradient-to-r from-white/20 via-white/60 to-transparent opacity-0 group-hover:opacity-100"
+          style={{ left: shineX }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        />
+
+        {/* Upper gradient */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
       </div>
 
-      <div className="p-4">
-        <h4 className="text-sm font-semibold leading-tight">{item.title}</h4>
-        <p className="text-xs text-white/60 mt-1">{item.client} • {item.year}</p>
-        <p className="text-xs text-white/60 mt-2 line-clamp-3">{item.caption}</p>
+      {/* Content */}
+      <div className="relative z-10 px-4 pt-3 pb-3.5 flex items-end justify-between gap-3">
+        <div>
+          <h4 className="text-sm md:text-[15px] font-semibold leading-tight">
+            {item.title}
+          </h4>
+          <p className="mt-1 text-[11px] text-white/60">
+            {item.client && <span>{item.client} · </span>}
+            {item.year}
+            {item.type && <span> · {item.type}</span>}
+          </p>
+          {item.tags?.length ? (
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {item.tags.slice(0, 3).map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-2 py-[3px] text-[10px] text-white/70"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        {/* CTA pill */}
+        <button
+          type="button"
+          className={cn(
+            "shrink-0 inline-flex items-center gap-1 rounded-full",
+            "bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white",
+            "border border-white/15 backdrop-blur-md",
+            "group-hover:bg-cyan-400 group-hover:text-black group-hover:border-cyan-200",
+            "transition-colors"
+          )}
+        >
+          <span>View</span>
+          <span className="text-[13px] translate-y-[0.5px]">↗</span>
+        </button>
       </div>
-    </motion.div>
+
+      {/* Outer ring glow */}
+      <div className="pointer-events-none absolute inset-0 rounded-2xl border border-white/0 group-hover:border-cyan-300/60 group-hover:shadow-[0_0_40px_rgba(34,211,238,0.35)] transition-all duration-500" />
+    </motion.article>
   );
 }
+
+WorkSampleCard.propTypes = {
+  item: PropTypes.object.isRequired,
+  onClick: PropTypes.func,
+};
