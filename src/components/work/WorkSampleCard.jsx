@@ -1,128 +1,89 @@
 // src/components/work/WorkSampleCard.jsx
 import React, { useRef } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
-import { cardHover } from "@/utils/workAnimations";
-import PropTypes from "prop-types";
+import { motion } from "framer-motion";
+import { cardHover, thumbReveal } from "../../utils/workAnimations";
+import { guessMediaType } from "../../utils/mediaType";
+import useHoverVideo from "../../hooks/useHoverVideo";
 
-const cn = (...xs) => xs.filter(Boolean).join(" ");
-
-export default function WorkSampleCard({ item, onClick }) {
-  const ref = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const rotateX = useTransform(y, [-40, 40], [10, -10]);
-  const rotateY = useTransform(x, [-40, 40], [-10, 10]);
-  const shineX = useTransform(x, [-40, 40], ["0%", "100%"]);
-
-  const handleMouseMove = (e) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const relX = e.clientX - rect.left - rect.width / 2;
-    const relY = e.clientY - rect.top - rect.height / 2;
-    x.set(relX / 4);
-    y.set(relY / 4);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  const parallaxX = useTransform(x, (v) => v * -0.4);
-  const parallaxY = useTransform(y, (v) => v * -0.4);
+/**
+ * WorkSampleCard
+ * Props:
+ *  - item: media item { id, src, poster, title, type, alt }
+ *  - onOpen: fn(item)
+ *  - className: additional wrapper classes
+ */
+export default function WorkSampleCard({ item, onOpen = () => {}, className = "" }) {
+  const type = item.type || guessMediaType(item.src);
+  const videoRef = useHoverVideo();
+  const wrapperRef = useRef(null);
 
   return (
     <motion.article
-      ref={ref}
-      layout
-      variants={cardHover}
+      ref={wrapperRef}
+      className={`work-sample-card group ${className}`}
+      variants={thumbReveal}
       initial="initial"
       animate="animate"
       whileHover="hover"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY }}
-      className={cn(
-        "relative rounded-2xl overflow-hidden bg-white/5",
-        "border border-white/5 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,0,0,0.6)]",
-        "cursor-pointer group"
-      )}
-      onClick={() => onClick?.(item)}
-      tabIndex={0}
-      role="button"
-      aria-label={`Open sample: ${item.title}`}
+      style={{ borderRadius: "1rem", overflow: "hidden" }}
     >
-      {/* Image */}
-      <div className="relative overflow-hidden">
-        <motion.img
-          src={item.thumbnail}
-          alt={item.alt || item.title}
-          className="w-full h-52 object-cover transform-gpu group-hover:scale-[1.03] transition-transform duration-500"
-          style={{ x: parallaxX, y: parallaxY }}
-          loading="lazy"
-        />
-
-        {/* Shine */}
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 w-1/2 bg-gradient-to-r from-white/20 via-white/60 to-transparent opacity-0 group-hover:opacity-100"
-          style={{ left: shineX }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        />
-
-        {/* Upper gradient */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 px-4 pt-3 pb-3.5 flex items-end justify-between gap-3">
-        <div>
-          <h4 className="text-sm md:text-[15px] font-semibold leading-tight">
-            {item.title}
-          </h4>
-          <p className="mt-1 text-[11px] text-white/60">
-            {item.client && <span>{item.client} · </span>}
-            {item.year}
-            {item.type && <span> · {item.type}</span>}
-          </p>
-          {item.tags?.length ? (
-            <div className="mt-1.5 flex flex-wrap gap-1.5">
-              {item.tags.slice(0, 3).map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-2 py-[3px] text-[10px] text-white/70"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          ) : null}
-        </div>
-
-        {/* CTA pill */}
-        <button
-          type="button"
-          className={cn(
-            "shrink-0 inline-flex items-center gap-1 rounded-full",
-            "bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white",
-            "border border-white/15 backdrop-blur-md",
-            "group-hover:bg-cyan-400 group-hover:text-black group-hover:border-cyan-200",
-            "transition-colors"
+      <motion.div
+        variants={cardHover}
+        className="relative bg-neutral-900"
+        style={{ borderRadius: "1rem" }}
+      >
+        <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-900">
+          {type === "image" ? (
+            <img
+              src={item.src}
+              alt={item.alt || item.title || "work sample"}
+              loading="lazy"
+              className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+            />
+          ) : (
+            <video
+              ref={videoRef}
+              src={item.src}
+              poster={item.poster || ""}
+              preload="metadata"
+              playsInline
+              className="w-full h-full object-cover"
+              // controls intentionally omitted
+            />
           )}
-        >
-          <span>View</span>
-          <span className="text-[13px] translate-y-[0.5px]">↗</span>
-        </button>
-      </div>
 
-      {/* Outer ring glow */}
-      <div className="pointer-events-none absolute inset-0 rounded-2xl border border-white/0 group-hover:border-cyan-300/60 group-hover:shadow-[0_0_40px_rgba(34,211,238,0.35)] transition-all duration-500" />
+          {/* bottom text overlay, small */}
+          <div className="absolute left-4 bottom-4 right-4 pointer-events-none">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm font-semibold tracking-tight text-white/95">
+                  {item.title}
+                </div>
+                <div className="text-xs text-white/60 mt-1">{/* subtitle if needed */}</div>
+              </div>
+
+              {/* micro badge showing type */}
+              <div className="ml-3">
+                <span
+                  className={`inline-flex items-center text-[11px] font-medium px-2 py-1 rounded-full ${
+                    type === "video" ? "bg-rose-600/90 text-white" : "bg-white/10 text-white"
+                  }`}
+                >
+                  {type === "video" ? "Reel" : "Image"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* clickable cover to open preview (transparent) */}
+          <button
+            onClick={() => onOpen(item)}
+            aria-label={`Open preview: ${item.title}`}
+            className="absolute inset-0 w-full h-full"
+            style={{ background: "transparent" }}
+          />
+        </div>
+      </motion.div>
     </motion.article>
   );
 }
-
-WorkSampleCard.propTypes = {
-  item: PropTypes.object.isRequired,
-  onClick: PropTypes.func,
-};
