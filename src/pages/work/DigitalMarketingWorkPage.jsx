@@ -1,24 +1,83 @@
-import React from "react";
-import WorkCategoryLayout from "@/layouts/WorkCategoryLayout";
-import { CATEGORY_HERO, WORK_BY_CATEGORY } from "@/data/workData";
-import WorkGalleryCard from "@/components/work/WorkGalleryCard";
+// src/pages/work/DigitalMarketingWorkPage.jsx
+import React, { useState } from "react";
+import WORK_CATEGORIES from "../../data/workData";
+import useWorkFilter from "../../hooks/useWorkFilter";
+import WorkSampleCard from "../../components/work/WorkSampleCard";
+import WorkModalView from "../../components/work/WorkModalView";
+import { motion } from "framer-motion";
+import { staggerContainer, thumbReveal } from "../../utils/workAnimations";
 
 export default function DigitalMarketingWorkPage() {
-  const categoryName = "Digital Marketing";
-  const heroImage = CATEGORY_HERO?.[categoryName];
-  const items = WORK_BY_CATEGORY?.[categoryName] || [];
+  const category = WORK_CATEGORIES.find((c) => c.slug === "digital-marketing");
+  const { list, typeFilter, setTypeFilter } = useWorkFilter(category.media);
+
+  const [selected, setSelected] = useState(null);
 
   return (
-    <WorkCategoryLayout
-      title={categoryName}
-      description="Campaign case work across channels: performance, CRO, and creative testing."
-      heroImage={heroImage}
-    >
-      <div className="mt-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((it) => <WorkGalleryCard key={it.id} item={it} />)}
-        </div>
+    <main className="min-h-screen bg-[#050505] text-white pb-20">
+      {/* Hero */}
+      <header className="max-w-6xl mx-auto px-6 pt-20 pb-10">
+        <h1 className="font-[Montserrat] text-5xl md:text-6xl tracking-tight">
+          Digital Marketing
+        </h1>
+        <p className="mt-4 text-white/70 text-lg max-w-xl">
+          Social-first asset design, campaign visuals, creative ideation,
+          conversion-focused reels, and micro-content.
+        </p>
+      </header>
+
+      {/* Filter Bar */}
+      <div className="max-w-6xl mx-auto px-6 pb-6 flex gap-3">
+        <button
+          onClick={() => setTypeFilter("all")}
+          className={`px-4 py-2 rounded-full text-sm ${
+            typeFilter === "all"
+              ? "bg-[#FF6F61] text-white"
+              : "bg-white/10 text-white/70"
+          }`}
+        >
+          All
+        </button>
+        <button
+          onClick={() => setTypeFilter("image")}
+          className={`px-4 py-2 rounded-full text-sm ${
+            typeFilter === "image"
+              ? "bg-[#FF6F61] text-white"
+              : "bg-white/10 text-white/70"
+          }`}
+        >
+          Images
+        </button>
+        <button
+          onClick={() => setTypeFilter("video")}
+          className={`px-4 py-2 rounded-full text-sm ${
+            typeFilter === "video"
+              ? "bg-[#FF6F61] text-white"
+              : "bg-white/10 text-white/70"
+          }`}
+        >
+          Reels
+        </button>
       </div>
-    </WorkCategoryLayout>
+
+      {/* Grid */}
+      <section className="max-w-7xl mx-auto px-6">
+        <motion.div
+          variants={staggerContainer(0.05)}
+          initial="initial"
+          animate="animate"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
+          {list.map((item, i) => (
+            <motion.div key={item.id} variants={thumbReveal} custom={i}>
+              <WorkSampleCard item={item} onOpen={setSelected} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* Modal */}
+      <WorkModalView open={!!selected} item={selected} onClose={() => setSelected(null)} />
+    </main>
   );
 }
