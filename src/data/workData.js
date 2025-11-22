@@ -38,7 +38,7 @@ export const WORK_CATEGORIES = [
     slug: "digital-marketing",
     title: "Digital Marketing",
     description: "Campaign creative, social-first assets, and conversion-focused media.",
-    hero: `${IMAGE_PLACEHOLDER}Digital+Marketing+Hero`,
+    hero: "https://i.ibb.co/Q731kq0S/Category-2-illustration-thumbnail.png",
     media: buildMedia("digital-marketing"),
   },
   {
