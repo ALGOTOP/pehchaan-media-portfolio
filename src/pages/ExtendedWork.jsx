@@ -42,12 +42,8 @@ export default function ExtendedWork() {
           animate="animate"
           className="max-w-4xl mx-auto px-6 pt-28 pb-12 text-center"
         >
-          <p className="text-[0.7rem] md:text-xs tracking-[0.28em] uppercase text-cyan-300/75">
-            Our Capabilities
-          </p>
-
-          <h1 className="mt-3 font-semibold text-[2.4rem] md:text-[2.9rem] lg:text-[3.2rem] leading-tight tracking-tight text-[#48b4ff]">
-            Extended Work Portfolio
+          <h1 className="font-semibold md:font-bold text-[2.5rem] md:text-[3rem] lg:text-[3.3rem] leading-tight tracking-tight text-[#48b4ff]">
+            OUR WORK AS A FULL-SERVICE AGENCY
           </h1>
 
           <p className="mt-4 text-sm md:text-base text-white/75 max-w-2xl mx-auto">
@@ -88,7 +84,11 @@ export default function ExtendedWork() {
                     className="group block w-full rounded-[28px] overflow-hidden bg-[#04060d] border border-white/6 shadow-[0_18px_45px_rgba(0,0,0,0.75)] hover:shadow-[0_22px_55px_rgba(0,193,255,0.45)] transition-all duration-300 transform-gpu hover:-translate-y-[4px]"
                     aria-label={`Open ${cat.title}`}
                   >
-                    <div className="relative w-full aspect-[16/10] bg-black overflow-hidden">
+                    {/* 
+                      Taller container to match previous version:
+                      aspect-[4/3] instead of [16/10]
+                    */}
+                    <div className="relative w-full aspect-[4/3] bg-black overflow-hidden">
                       {/* IMAGE */}
                       {hero ? (
                         <img
@@ -103,10 +103,10 @@ export default function ExtendedWork() {
                         </div>
                       )}
 
-                      {/* Overlays to mimic “Our Work” card text on top */}
+                      {/* Overlays to keep text on top of image */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/45 to-transparent pointer-events-none" />
 
-                      {/* Glow ring on hover – subtle */}
+                      {/* Hover glow ring */}
                       <div
                         className={`absolute inset-0 rounded-[28px] pointer-events-none transition-opacity duration-300 ${
                           hovered === cat.slug
@@ -117,7 +117,6 @@ export default function ExtendedWork() {
 
                       {/* TEXT OVER IMAGE */}
                       <div className="absolute left-5 right-5 bottom-5 flex flex-col gap-1.5">
-                        {/* Top row: title + badge */}
                         <div className="flex items-center justify-between gap-3">
                           <h3 className="text-base md:text-lg font-semibold tracking-tight text-white">
                             {cat.title}
