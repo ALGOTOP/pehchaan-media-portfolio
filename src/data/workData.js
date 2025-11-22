@@ -31,7 +31,7 @@ export const WORK_CATEGORIES = [
     slug: "ad-creatives",
     title: "Ad Creatives",
     description: "High-conversion ad creatives — motion, stills, and experimental cuts.",
-    hero: "https://ibb.co/pj6jykng",
+    hero: `${IMAGE_PLACEHOLDER}Graphics+Hero`,
     media: buildMedia("ad-creatives"),
   },
   {
@@ -45,7 +45,7 @@ export const WORK_CATEGORIES = [
     slug: "graphics",
     title: "Graphics",
     description: "Branding, illustration, and editorial graphics.",
-    hero: `${IMAGE_PLACEHOLDER}Graphics+Hero`,
+    hero: "https://i.ibb.co/CKpK2SWq/Category-3-Vector-Thumbnail.jpg",
     media: buildMedia("graphics"),
   },
   {
