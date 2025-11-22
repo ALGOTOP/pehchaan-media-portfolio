@@ -73,7 +73,7 @@ export const WORK_CATEGORIES = [
     slug: "social-media-management",
     title: "Social Media Management",
     description: "Content packages, reels, and social-first stories.",
-    hero: `${IMAGE_PLACEHOLDER}Social+Media+Hero`,
+    hero: "https://i.ibb.co/HLWwX5Jy/Gemini-Generated-Image-98czpj98czpj98cz-b022956f-f5f4-4986-8510-e40352892c29.jpg",
     media: buildMedia("social-media-management"),
   },
   {
