@@ -31,7 +31,7 @@ export const WORK_CATEGORIES = [
     slug: "ad-creatives",
     title: "Ad Creatives",
     description: "High-conversion ad creatives — motion, stills, and experimental cuts.",
-    hero: `${IMAGE_PLACEHOLDER}Ad+Creatives+Hero`,
+    hero: "https://ibb.co/pj6jykng",
     media: buildMedia("ad-creatives"),
   },
   {
