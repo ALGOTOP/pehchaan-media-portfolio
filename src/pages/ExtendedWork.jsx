@@ -42,11 +42,11 @@ export default function ExtendedWork() {
           animate="animate"
           className="max-w-4xl mx-auto px-6 pt-28 pb-12 text-center"
         >
-          <h1 className="font-semibold md:font-bold text-[2.5rem] md:text-[3rem] lg:text-[3.3rem] leading-tight tracking-tight text-[#48b4ff]">
+          <h1 className="font-bold text-[2.7rem] md:text-[3.2rem] lg:text-[3.6rem] leading-tight tracking-tight text-[#48b4ff]">
             OUR WORK AS A FULL-SERVICE AGENCY
           </h1>
 
-          <p className="mt-4 text-sm md:text-base text-white/75 max-w-2xl mx-auto">
+          <p className="mt-5 text-sm md:text-base text-white/75 max-w-2xl mx-auto">
             From brand launches and social content to motion and product
             visuals, these categories showcase how we make brands{" "}
             <span className="font-semibold text-white">unforgettable</span>{" "}
@@ -60,7 +60,7 @@ export default function ExtendedWork() {
             variants={staggerContainer(0.06)}
             initial="initial"
             animate="animate"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-9"
           >
             {categoryCards.map((cat, idx) => {
               const hero =
@@ -81,21 +81,18 @@ export default function ExtendedWork() {
                 >
                   <Link
                     to={`/work/${cat.slug}`}
-                    className="group block w-full rounded-[28px] overflow-hidden bg-[#04060d] border border-white/6 shadow-[0_18px_45px_rgba(0,0,0,0.75)] hover:shadow-[0_22px_55px_rgba(0,193,255,0.45)] transition-all duration-300 transform-gpu hover:-translate-y-[4px]"
+                    className="group block w-full rounded-[30px] overflow-hidden bg-[#04060d] border border-white/6 shadow-[0_22px_55px_rgba(0,0,0,0.78)] hover:shadow-[0_26px_65px_rgba(0,193,255,0.5)] transition-all duration-300 transform-gpu hover:-translate-y-[5px]"
                     aria-label={`Open ${cat.title}`}
                   >
-                    {/* 
-                      Taller container to match previous version:
-                      aspect-[4/3] instead of [16/10]
-                    */}
-                    <div className="relative w-full aspect-[4/3] bg-black overflow-hidden">
+                    {/* Bigger & slightly taller container */}
+                    <div className="relative w-full aspect-[3/2] min-h-[320px] md:min-h-[360px] bg-black overflow-hidden">
                       {/* IMAGE */}
                       {hero ? (
                         <img
                           src={hero}
                           alt={cat.title}
                           loading="lazy"
-                          className="w-full h-full object-cover transition-transform duration-[900ms] group-hover:scale-[1.05]"
+                          className="w-full h-full object-cover transition-transform duration-[900ms] group-hover:scale-[1.07]"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-white/35 text-sm">
@@ -103,41 +100,42 @@ export default function ExtendedWork() {
                         </div>
                       )}
 
-                      {/* Overlays to keep text on top of image */}
+                      {/* Gradient overlay to keep text readable */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/82 via-black/45 to-transparent pointer-events-none" />
 
                       {/* Hover glow ring */}
                       <div
-                        className={`absolute inset-0 rounded-[28px] pointer-events-none transition-opacity duration-300 ${
+                        className={`absolute inset-0 rounded-[30px] pointer-events-none transition-opacity duration-300 ${
                           hovered === cat.slug
-                            ? "opacity-100 shadow-[0_0_0_1px_rgba(0,193,255,0.9),0_0_35px_rgba(0,193,255,0.55)]"
+                            ? "opacity-100 shadow-[0_0_0_1px_rgba(0,193,255,0.9),0_0_40px_rgba(0,193,255,0.55)]"
                             : "opacity-0"
                         }`}
                       />
 
                       {/* TEXT OVER IMAGE */}
-                      <div className="absolute left-5 right-5 bottom-5 flex flex-col gap-1.5">
+                      <div className="absolute left-6 right-6 bottom-6 flex flex-col gap-2">
                         <div className="flex items-center justify-between gap-3">
-                          <h3 className="text-base md:text-lg font-semibold tracking-tight text-white">
+                          {/* Title in cyan */}
+                          <h3 className="text-lg md:text-xl font-semibold tracking-tight text-[#48b4ff]">
                             {cat.title}
                           </h3>
 
                           {sampleCount > 0 && (
-                            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white/10 text-white/80 backdrop-blur-[2px]">
+                            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white/10 text-white/80 backdrop-blur-[2px]">
                               {sampleCount} samples
                             </span>
                           )}
                         </div>
 
                         {cat.description && (
-                          <p className="text-[0.72rem] md:text-xs text-white/65 leading-relaxed max-w-[90%]">
+                          <p className="text-[0.76rem] md:text-xs text-white/70 leading-relaxed max-w-[92%]">
                             {cat.description}
                           </p>
                         )}
 
                         <button
                           type="button"
-                          className="mt-2 self-start text-[0.72rem] md:text-xs font-medium text-cyan-300 group-hover:text-cyan-200 inline-flex items-center gap-1"
+                          className="mt-2 self-start text-[0.75rem] md:text-xs font-medium text-white/55 group-hover:text-cyan-300 inline-flex items-center gap-1 transition-colors duration-200"
                         >
                           <span>View curated projects</span>
                           <span className="translate-x-0 group-hover:translate-x-0.5 transition-transform">
@@ -153,13 +151,14 @@ export default function ExtendedWork() {
           </motion.div>
 
           {/* CTA PILL BELOW GRID */}
-          <div className="mt-16 flex justify-center">
-            <a
-              href="#contact"
-              className="inline-flex items-center justify-center rounded-full px-8 py-3 text-sm md:text-base font-semibold bg-gradient-to-r from-[#1dd1ff] to-[#4c8dff] text-black shadow-[0_12px_32px_rgba(0,0,0,0.6)] hover:shadow-[0_16px_40px_rgba(0,193,255,0.6)] transition-all duration-300 hover:-translate-y-[2px]"
+          <div className="mt-18 flex justify-center">
+            {/* Use Link to go to home page contact section */}
+            <Link
+              to="/#contact"
+              className="inline-flex items-center justify-center rounded-full px-9 py-3.5 text-sm md:text-base font-semibold bg-gradient-to-r from-[#1dd1ff] to-[#4c8dff] text-black shadow-[0_14px_34px_rgba(0,0,0,0.7)] hover:shadow-[0_18px_42px_rgba(0,193,255,0.65)] transition-all duration-300 hover:-translate-y-[2px]"
             >
               Book a Free Session
-            </a>
+            </Link>
           </div>
 
           <div className="h-20" />
